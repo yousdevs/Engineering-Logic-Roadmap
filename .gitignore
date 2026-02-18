@@ -1,0 +1,36 @@
+## Visual Studio Junk
+.vs/
+[Bb]in/
+[Oo]bj/
+out/
+x64/
+x86/
+Generated\ Files/
+
+## Solution and Project User Settings
+*.user
+*.userosscache
+*.sln.doccas
+*.suo
+*.userprefs
+
+## C++ Compilations
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.aps
+*.ncb
+*.sdf
+*.ipch
+*.tlog
+*.lastbuildstate
+
+## C# / .NET Specific
+*.deps.json
+*.runtimeconfig.json
+*.dll
+
+## Logs and temporary
+*.log
+*.tmp

@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="05-Algorithms-L2/05-Algorithms-L2.vcxproj" Id="5b803d56-cc5a-41d5-832e-7e1929bfffab" />
+</Solution>
