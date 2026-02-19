@@ -19,7 +19,6 @@ void printInvertedNumberPattern(int number) {
 		}
 		std::cout << std::endl;
 	}
-
 }
 
 int main() {
