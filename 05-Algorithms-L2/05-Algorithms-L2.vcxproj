@@ -67,7 +67,10 @@
     <ClCompile Include="16-all-words-from-aaa-to-zzz.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="17-guess-a-3-letter-password.cpp" />
+    <ClCompile Include="17-guess-a-3-letter-password.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="18-encrypt-decrypt-text.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
