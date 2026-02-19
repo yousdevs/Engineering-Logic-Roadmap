@@ -1,7 +1,7 @@
 #include <iostream>
 
 
-void printAllWordsFromAToZ() {
+void printAllWordsFromAAAToZZZ() {
 	int start = char('A');
 	int end = char('Z');
 	for (int i = start; i <= end; i++) {
@@ -14,6 +14,6 @@ void printAllWordsFromAToZ() {
 }
 
 int main() {
-	printAllWordsFromAToZ();
+	printAllWordsFromAAAToZZZ();
 	return 0;
 }
