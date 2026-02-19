@@ -22,7 +22,10 @@
     <ClCompile Include="01-multiplication-table-from-1-to-10.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="02-print-all-prime-numbers-1-to-n.cpp" />
+    <ClCompile Include="02-print-all-prime-numbers-1-to-n.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="03-perfect-number.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
