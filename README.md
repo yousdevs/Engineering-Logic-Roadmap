@@ -1,7 +1,7 @@
 
 ## 🏛️ Monorepo Architecture
 
-This repository adopts a **Multi-Project Solution** structure within Visual Studio. I treat each learning module as an encapsulated project to simulate a production-grade environment, ensuring clean separation of concerns and modularity.
+This repository adopts a **Multi-Project Solution** structure within Visual Studio. I treat each learning module as an encapsulated project to ensure modularity.
 
 ```text
 Engineering-Logic-Roadmap/
