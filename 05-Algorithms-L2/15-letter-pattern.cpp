@@ -11,10 +11,10 @@ int readPositiveNumber(std::string message) {
 	return number;
 }
 
-void printInvertedLetterPattern(int number) {
-
-	for (int i = number + 64 ; i > 64; i--) {
-		for (int j = 64; j < i; j++) {
+void printInvertedNumberPattern(int number) {
+	int base = 64;
+	for (int i = 0 + base; i <= number + base; i++) {
+		for (int j = 0 + base; j < i; j++) {
 			std::cout << char(i) << " ";
 		}
 		std::cout << std::endl;
@@ -22,6 +22,6 @@ void printInvertedLetterPattern(int number) {
 }
 
 int main() {
-	printInvertedLetterPattern(readPositiveNumber("Please enter a positive number: "));
+	printInvertedNumberPattern(readPositiveNumber("Please enter a positive number: "));
 	return 0;
 }
