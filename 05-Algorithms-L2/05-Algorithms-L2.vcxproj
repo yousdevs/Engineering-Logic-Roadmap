@@ -31,7 +31,10 @@
     <ClCompile Include="04-perfect-number-from-1-to-n.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="05-print-digits-in-a-reversed-order.cpp" />
+    <ClCompile Include="05-print-digits-in-a-reversed-order.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="06-sum-of-digits.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
