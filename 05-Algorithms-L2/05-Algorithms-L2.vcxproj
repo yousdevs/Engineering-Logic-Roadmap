@@ -109,7 +109,10 @@
     <ClCompile Include="30-sum-of-two-arrays-to-third-one.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="31-shuffle-ordered-array.cpp" />
+    <ClCompile Include="31-shuffle-ordered-array.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="32-copy-array-in-reverse-order.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
