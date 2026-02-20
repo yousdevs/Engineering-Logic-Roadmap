@@ -133,7 +133,10 @@
     <ClCompile Include="38-copy-odd-numbers-to-new-array.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="39-copy-prime-numbers-to-new-array.cpp" />
+    <ClCompile Include="39-copy-prime-numbers-to-new-array.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="40-copy-distinct-numbers-to-array.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
