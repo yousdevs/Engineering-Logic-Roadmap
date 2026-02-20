@@ -136,7 +136,10 @@
     <ClCompile Include="39-copy-prime-numbers-to-new-array.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="40-copy-distinct-numbers-to-array.cpp" />
+    <ClCompile Include="40-copy-distinct-numbers-to-array.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="41-is-palindrome-array.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
