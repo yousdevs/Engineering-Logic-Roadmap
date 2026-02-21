@@ -204,76 +204,21 @@ std::string generateTabs(short count) {
 }
 
 void displayGameReport(strGameReport report) {
-    short spacing = 2;
-    
-    std::cout << generateTabs(spacing)
-        << generateLine(spacing * 20)
-        << std::endl;
-    std::cout << std::endl;
+    std::string tabs = "\t\t";
+    std::string line = "_________________________________________________";
 
-    std::cout << generateTabs(spacing + 1)
-        << "+++ G a m e  O v e r +++"
-        << std::endl;
-    std::cout << std::endl;
+    std::cout << "\n" << tabs << line << "\n\n";
+    std::cout << tabs << "\t\t+++ G A M E  O V E R +++\n";
+    std::cout << tabs << line << "\n\n";
 
-    std::cout << generateTabs(spacing)
-        << generateLine(spacing * 20)
-        << std::endl;
-    std::cout << std::endl;
+    std::cout << tabs << "[Game Results]\n";
+    std::cout << tabs << "Game Rounds        : " << report.rounds << "\n";
+    std::cout << tabs << "Player Won Times   : " << report.playerWonTimes << "\n";
+    std::cout << tabs << "Computer Won Times : " << report.computerWonTimes << "\n";
+    std::cout << tabs << "Draw Times         : " << report.drawTimes << "\n";
+    std::cout << tabs << "Final Winner       : " << getRoundResultStringFrom(report.finalWinner) << "\n";
 
-    std::cout << generateTabs(spacing)
-        << generateLine(spacing * 10 / 2 + 3)
-        << "[Game Results]"
-        << generateLine(spacing * 10 / 2 + 3)
-        << std::endl;
-    std::cout << std::endl;
-
-    std::cout << generateTabs(spacing)
-        << "Game rounds"
-        << generateTabs(spacing)
-        << " :"
-        << generateTabs(spacing/2)
-        << report.rounds
-        << std::endl;
-
-    std::cout << generateTabs(spacing)
-        << "Player Won Times"
-        << generateTabs(spacing/2)
-        << " :"
-        << generateTabs(spacing/2)
-        << report.playerWonTimes
-        << std::endl;
-
-    std::cout << generateTabs(spacing)
-        << "Computer Won Times"
-        << generateTabs(spacing/2)
-        << " :"
-        << generateTabs(spacing/2)
-        << report.computerWonTimes
-        << std::endl;
-
-    std::cout << generateTabs(spacing)
-        << "Draw Times"
-        << generateTabs(spacing)
-        << " :"
-        << generateTabs(spacing/2)
-        << report.drawTimes
-        << std::endl;
-
-    std::cout << generateTabs(spacing)
-        << "Final Winner"
-        << generateTabs(spacing)
-        << " :"
-        << generateTabs(spacing/2)
-        << getRoundResultStringFrom(report.finalWinner)
-        << std::endl;
-
-    std::cout << std::endl;
-
-    std::cout << generateTabs(spacing)
-        << generateLine(spacing * 20)
-        << std::endl;
-    std::cout << std::endl;
+    std::cout << tabs << line << "\n\n";
 
     setConsoleColorBasedOn(report.finalWinner);
 }
@@ -315,6 +260,9 @@ int main()
 
     char playAgain = 'N';
     do {
+        system("cls"); //TODO: remove
+        system("color 0F");
+        setConsoleColor(enScreenColor::Default);
         startGame();
         std::cout << "\nDo You Want to Play Again? Y/N ? ";
         std::cin >> playAgain;
