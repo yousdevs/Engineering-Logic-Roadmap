@@ -1,20 +1,27 @@
-// 05-l2-p1-rock-paper-scissors.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+
+short readPositiveNumberInRange(short min, short max, std::string message) {
+    short input = 0;
+    do {
+        std::cout << message;
+        std::cout << std::endl;
+        std::cin >> input;
+    } while (input < min || input > max);
+
+    return input;
+}
+
+short askForRoundsCount() {
+    return readPositiveNumberInRange(1, 10, "How Many Rounds 1 to 10 ?");
+}
+
+void startGame() {
+    short rounds = askForRoundsCount();
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    startGame();
+    
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
