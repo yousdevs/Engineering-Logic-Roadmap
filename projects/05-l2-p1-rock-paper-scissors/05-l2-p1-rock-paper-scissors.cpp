@@ -305,12 +305,6 @@ void startGame() {
 
     strGameReport report = generateGameReport(rounds, length);
     displayGameReport(report);
-
-    std::cout << generateTabs(2) << "Do You Want to Play Again? Y/N ? " << std::endl;
-    char playAgain = 'N';
-    std::cin >> playAgain;
-    if(playAgain == 'Y')
-        startGame();
 }
 
 int main()
@@ -319,7 +313,12 @@ int main()
     // This ensures that we get a different sequence of random numbers on each run.
     srand((unsigned)time(NULL));
 
-    startGame();
+    char playAgain = 'N';
+    do {
+        startGame();
+        std::cout << "\nDo You Want to Play Again? Y/N ? ";
+        std::cin >> playAgain;
+    } while (playAgain == 'Y' || playAgain == 'y');
 
     return 0;
 }
