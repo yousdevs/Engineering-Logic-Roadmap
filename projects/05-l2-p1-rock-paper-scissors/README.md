@@ -22,6 +22,7 @@ This project is part of a monorepo structure. You can open it via the main solut
 
 Open the root solution file to see all projects in the workspace:
 `./root_monorepo.slnx`
+select this project folder as startup project
 
 ### 2. The Project Way
 
