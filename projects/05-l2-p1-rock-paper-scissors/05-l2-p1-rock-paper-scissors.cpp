@@ -53,17 +53,20 @@ enChoice askForComputerChoice() {
     return getChoiceFrom(randomNumber);
 }
 
-enum enPlayer {Player = 1, Computer = 2};
+enum enRoundResult {Player = 1, Computer = 2, NoWinner = 3};
 
 struct strRound {
     enChoice playerChoice = enChoice::Rock;
     enChoice computerChoice = enChoice::Rock;
-    enPlayer winner = enPlayer::Player;
+    enRoundResult result = enRoundResult::NoWinner;
     short roundNumber = 0;
 };
 
-enPlayer getWinner(enChoice playerChoice, enChoice computerChoice) {
-    return enPlayer::Player;
+enRoundResult getWinner(enChoice playerChoice, enChoice computerChoice) {
+    
+    if (playerChoice == computerChoice)
+        return enRoundResult::NoWinner;
+    return enRoundResult::Computer;
 }
 
 std::string generateLine(short count) {
@@ -85,12 +88,14 @@ std::string getChoiceStringFrom(enChoice choice) {
     }
 }
 
-std::string getPlayerStringFrom(enPlayer player) {
-    switch (player) {
-        case enPlayer::Player:
+std::string getRoundResultStringFrom(enRoundResult result) {
+    switch (result) {
+        case enRoundResult::Player:
             return "You";
-        case enPlayer::Computer:
+        case enRoundResult::Computer:
             return "Computer";
+        case enRoundResult::NoWinner:
+            return "No Winner";
     }
 }
 
@@ -125,7 +130,7 @@ void displayRoundResult(strRound round) {
         << std::endl;
     std::cout << "Round Winner: "
         << "["
-        << getPlayerStringFrom(round.winner)
+        << getRoundResultStringFrom(round.result)
         << "]"
         << std::endl;
     std::cout << std::endl;
@@ -149,7 +154,7 @@ void startGame() {
         round.roundNumber = (i + 1);
         round.playerChoice = playerChoice;
         round.computerChoice = computerChoice;
-        round.winner = getWinner(playerChoice, computerChoice);
+        round.result = getWinner(playerChoice, computerChoice);
         
         rounds[i] = round;
 
