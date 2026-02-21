@@ -278,6 +278,8 @@ void displayGameReport(strGameReport report) {
     setConsoleColorBasedOn(report.finalWinner);
 }
 
+
+
 void startGame() {
 
     short selectedRoundsCount = askForRoundsCount();
@@ -304,7 +306,11 @@ void startGame() {
     strGameReport report = generateGameReport(rounds, length);
     displayGameReport(report);
 
-    //startGame();
+    std::cout << generateTabs(2) << "Do You Want to Play Again? Y/N ? " << std::endl;
+    char playAgain = 'N';
+    std::cin >> playAgain;
+    if(playAgain == 'Y')
+        startGame();
 }
 
 int main()
