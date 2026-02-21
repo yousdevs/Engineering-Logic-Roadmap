@@ -52,14 +52,92 @@ enChoice askForComputerChoice() {
     return getChoiceFrom(randomNumber);
 }
 
+enum enPlayer {Player = 1, Computer = 2};
+
+struct strRound {
+    enChoice playerChoice = enChoice::Rock;
+    enChoice computerChoice = enChoice::Rock;
+    enPlayer winner = enPlayer::Player;
+    short roundNumber = 0;
+};
+
+enPlayer getWinner(enChoice playerChoice, enChoice computerChoice) {
+    return enPlayer::Player;
+}
+
+std::string generateLine(short count) {
+    std::string line = "";
+    for (short i = 0; i < count; i++) {
+        line += '_';
+    }
+    return line;
+}
+
+std::string getChoiceStringFrom(enChoice choice) {
+    switch (choice) {
+        case enChoice::Rock:
+            return "Rock";
+        case enChoice::Paper:
+            return "Paper";
+        case enChoice::Scissors:
+            return "Scissors";
+    }
+}
+
+std::string getPlayerStringFrom(enPlayer player) {
+    switch (player) {
+        case enPlayer::Player:
+            return "You";
+        case enPlayer::Computer:
+            return "Computer";
+    }
+}
+
+void displayRoundResult(strRound round) {
+    std::cout << generateLine(10)
+        << "Round["
+        << round.roundNumber
+        << "]"
+        << generateLine(10)
+        << std::endl;
+    std::cout << std::endl;
+    std::cout << "Your Choice: "
+        << getChoiceStringFrom(round.playerChoice)
+        << std::endl;
+    std::cout << "Computer Choice: "
+        << getChoiceStringFrom(round.computerChoice)
+        << std::endl;
+    std::cout << "Round Winner:\t\t\t"
+        << "["
+        << getPlayerStringFrom(round.winner)
+        << "]"
+        << std::endl;
+    std::cout << std::endl;
+    std::cout << generateLine(28)
+        << std::endl;
+    std::cout << std::endl;
+}
+
 void startGame() {
 
-    short rounds = askForRoundsCount();
+    short selectedRoundsCount = askForRoundsCount();
+
+    strRound rounds[11] = {}; // allowed round count is between 1 and 10
+    short length = selectedRoundsCount;
     
-    for (int i = 0; i < rounds; i++) {
+    for (int i = 0; i < selectedRoundsCount; i++) {
         enChoice playerChoice = askForPlayerChoice(i + 1);
         enChoice computerChoice = askForComputerChoice();
-        std::cout << "\nPlayer choice: " << playerChoice << ", Coputer: " << computerChoice;
+        
+        strRound round = {};
+        round.roundNumber = (i + 1);
+        round.playerChoice = playerChoice;
+        round.computerChoice = computerChoice;
+        round.winner = getWinner(playerChoice, computerChoice);
+        
+        rounds[i] = round;
+
+        displayRoundResult(round);
     }
 }
 
