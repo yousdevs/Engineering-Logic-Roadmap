@@ -16,7 +16,7 @@ Engineering-Logic-Roadmap/
 └── projects/                           # 📂 Structured Applications
     ├── 05-l2-p1-rock-paper-scissors/   # ✊ Game Project 1
     │   ├── 05-l2-p1-rps.slnx
-    │   └── main.cpp
+    │   └── 05-l2-p1-rock-paper-scissors.cpp
     │
     ├── 13-Bank-System/                 # 🏦 [Capstone] OOP Project
     │   └── ...
