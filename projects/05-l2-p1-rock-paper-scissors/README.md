@@ -10,7 +10,7 @@ You vs. The Machine. You pick the number of rounds (up to 10), and the computer 
 
 ## Screenshot Placeholder
 
-![Game Screenshot](./screenshot.png)
+![Game Screenshot](./Screenshot.png)
 
 ---
 
