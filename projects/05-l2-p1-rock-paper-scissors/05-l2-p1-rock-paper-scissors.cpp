@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 short readPositiveNumberInRange(short min, short max, std::string message) {
     short input = 0;
@@ -93,6 +94,21 @@ std::string getPlayerStringFrom(enPlayer player) {
     }
 }
 
+enum enScreenColor {
+    Default = '7',  
+    Red = '4',
+    Green = '2',
+    Yellow = '6',
+    BrightYellow = 'E' 
+};
+
+void setConsoleColor(enScreenColor color) {
+    char command[] = "color 07";
+    command[6] = (char)color;
+
+    system(command);
+}
+
 void displayRoundResult(strRound round) {
     std::cout << generateLine(10)
         << "Round["
@@ -107,7 +123,7 @@ void displayRoundResult(strRound round) {
     std::cout << "Computer Choice: "
         << getChoiceStringFrom(round.computerChoice)
         << std::endl;
-    std::cout << "Round Winner:\t\t\t"
+    std::cout << "Round Winner: "
         << "["
         << getPlayerStringFrom(round.winner)
         << "]"
@@ -125,7 +141,7 @@ void startGame() {
     strRound rounds[11] = {}; // allowed round count is between 1 and 10
     short length = selectedRoundsCount;
     
-    for (int i = 0; i < selectedRoundsCount; i++) {
+    for (short i = 0; i < selectedRoundsCount; i++) {
         enChoice playerChoice = askForPlayerChoice(i + 1);
         enChoice computerChoice = askForComputerChoice();
         
@@ -138,6 +154,7 @@ void startGame() {
         rounds[i] = round;
 
         displayRoundResult(round);
+        setConsoleColor(enScreenColor::Red);
     }
 }
 
