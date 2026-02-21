@@ -3,6 +3,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/projects/">
+    <Project Path="projects/05-l2-p1-rock-paper-scissors/05-l2-p1-rock-paper-scissors.vcxproj" Id="7e7f289f-793e-4b44-a5fa-f85a6c256bbd" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
     <File Path="README.md" />
