@@ -160,6 +160,124 @@ void setConsoleColorBasedOn(enRoundResult result) {
     }
 }
 
+struct strGameReport {
+    short rounds = 0;
+    short playerWonTimes = 0;
+    short computerWonTimes = 0;
+    short drawTimes = 0;
+    enRoundResult finalWinner = enRoundResult::NoWinner;
+};
+
+enRoundResult getFinalWinner(short playerWonTimes, short computerWonTimes) {
+    if (playerWonTimes > computerWonTimes)
+        return enRoundResult::Player;
+    else if (computerWonTimes > playerWonTimes)
+        return enRoundResult::Computer;
+    else
+        return enRoundResult::NoWinner;
+}
+
+strGameReport generateGameReport(strRound rounds[11], short length) {
+    strGameReport report = {};
+    report.rounds = length;
+    for (short i = 0; i < length; i++) {
+        if (rounds[i].result == enRoundResult::Player) {
+            report.playerWonTimes++;
+        }
+        else if (rounds[i].result == enRoundResult::Computer) {
+            report.computerWonTimes++;
+        }
+    }
+    report.drawTimes = report.rounds - (report.playerWonTimes + report.computerWonTimes);
+
+    report.finalWinner = getFinalWinner(report.playerWonTimes, report.computerWonTimes);
+
+    return report;
+}
+
+std::string generateTabs(short count) {
+    std::string tabs = "";
+    for (short i = 0; i < count; i++) {
+        tabs += '\t';
+    }
+    return tabs;
+}
+
+void displayGameReport(strGameReport report) {
+    short spacing = 2;
+    
+    std::cout << generateTabs(spacing)
+        << generateLine(spacing * 20)
+        << std::endl;
+    std::cout << std::endl;
+
+    std::cout << generateTabs(spacing + 1)
+        << "+++ G a m e  O v e r +++"
+        << std::endl;
+    std::cout << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << generateLine(spacing * 20)
+        << std::endl;
+    std::cout << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << generateLine(spacing * 10 / 2 + 3)
+        << "[Game Results]"
+        << generateLine(spacing * 10 / 2 + 3)
+        << std::endl;
+    std::cout << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << "Game rounds"
+        << generateTabs(spacing)
+        << " :"
+        << generateTabs(spacing/2)
+        << report.rounds
+        << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << "Player Won Times"
+        << generateTabs(spacing/2)
+        << " :"
+        << generateTabs(spacing/2)
+        << report.playerWonTimes
+        << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << "Computer Won Times"
+        << generateTabs(spacing/2)
+        << " :"
+        << generateTabs(spacing/2)
+        << report.computerWonTimes
+        << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << "Draw Times"
+        << generateTabs(spacing)
+        << " :"
+        << generateTabs(spacing/2)
+        << report.drawTimes
+        << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << "Final Winner"
+        << generateTabs(spacing)
+        << " :"
+        << generateTabs(spacing/2)
+        << getRoundResultStringFrom(report.finalWinner)
+        << std::endl;
+
+    std::cout << std::endl;
+
+    std::cout << generateTabs(spacing)
+        << generateLine(spacing * 20)
+        << std::endl;
+    std::cout << std::endl;
+
+    setConsoleColorBasedOn(report.finalWinner);
+}
+
 void startGame() {
 
     short selectedRoundsCount = askForRoundsCount();
@@ -182,6 +300,11 @@ void startGame() {
         displayRoundResult(round);
         setConsoleColorBasedOn(round.result);
     }
+
+    strGameReport report = generateGameReport(rounds, length);
+    displayGameReport(report);
+
+    //startGame();
 }
 
 int main()
