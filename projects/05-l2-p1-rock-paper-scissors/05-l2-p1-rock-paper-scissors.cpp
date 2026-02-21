@@ -63,10 +63,17 @@ struct strRound {
 };
 
 enRoundResult getWinner(enChoice playerChoice, enChoice computerChoice) {
-    
+
     if (playerChoice == computerChoice)
         return enRoundResult::NoWinner;
-    return enRoundResult::Computer;
+    
+    bool playerWinner = (
+        (playerChoice == enChoice::Rock && computerChoice == enChoice::Scissors) ||
+        (playerChoice == enChoice::Scissors && computerChoice == enChoice::Paper) ||
+        (playerChoice == enChoice::Paper && computerChoice == enChoice::Rock)
+        );
+
+    return (playerWinner) ? enRoundResult::Player : enRoundResult::Computer;
 }
 
 std::string generateLine(short count) {
@@ -139,6 +146,20 @@ void displayRoundResult(strRound round) {
     std::cout << std::endl;
 }
 
+void setConsoleColorBasedOn(enRoundResult result) {
+    switch (result) {
+        case enRoundResult::NoWinner:
+            setConsoleColor(enScreenColor::Yellow);
+            break;
+        case enRoundResult::Player:
+            setConsoleColor(enScreenColor::Green);
+            break;
+        case enRoundResult::Computer:
+            setConsoleColor(enScreenColor::Red);
+            break;
+    }
+}
+
 void startGame() {
 
     short selectedRoundsCount = askForRoundsCount();
@@ -159,7 +180,7 @@ void startGame() {
         rounds[i] = round;
 
         displayRoundResult(round);
-        setConsoleColor(enScreenColor::Red);
+        setConsoleColorBasedOn(round.result);
     }
 }
 
