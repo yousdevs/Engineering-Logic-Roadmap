@@ -5,17 +5,21 @@ This repository adopts a **Multi-Project Solution** structure within Visual Stud
 
 ```text
 Engineering-Logic-Roadmap/
-├── Engineering-Logic-Roadmap.slnx       # Central Workspace Solution (Entry Point)
-├── .gitignore                          # Environment-agnostic filter (excludes .vs, .obj)
-├── README.md                           # Core documentation & Progress Tracker
+├── Engineering-Logic-Roadmap.slnx       # Central Workspace Entry Point
+├── README.md                           # Core Documentation & Progress Tracker
+├── .gitignore                          # Environment-agnostic filters
 │
-├── 05-Algorithms-L2/                   # 🧩 Level 2: Advanced Logic & Math
-│   ├── 05-Algorithms-L2.vcxproj        # Project configuration
-│   ├── *.cpp                           # Standalone algorithmic solutions
+├── 05-Algorithms-L2/                   # 🧩 Level 2: Standalone Logic & Math
+│   ├── 05-Algorithms-L2.vcxproj
+│   └── *.cpp                           # Collection of logic exercises
 │
-├── 13-Bank-System/                     # 🏦 [Capstone] OOP Integrated Project
-│   ├── src/                            # Source code (Header & Implementation separation)
-│   └── 13-Bank-System.vcxproj
-│
-└── ...
+└── projects/                           # 📂 Structured Applications
+    ├── 05-l2-p1-rock-paper-scissors/   # ✊ Game Project 1
+    │   ├── 05-l2-p1-rps.slnx
+    │   └── main.cpp
+    │
+    ├── 13-Bank-System/                 # 🏦 [Capstone] OOP Project
+    │   └── ...
+    │
+    └── ...
 ```
