@@ -35,6 +35,13 @@ short readIntegerInRange(short min, short max) {
     return integer;
 }
 
+// Returns: A random integer between From and To (inclusive).
+int getRandomNumberInRange(int From, int To)
+{
+    int randNum = rand() % (To - From + 1) + From;
+    return randNum;
+}
+
 // _________CONSTANTS__________
 const short MIN_ALLOWED_QUIZES = 1; // used for input validation
 const short MAX_ALLOWED_QUIZES = 100;
@@ -42,14 +49,21 @@ const short MIN_QUIZ_DIFFICULTY_LEVEL = 1; // used for mappers validation & inpu
 const short MAX_QUIZ_DIFFICULTY_LEVEL = 4;
 const short MIN_QUIZ_OPERATOR_ORDER = 1; // used for mappers validation & input validation
 const short MAX_QUIZ_OPERATOR_ORDER = 5;
+const short OPERAND_RANGE_EASY_MIN = 1;
+const short OPERAND_RANGE_EASY_MAX = 10;
+const short OPERAND_RANGE_MEDIUM_MIN = 11;
+const short OPERAND_RANGE_MEDIUM_MAX = 20;
+const short OPERAND_RANGE_HARD_MIN = 21;
+const short OPERAND_RANGE_HARD_MAX = 100;
 
 // _________ENUMS & Mappers_________
 enum enQuizDifficulty {
     Easy = 1,
     Medium = 2,
     Hard = 3,
-    dMix = 4 // avoids unscoped enums conflicts, we can use scoped enums by prefixing enum with class keyword
-            // but at current roadmap level we skip it
+    dMix = 4, // avoids unscoped enums conflicts, we can use scoped enums by prefixing enum with class keyword
+    // but at current roadmap level we skip it
+    _LastActualDifficultyLevel = Hard,
 };
 
 enum enQuizOperator {
@@ -57,7 +71,8 @@ enum enQuizOperator {
     Sub = 2,
     Multi = 3,
     Div = 4,
-    oMix = 5
+    oMix = 5,
+    _LastActualOperand = Div,
 };
 
 enQuizDifficulty enQuizDifficultyFromInt(short input) {
@@ -114,7 +129,47 @@ struct strQuizQuestion {
     int calculatedResult = 0;
 };
 
-void displayQuizQuestion(strQuizQuestion question, short allQuestionsCount) {
+
+int determineOperand(enQuizDifficulty difficulty) {
+    if (difficulty == enQuizDifficulty::dMix) {
+        difficulty = enQuizDifficultyFromInt(getRandomNumberInRange(MIN_QUIZ_DIFFICULTY_LEVEL, enQuizDifficulty::_LastActualDifficultyLevel));
+    }
+
+    switch (difficulty) {
+    case enQuizDifficulty::Easy: return getRandomNumberInRange(OPERAND_RANGE_EASY_MIN, OPERAND_RANGE_EASY_MAX);
+    case enQuizDifficulty::Medium: return getRandomNumberInRange(OPERAND_RANGE_MEDIUM_MIN, OPERAND_RANGE_MEDIUM_MAX);
+    case enQuizDifficulty::Hard: return getRandomNumberInRange(OPERAND_RANGE_HARD_MIN, OPERAND_RANGE_HARD_MAX);
+    default: return getRandomNumberInRange(OPERAND_RANGE_EASY_MIN, OPERAND_RANGE_EASY_MAX); //TODO: Throw an error
+    }
+}
+
+enQuizOperator determineOperator(enQuizOperator op) {
+    if (op != enQuizOperator::oMix) {
+        return op;
+    }
+    return enQuizOperatorFromInt(getRandomNumberInRange(MIN_QUIZ_OPERATOR_ORDER, enQuizOperator::_LastActualOperand));
+}
+
+int calculateResult(int operandA, int operandB, enQuizOperator op) {
+    switch (op) {
+    case enQuizOperator::Add: return operandA + operandB;
+    case enQuizOperator::Sub: return operandA - operandB;
+    case enQuizOperator::Multi: return operandA * operandB;
+    case enQuizOperator::Div: return operandA / operandB; // TODO: handle division by 0
+    default: return 0;
+    }
+}
+strQuizQuestion generateQuestion(strUserInputConfig config, short order) {
+    strQuizQuestion question = {};
+    question.questionId = order;
+    question.operandA = determineOperand(config.quizDifficulty);
+    question.operandB = determineOperand(config.quizDifficulty);
+    question.questionOperator = determineOperator(config.quizOperator);
+    question.calculatedResult = calculateResult(question.operandA, question.operandB, question.questionOperator);
+    return question;
+}
+
+void displayQuestion(strQuizQuestion question, short allQuestionsCount) {
 
     println("");
     println("Question [" + std::to_string(question.questionId) + "/" + std::to_string(allQuestionsCount) + "]:");
@@ -133,13 +188,10 @@ void startGame() {
 
     for (short i = 0; i < userInputConfig.quizCount; i++) {
 
-        strQuizQuestion q = {};
-        q.questionId = (i+1);
-        q.operandA = 1;
-        q.operandB = 4;
-        q.questionOperator = enQuizOperator::Add;
-        q.calculatedResult = 5;
-        displayQuizQuestion(q, userInputConfig.quizCount);
+        strQuizQuestion question = generateQuestion(userInputConfig, (i + 1));
+        displayQuestion(question, userInputConfig.quizCount);
+        println(std::to_string(question.calculatedResult));
+        
     }
 
 }
@@ -147,6 +199,10 @@ void startGame() {
 
 int main()
 {
+    // Seed the random number generator with the current time.
+    // This ensures that we get a different sequence of random numbers on each run.
+    srand((unsigned)time(NULL));
+
     char playAgain = 'N';
     do {
         startGame();
