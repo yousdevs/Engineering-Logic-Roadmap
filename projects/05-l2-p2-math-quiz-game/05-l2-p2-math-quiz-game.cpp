@@ -12,14 +12,6 @@ void println(std::string message) {
     std::cout << message << std::endl;
 }
 
-unsigned int readPositiveInteger() {
-    int integer = 0;
-    do {
-        println("Please Enter Positive Integer: ");
-        std::cin >> integer; // TODO: add string to integer validation
-    } while (integer <= 0);
-    return integer;
-}
 
 bool isNumber(std::string s) {
     if (s.empty()) return false;
@@ -33,6 +25,30 @@ bool isNumber(std::string s) {
     return true;
 }
 
+int readValidInteger() {
+    std::string input = "";
+    bool firstInput = true;
+    do {
+        if (!firstInput) {
+            println("Please enter valid integer");
+        }
+        else {
+            firstInput = false;
+        }
+        std::cin >> input;
+    } while (!isNumber(input));
+    return std::stoi(input);
+}
+
+unsigned int readPositiveInteger() {
+    int integer = 0;
+    do {
+        println("Please Enter Positive Integer: ");
+        integer = readValidInteger();
+    } while (integer <= 0);
+    return integer;
+}
+
 short readIntegerInRange(short min, short max) {
     short integer = 0;
     bool firstInput = true;
@@ -42,7 +58,7 @@ short readIntegerInRange(short min, short max) {
         } else{
             firstInput = false;
         }
-        std::cin >> integer; // TODO: add string to integer validation
+        integer = readValidInteger();
     } while (integer < min || integer > max);
     return integer;
 }
@@ -116,12 +132,23 @@ enQuizOperator enQuizOperatorFromInt(short input) {
     return (enQuizOperator)input;
 }
 
-std::string enQuizOperatorToString(enQuizOperator op) {
+std::string enQuizOperatorToString(enQuizOperator op, bool sign) {
     switch (op) {
-    case enQuizOperator::Add:   return "+";
-    case enQuizOperator::Sub:   return "-";
-    case enQuizOperator::Multi: return "*";
-    case enQuizOperator::Div:   return "/";
+    case enQuizOperator::Add:   return sign ? "+" : "Add";
+    case enQuizOperator::Sub:   return sign ? "-" : "Sub";
+    case enQuizOperator::Multi: return sign ? "*" : "Multi";
+    case enQuizOperator::Div:   return sign ? "/" : "Div";
+    case enQuizOperator::oMix:   return "Mix";
+    default:                    return "Unknown";
+    }
+}
+
+std::string enQuizDifficultyToString(enQuizDifficulty difficulty) {
+    switch (difficulty) {
+    case enQuizDifficulty::Easy:   return "Easy";
+    case enQuizDifficulty::Medium:   return "Medium";
+    case enQuizDifficulty::Hard:   return "Hard";
+    case enQuizDifficulty::dMix:   return "Mix";
     default:                    return "Unknown";
     }
 }
@@ -205,7 +232,7 @@ void displayQuestion(strQuizQuestion question, short allQuestionsCount) {
     println(std::to_string(question.operandA));
     print(std::to_string(question.operandB));
     print("  ");
-    println(enQuizOperatorToString(question.questionOperator));
+    println(enQuizOperatorToString(question.questionOperator, true));
     println("_________");
 }
 
@@ -223,9 +250,56 @@ void displayResult(int calculatedResult, bool isUserAnswerWrong) {
     }
 }
 
+struct strReport {
+    short correctAnswers = 0;
+    short wrongAnswers = 0;
+    enQuizDifficulty difficulty = enQuizDifficulty::dMix;
+    enQuizOperator op = enQuizOperator::oMix;
+};
+
+void printHeader(bool isUserFail) {
+    println("___________________________________________");
+    println("");
+    isUserFail ? println("\t Final Result is Fail :(") : println("\t Final Result is Success :)");
+    println("___________________________________________");
+}
+
+
+void printReportField(std::string label, std::string value) {
+    // We assume the longest label needs about 3 tabs worth of space (24 chars)
+    // adjust 'targetTabs' based on your longest label name
+    const short targetTabs = 3;
+
+    // Calculate how many tabs this specific label already occupies
+    // (Each tab is usually 8 characters)
+    short tabsOccupied = (short)(label.length() / 8);
+    short tabsNeeded = targetTabs - tabsOccupied;
+
+    std::string padding = "";
+    for (short i = 0; i < tabsNeeded; i++) {
+        padding += "\t";
+    }
+
+    println(label + padding + ": " + value);
+}
+
+void displayReport(strReport report) {
+    bool isUserFail = report.correctAnswers < report.wrongAnswers;
+    printHeader(isUserFail);
+    printReportField("Number Of Questions" , std::to_string(report.correctAnswers + report.wrongAnswers));
+    printReportField("Quiz Level", enQuizDifficultyToString(report.difficulty));
+    printReportField("OP Type", enQuizOperatorToString(report.op, false));
+    printReportField("Correct Answers", std::to_string(report.correctAnswers));
+    printReportField("Wrong Answers", std::to_string(report.wrongAnswers));
+    println("___________________________________________");
+}
+
 void startGame() {
 
     strUserInputConfig userInputConfig = askUserForConfig();
+    strReport report = {};
+    report.difficulty = enQuizDifficultyFromInt(userInputConfig.quizDifficulty);
+    report.op = enQuizOperatorFromInt(userInputConfig.quizOperator);
 
     for (short i = 0; i < userInputConfig.quizCount; i++) {
 
@@ -234,9 +308,15 @@ void startGame() {
         int userAnswer = getUserAnswer();
         bool isUserAnswerWrong = !(question.calculatedResult == userAnswer);
         displayResult(question.calculatedResult, isUserAnswerWrong);
-
-        
+        if (isUserAnswerWrong) {
+            report.wrongAnswers++;
+        }
+        else {
+            report.correctAnswers++;
+        }
     }
+
+    displayReport(report);
 
 }
 
