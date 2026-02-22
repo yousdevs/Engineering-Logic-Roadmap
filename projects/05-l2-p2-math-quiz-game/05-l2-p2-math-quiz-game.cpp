@@ -21,6 +21,18 @@ unsigned int readPositiveInteger() {
     return integer;
 }
 
+bool isNumber(std::string s) {
+    if (s.empty()) return false;
+
+    int start = (s[0] == '-') ? 1 : 0;
+    if (start == 1 && s.length() == 1) return false; // Just a "-" is not a number
+
+    for (int i = start; i < s.length(); i++) {
+        if (!isdigit(s[i])) return false;
+    }
+    return true;
+}
+
 short readIntegerInRange(short min, short max) {
     short integer = 0;
     bool firstInput = true;
@@ -33,6 +45,21 @@ short readIntegerInRange(short min, short max) {
         std::cin >> integer; // TODO: add string to integer validation
     } while (integer < min || integer > max);
     return integer;
+}
+
+int readInteger() {
+    std::string input = "";
+    bool firstInput = true;
+    do {
+        if (!firstInput) {
+            println("Please enter a valid integer: ");
+        }
+        else {
+            firstInput = false;
+        }
+        std::cin >> input;
+    } while (!isNumber(input));
+    return std::stoi(input);
 }
 
 // Returns: A random integer between From and To (inclusive).
@@ -182,6 +209,20 @@ void displayQuestion(strQuizQuestion question, short allQuestionsCount) {
     println("_________");
 }
 
+int getUserAnswer() {
+    return readInteger();
+}
+
+void displayResult(int calculatedResult, bool isUserAnswerWrong) {
+    if (isUserAnswerWrong) {
+        println("Wrong Answer :(");
+        println("The right answer is " + std::to_string(calculatedResult));
+    }
+    else {
+        println("Right Answer :)");
+    }
+}
+
 void startGame() {
 
     strUserInputConfig userInputConfig = askUserForConfig();
@@ -190,7 +231,10 @@ void startGame() {
 
         strQuizQuestion question = generateQuestion(userInputConfig, (i + 1));
         displayQuestion(question, userInputConfig.quizCount);
-        println(std::to_string(question.calculatedResult));
+        int userAnswer = getUserAnswer();
+        bool isUserAnswerWrong = !(question.calculatedResult == userAnswer);
+        displayResult(question.calculatedResult, isUserAnswerWrong);
+
         
     }
 
