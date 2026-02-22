@@ -5,6 +5,7 @@
   </Configurations>
   <Folder Name="/projects/">
     <Project Path="projects/05-l2-p1-rock-paper-scissors/05-l2-p1-rock-paper-scissors.vcxproj" Id="7e7f289f-793e-4b44-a5fa-f85a6c256bbd" />
+    <Project Path="projects/05-l2-p2-math-quiz-game/05-l2-p2-math-quiz-game.vcxproj" Id="15f1ccaa-a14b-45c9-9378-be6ddac7aec0" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
