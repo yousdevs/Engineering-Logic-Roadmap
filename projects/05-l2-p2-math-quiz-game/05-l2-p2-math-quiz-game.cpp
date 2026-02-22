@@ -74,6 +74,16 @@ enQuizOperator enQuizOperatorFromInt(short input) {
     return (enQuizOperator)input;
 }
 
+std::string enQuizOperatorToString(enQuizOperator op) {
+    switch (op) {
+    case enQuizOperator::Add:   return "+";
+    case enQuizOperator::Sub:   return "-";
+    case enQuizOperator::Multi: return "*";
+    case enQuizOperator::Div:   return "/";
+    default:                    return "Unknown";
+    }
+}
+
 
 struct strUserInputConfig {
     short quizCount = 0;
@@ -87,7 +97,7 @@ strUserInputConfig askUserForConfig() {
     println("How many quizes do you want to take ?");
     userInputConfig.quizCount = readIntegerInRange(MIN_ALLOWED_QUIZES, MAX_ALLOWED_QUIZES);
 
-    println("Enter Quiz Difficulty: [1] Easy, [2] Medium, [3] Hard, [4] Mix :");
+    println("Enter Quiz Difficulty: [1] Easy, [2] Medium, [3] Hard, [4] Mix:");
     userInputConfig.quizDifficulty = enQuizDifficultyFromInt(readIntegerInRange(MIN_QUIZ_DIFFICULTY_LEVEL, MAX_QUIZ_DIFFICULTY_LEVEL));
 
     println("Enter Operator: [1] ADD, [2] SUB, [3] MULTI, [4] DIV, [5] MIX:");
@@ -96,8 +106,42 @@ strUserInputConfig askUserForConfig() {
     return userInputConfig;
 }
 
+struct strQuizQuestion {
+    short questionId = 0;
+    int operandA = 0;
+    int operandB = 0;
+    enQuizOperator questionOperator = enQuizOperator::oMix;
+    int calculatedResult = 0;
+};
+
+void displayQuizQuestion(strQuizQuestion question, short allQuestionsCount) {
+
+    println("");
+    println("Question [" + std::to_string(question.questionId) + "/" + std::to_string(allQuestionsCount) + "]:");
+    println("");
+
+    println(std::to_string(question.operandA));
+    print(std::to_string(question.operandB));
+    print("  ");
+    println(enQuizOperatorToString(question.questionOperator));
+    println("_________");
+}
+
 void startGame() {
+
     strUserInputConfig userInputConfig = askUserForConfig();
+
+    for (short i = 0; i < userInputConfig.quizCount; i++) {
+
+        strQuizQuestion q = {};
+        q.questionId = (i+1);
+        q.operandA = 1;
+        q.operandB = 4;
+        q.questionOperator = enQuizOperator::Add;
+        q.calculatedResult = 5;
+        displayQuizQuestion(q, userInputConfig.quizCount);
+    }
+
 }
 
 
