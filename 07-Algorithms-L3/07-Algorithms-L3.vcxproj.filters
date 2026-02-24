@@ -24,5 +24,8 @@
     <ClCompile Include="03-sum-each-row-in-matrix-in-array.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="04-sum-each-col-in-matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
