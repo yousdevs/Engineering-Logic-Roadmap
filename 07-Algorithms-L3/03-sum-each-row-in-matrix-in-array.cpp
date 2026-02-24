@@ -39,7 +39,20 @@ void printMatrixRowsSum(int matrix[3][3], int rows, int cols) {
 	std::cout << "\nThe following are the sums of each row in the matrix: " << std::endl;
 	for (int i = 0; i < rows; i++) {
 		int sum = sumArr(matrix[i], cols);
-		std::cout << "The Sum of row " << std::to_string(i+1) << " is: " << sum << std::endl;
+		std::cout << "The Sum of row " << std::to_string(i + 1) << " is: " << sum << std::endl;
+	}
+}
+
+void fillSumsArrayFromMatrix(int matrix[3][3], int rows, int cols, int sumsArray[3]) {
+	for (int i = 0; i < rows; i++) {
+		sumsArray[i] = sumArr(matrix[i], cols);
+	}
+}
+
+void printSumsArray(int sumsArray[3], int length) {
+	std::cout << "\nThe following are the sums of each row in the matrix: " << std::endl;
+	for (int i = 0; i < length; i++) {
+		std::cout << "The Sum of row " << std::to_string(i + 1) << " is: " << sumsArray[i] << std::endl;
 	}
 }
 
@@ -52,8 +65,12 @@ int main() {
 	fillMatrixWithRandomNumbers(matrix, rows, cols);
 	printMatrix(matrix, rows, cols);
 
-	printMatrixRowsSum(matrix, rows, cols);
+	int sums[3] = {};
+	int sumsLength = 3;
 	
+	fillSumsArrayFromMatrix(matrix, rows, cols, sums);
+	printSumsArray(sums, sumsLength);
+
 
 	return 0;
 }
