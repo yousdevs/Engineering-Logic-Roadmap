@@ -42,5 +42,8 @@
     <ClCompile Include="09-print-middle-row-and-col-of-matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="10-sum-of-matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
