@@ -48,5 +48,8 @@
     <ClCompile Include="11-check-matrieces-equality.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="12-check-typical-matrices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
