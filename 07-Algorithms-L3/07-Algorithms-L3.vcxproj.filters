@@ -27,5 +27,8 @@
     <ClCompile Include="04-sum-each-col-in-matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="05-sum-each-col-in-matrix-in-another-array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
