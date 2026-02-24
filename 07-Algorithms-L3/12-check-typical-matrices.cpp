@@ -36,7 +36,6 @@ void printCheckTypicalMatrices(int matrix1[3][3], int matrix2[3][3], int rows, i
 				break;
 				
 			}
-			std::cout << i << " ";
 		}
 	}
 	if (isTypical) {
