@@ -45,5 +45,8 @@
     <ClCompile Include="10-sum-of-matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="11-check-matrieces-equality.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
