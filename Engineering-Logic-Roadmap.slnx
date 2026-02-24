@@ -12,4 +12,5 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="05-Algorithms-L2/05-Algorithms-L2.vcxproj" Id="5b803d56-cc5a-41d5-832e-7e1929bfffab" />
+  <Project Path="07-Algorithms-L3/07-Algorithms-L3.vcxproj" Id="4bc62c83-1fc7-4227-bc34-d3838b6a9bd7" />
 </Solution>
