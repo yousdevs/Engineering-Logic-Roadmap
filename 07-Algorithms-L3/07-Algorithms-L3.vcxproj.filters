@@ -39,5 +39,8 @@
     <ClCompile Include="08-multiply-two-matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="09-print-middle-row-and-col-of-matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
