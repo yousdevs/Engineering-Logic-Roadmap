@@ -29,6 +29,7 @@ void printCounts(std::string str) {
 int main() {
 
 	std::string str = "MUHAMMED abu hadhud";
+
 	printCounts(str);
 
 

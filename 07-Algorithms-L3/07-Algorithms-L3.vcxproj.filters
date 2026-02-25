@@ -72,5 +72,8 @@
     <ClCompile Include="29-count-small-capital-letters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="30-count-letter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
