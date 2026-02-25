@@ -99,5 +99,8 @@
     <ClCompile Include="38-trim-left-right.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="39-join-string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
