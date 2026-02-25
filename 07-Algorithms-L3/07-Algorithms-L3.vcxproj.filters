@@ -78,5 +78,8 @@
     <ClCompile Include="31-count-letter-match-case.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="32-is-vowel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
