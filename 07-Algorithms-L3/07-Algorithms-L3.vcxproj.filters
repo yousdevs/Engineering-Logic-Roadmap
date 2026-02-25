@@ -51,5 +51,8 @@
     <ClCompile Include="22-fibonacci-series-with-recursion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="23-print-first-letter-of-each-word.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
