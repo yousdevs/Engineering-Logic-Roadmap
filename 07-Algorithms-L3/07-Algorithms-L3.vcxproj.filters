@@ -54,5 +54,8 @@
     <ClCompile Include="23-print-first-letter-of-each-word.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="24-upper-first-letter-of-each-word.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
