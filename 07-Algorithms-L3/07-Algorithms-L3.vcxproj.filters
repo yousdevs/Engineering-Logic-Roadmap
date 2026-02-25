@@ -96,5 +96,8 @@
     <ClCompile Include="37-split-string.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="38-trim-left-right.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
