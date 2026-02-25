@@ -87,5 +87,8 @@
     <ClCompile Include="34-print-all-vowels-in-string.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="35-print-each-word-in-string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
