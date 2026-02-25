@@ -93,5 +93,8 @@
     <ClCompile Include="36-count-each-word-in-string.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="37-split-string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
