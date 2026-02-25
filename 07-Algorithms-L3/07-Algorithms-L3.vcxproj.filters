@@ -81,5 +81,8 @@
     <ClCompile Include="32-is-vowel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="33-count-vowel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
