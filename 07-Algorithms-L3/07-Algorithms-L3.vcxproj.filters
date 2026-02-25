@@ -66,5 +66,8 @@
     <ClCompile Include="27-invert-character-case.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="28-invert-all-letters-case.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
