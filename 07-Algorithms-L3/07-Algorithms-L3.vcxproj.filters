@@ -45,5 +45,8 @@
     <ClCompile Include="10-sum-of-matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="21-fibonacci-series.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
