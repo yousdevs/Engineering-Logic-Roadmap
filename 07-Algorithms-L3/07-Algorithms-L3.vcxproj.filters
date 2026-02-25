@@ -102,5 +102,8 @@
     <ClCompile Include="39-join-string.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="40-join-string-overloading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
