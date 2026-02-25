@@ -60,5 +60,8 @@
     <ClCompile Include="25-lower-first-letter-of-each-word.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="26-upper-lower-all-letters-of-string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
