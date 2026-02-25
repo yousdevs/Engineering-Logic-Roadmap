@@ -69,5 +69,8 @@
     <ClCompile Include="18-intersected-numbers-in-matrices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="19-min-max-number-in-matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
