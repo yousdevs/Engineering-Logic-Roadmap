@@ -13,22 +13,6 @@ void printMatrix(int matrix[3][3], int rows, int cols) {
 	}
 }
 
-int readNumber()
-{
-	int number;
-	std::cout << "Please enter a number?" << std::endl;
-	std::cin >> number;
-	while (std::cin.fail())
-	{
-		// user didn't input a number
-		std::cin.clear();
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		std::cout << "Invalid Number, Enter a valid one:" << std::endl;
-		std::cin >> number;
-	}
-	return number;
-}
-
 int countNumberInMatrix(int matrix[3][3], int rows, int cols, int numberToCount) {
 	int count = 0;
 	for (int i = 0; i < rows; i++) {
@@ -41,7 +25,7 @@ int countNumberInMatrix(int matrix[3][3], int rows, int cols, int numberToCount)
 
 bool isMatrixSparse(int matrix[3][3], int rows, int cols) {
 	int zerosCount = countNumberInMatrix(matrix, rows, cols, 0);
-	return (zerosCount > ((rows * cols / 2) + 1));
+	return (zerosCount >= ((rows * cols / 2)));
 }
 
 int main() {
@@ -54,8 +38,6 @@ int main() {
 	int rows = 3, cols = 3;
 
 	printMatrix(matrix, rows, cols);
-
-	int numberToCount = readNumber();
 
 	bool isSparse = isMatrixSparse(matrix, rows, cols);
 
