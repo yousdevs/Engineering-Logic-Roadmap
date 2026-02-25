@@ -3,10 +3,10 @@
 
 char invertCharacter(char c) {
 	if (std::isupper(c)) {
-		return std::toupper(c);
+		return std::tolower(c);
 	}
 	else {
-		return std::tolower(c);
+		return std::toupper(c);
 	}
 }
 
