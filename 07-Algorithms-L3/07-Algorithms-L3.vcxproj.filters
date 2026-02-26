@@ -111,5 +111,8 @@
     <ClCompile Include="42-replace-words.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="43-replace-words-custom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
