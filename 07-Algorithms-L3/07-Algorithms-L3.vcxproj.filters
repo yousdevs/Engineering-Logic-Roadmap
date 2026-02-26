@@ -114,5 +114,8 @@
     <ClCompile Include="43-replace-words-custom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="44-remove-punctuations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
