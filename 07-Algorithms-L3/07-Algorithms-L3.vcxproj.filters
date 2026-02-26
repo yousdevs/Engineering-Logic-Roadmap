@@ -117,5 +117,8 @@
     <ClCompile Include="44-remove-punctuations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="45-convert-record-to-line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
