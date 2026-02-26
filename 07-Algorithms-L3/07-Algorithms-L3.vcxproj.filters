@@ -105,5 +105,38 @@
     <ClCompile Include="40-join-string-overloading.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="41-reverse-words.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="42-replace-words.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="43-replace-words-custom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="44-remove-punctuations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="45-convert-record-to-line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="46-convert-line-data-to-record.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="47-add-clients-to-file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="48-show-all-clients.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="49-find-client-by-account-number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="50-delete-client-by-account-number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="51-update-client-by-account-number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
