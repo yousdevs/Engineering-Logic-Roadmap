@@ -55,6 +55,17 @@ short readIntegerInRange(short min, short max) {
 	return integer;
 }
 
+std::string readString(const std::string& message = "") {
+	std::string input;
+
+	if (!message.empty())
+		std::cout << message;
+
+	// Skip any leading whitespace/newlines left in the buffer
+	std::getline(std::cin >> std::ws, input);
+
+	return input;
+}
 
 enum enMainMenuOptions {
 	SHOW_CLIENT_LIST = 1,
@@ -71,6 +82,7 @@ enum enScreen {
 	APP_EXIT = 0,
 	MAIN_MENU_SCREEN = 1,
 	CLIENTS_LIST_SCREEN = 2,
+	ADD_NEW_CLIENT_SCREEN = 3,
 };
 
 
@@ -169,12 +181,51 @@ stScreenResult showMainMenuScreen() {
 	switch (option) {
 		case SHOW_CLIENT_LIST: 
 			return { CLIENTS_LIST_SCREEN , false};
+		case ADD_NEW_CLIENT:
+			return { ADD_NEW_CLIENT_SCREEN, false };
 		case EXIT:
 			return { APP_EXIT, false };
 		default:
 			return { APP_EXIT, false };
 	}
 
+}
+
+stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
+	std::string line = std::string(40, '-');
+	std::cout << line << std::endl;
+	std::cout << std::setw(10) << "Add New Clients Screen" << std::endl;
+	std::cout << line << std::endl;
+	std::cout << "Adding New Client" << std::endl;
+
+	
+	
+	char continueAdding = 'n';
+	do {
+		std::string accountID = "";
+		accountID = readString("Enter Account ID: ");
+		std::cout << std::endl;
+
+		//TODO: validate if exist
+		stClient newClient;
+		newClient.accountID = accountID;
+		newClient.pinCode = readString("PIN Code: ");
+		std::cout << std::endl;
+		newClient.fullName = readString("Full Name: ");
+		std::cout << std::endl;
+		newClient.phoneNumber = readString("Phone: ");
+		std::cout << std::endl;
+		std::string balanceInput = readString("Balance: ");
+		double balance = 0;
+		balance = std::stod(balanceInput);
+		newClient.accountBalance = balance;
+
+		clients.push_back(newClient);
+		continueAdding = readString("Client Added Successfully, do you want to add more client? y/n")[0];
+	} while (std::tolower(continueAdding) == 'y');
+
+	
+	return { MAIN_MENU_SCREEN, true }; // TODO: flag
 }
 
 void runApp() {
@@ -195,7 +246,14 @@ void runApp() {
 		case CLIENTS_LIST_SCREEN:
 			currentScreen = showClientsScreen(clients).nextScreen;
 			break;
+		case ADD_NEW_CLIENT_SCREEN:
+			stScreenResult res = showAddNewClientScreen(clients);
+			if (res.dataChanged)
+				res.dataChanged; //TODO save
+			currentScreen = res.nextScreen;
+			break;
 		}
+		
 	}
 
 }
