@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <string>
 #include <cctype>
-
+#include <fstream>
 
 std::string readString(const std::string& message = "") {
 	std::string input;
@@ -68,6 +68,19 @@ short readIntegerInRange(short min, short max) {
 	return integer;
 }
 
+std::vector <std::string> split(std::string str, std::string delim = " ") {
+	std::vector<std::string> v{};
+	short pos = 0;
+	std::string word = "";
+	while ((pos = str.find(delim)) != str.npos) {
+		word = str.substr(0, pos);
+		if (word != "") v.push_back(word);
+		str.erase(0, pos + delim.length()); //O(n²)
+	}
+	if (str != "") v.push_back(str);
+	return v;
+}
+
 
 
 enum enMainMenuOptions {
@@ -111,6 +124,41 @@ struct stSearchResult {
 	stClient client = {};
 	bool found = false;
 };
+
+stClient deserializeClient(std::string line, std::string delim) {
+	stClient client{};
+	std::vector<std::string> splitted = split(line, delim);
+	if ((splitted.size() == 5)) {
+		client.accountID = splitted[0];
+		client.pinCode = splitted[1];
+		client.fullName = splitted[2];
+		client.phoneNumber = splitted[3];
+		client.accountBalance = std::stod(splitted[4]);
+	}
+
+	return client;
+}
+
+std::vector<stClient> loadClients(std::string filePath, std::string delim) {
+	std::vector<stClient> clients{};
+	std::fstream file;
+	file.open(filePath, std::ios::in);
+	if (file.is_open()) {
+		std::string line = "";
+		while (std::getline(file, line)) {
+			if (line.empty()) continue;
+
+			stClient client = deserializeClient(line, delim);
+			if (!client.accountID.empty())   // avoid pushing invalid clients
+				clients.push_back(client);
+		}
+		file.close();
+	}
+	else {
+		std::cout << "\nCan't open file with path " << filePath << std::endl;
+	}
+	return clients;
+}
 
 stSearchResult searchClientByAccountID(const std::vector<stClient> &clients, std::string accountID){
 	stClient client{};
@@ -263,12 +311,14 @@ stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
 
 void runApp() {
 
+	const std::string PERSISTENCE_FILE_PATH = "clients.txt";
+	const std::string RECORDS_DELIM = "#//#";
 	std::vector<stClient> clients{
 				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
 				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
 				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
 	};
-
+	clients = loadClients(PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 	enScreen currentScreen = MAIN_MENU_SCREEN;
 
 	while (currentScreen != enScreen::APP_EXIT) {
@@ -280,9 +330,9 @@ void runApp() {
 			currentScreen = showClientsScreen(clients).nextScreen;
 			break;
 		case ADD_NEW_CLIENT_SCREEN:
-			stScreenResult res = showAddNewClientScreen(clients);
+			stScreenResult res = showAddNewClientScreen(clients); //changes clients vector
 			if (res.dataChanged)
-				res.dataChanged; //TODO save
+				//persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM); //TODO save persistClients
 			currentScreen = res.nextScreen;
 			break;
 		}
