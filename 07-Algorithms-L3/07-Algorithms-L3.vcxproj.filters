@@ -135,5 +135,8 @@
     <ClCompile Include="50-delete-client-by-account-number.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="51-update-client-by-account-number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
