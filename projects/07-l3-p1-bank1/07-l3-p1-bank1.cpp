@@ -87,6 +87,11 @@ struct stMenuItem {
 	std::string label;
 };
 
+struct stScreenResult {
+	enScreen nextScreen = APP_EXIT;
+	bool dataChanged = false;
+};
+
 void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "") {
 	std::string line = std::string(40, '-');
 	
@@ -103,7 +108,7 @@ void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "")
 	std::cout << "Please choose an option: ";
 }
 
-enScreen showClientsScreen(const std::vector<stClient> &clients) {
+stScreenResult showClientsScreen(const std::vector<stClient> &clients) {
 	
 	std::string clientList = "Client List (" + std::to_string(clients.size()) + ") Client(s).\n";
 	std::string line = std::string(120, '-') + "\n";
@@ -146,10 +151,10 @@ enScreen showClientsScreen(const std::vector<stClient> &clients) {
 	
 	std::string input = "";
 	std::cin >> input;
-	return MAIN_MENU_SCREEN;
+	return { MAIN_MENU_SCREEN , false};
 }
 
-enScreen showMainMenuScreen() {
+stScreenResult showMainMenuScreen() {
 	std::vector<stMenuItem> mainMenu = {
 		{ SHOW_CLIENT_LIST, "Show Client List"},
 		{ ADD_NEW_CLIENT, "Add New Client"},
@@ -163,11 +168,11 @@ enScreen showMainMenuScreen() {
 	int option = readIntegerInRange(enMainMenuOptions::_FIRST_OPTION, enMainMenuOptions::_LAST_OPTION);
 	switch (option) {
 		case SHOW_CLIENT_LIST: 
-			return CLIENTS_LIST_SCREEN;
+			return { CLIENTS_LIST_SCREEN , false};
 		case EXIT:
-			return APP_EXIT;
+			return { APP_EXIT, false };
 		default:
-			return APP_EXIT;
+			return { APP_EXIT, false };
 	}
 
 }
@@ -185,10 +190,10 @@ void runApp() {
 	while (currentScreen != enScreen::APP_EXIT) {
 		switch (currentScreen) {
 		case MAIN_MENU_SCREEN:
-			currentScreen = showMainMenuScreen();
+			currentScreen = showMainMenuScreen().nextScreen;
 			break;
 		case CLIENTS_LIST_SCREEN:
-			currentScreen = showClientsScreen(clients);
+			currentScreen = showClientsScreen(clients).nextScreen;
 			break;
 		}
 	}
