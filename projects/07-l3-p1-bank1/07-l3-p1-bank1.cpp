@@ -1,20 +1,47 @@
-// 07-l3-p1-bank1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <vector>
+#include <iomanip>
+
+enum enMainMenuOptions {
+    SHOW_CLIENT_LIST = 1,
+    ADD_NEW_CLIENT = 2,
+	DELETE_CLIENT = 3,
+	UPDATE_CLIENT_INFO = 4,
+	FIND_CLIENT = 5,
+	EXIT = 6,
+};
+
+struct stMenuItem {
+	short ID;
+	std::string label;
+};
+
+void showMenu(std::vector<stMenuItem> menu, std::string headerLabel = "") {
+	std::string line = std::string(40, '-');
+	
+	std::cout << line << std::endl;
+	if (headerLabel != "")
+		std::cout << std::setw(25) << headerLabel << std::endl;
+	std::cout << line << std::endl;
+
+	for(stMenuItem item : menu){
+		std::cout << std::setw(10) << "[" << item.ID << "] " << item.label << std::endl;
+	}
+
+	std::cout << line << std::endl;
+	std::cout << "Please choose an option: ";
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	std::vector<stMenuItem> mainMenu = {
+		{ SHOW_CLIENT_LIST, "Show Client List"},
+		{ ADD_NEW_CLIENT, "Add New Client"},
+		{ DELETE_CLIENT, "Delete Client"},
+		{ UPDATE_CLIENT_INFO, "Update Client Info"},
+		{ FIND_CLIENT, "Find Client"},
+		{ EXIT, "Exit"},
+	};
+	showMenu(mainMenu, "Main Menu");
+    
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
