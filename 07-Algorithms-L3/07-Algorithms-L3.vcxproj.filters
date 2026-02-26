@@ -126,5 +126,8 @@
     <ClCompile Include="47-add-clients-to-file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="48-show-all-clients.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
