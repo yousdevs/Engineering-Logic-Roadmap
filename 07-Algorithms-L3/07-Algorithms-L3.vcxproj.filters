@@ -129,5 +129,8 @@
     <ClCompile Include="48-show-all-clients.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="49-find-client-by-account-number.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
