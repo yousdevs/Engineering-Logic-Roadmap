@@ -104,6 +104,21 @@ struct stScreenResult {
 	bool dataChanged = false;
 };
 
+struct stSearchResult {
+	stClient client = {};
+	bool found = false;
+};
+
+stSearchResult searchClientByAccountID(const std::vector<stClient> &clients, std::string accountID){
+	stClient client{};
+	for (const stClient &c : clients) {
+		if (c.accountID == accountID) {
+			return { c, true };
+		}
+	}
+	return { client, false };
+}
+
 void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "") {
 	std::string line = std::string(40, '-');
 	
@@ -191,6 +206,22 @@ stScreenResult showMainMenuScreen() {
 
 }
 
+stClient readClientInfo(std::string accountID) {
+	stClient newClient{};
+	newClient.accountID = accountID;
+	newClient.pinCode = readString("PIN Code: ");
+	std::cout << std::endl;
+	newClient.fullName = readString("Full Name: ");
+	std::cout << std::endl;
+	newClient.phoneNumber = readString("Phone: ");
+	std::cout << std::endl;
+	std::string balanceInput = readString("Balance: ");
+	double balance = 0;
+	balance = std::stod(balanceInput);
+	newClient.accountBalance = balance;
+	return newClient;
+}
+
 stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
 	std::string line = std::string(40, '-');
 	std::cout << line << std::endl;
@@ -201,28 +232,32 @@ stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
 	
 	
 	char continueAdding = 'n';
+	bool clientAlreadyExist = false;
+	std::string accountID = "";
 	do {
-		std::string accountID = "";
-		accountID = readString("Enter Account ID: ");
-		std::cout << std::endl;
+		if (clientAlreadyExist) {
+			accountID = readString("Client with ID [" + accountID + "] Already exist, Enter Another Account ID? ");
+			std::cout << std::endl;
+		}
+		else {
+			accountID = readString("Enter Account ID: ");
+			std::cout << std::endl;
+		}
 
-		//TODO: validate if exist
-		stClient newClient;
-		newClient.accountID = accountID;
-		newClient.pinCode = readString("PIN Code: ");
-		std::cout << std::endl;
-		newClient.fullName = readString("Full Name: ");
-		std::cout << std::endl;
-		newClient.phoneNumber = readString("Phone: ");
-		std::cout << std::endl;
-		std::string balanceInput = readString("Balance: ");
-		double balance = 0;
-		balance = std::stod(balanceInput);
-		newClient.accountBalance = balance;
+		stSearchResult searchResult = searchClientByAccountID(clients, accountID);
+		if (searchResult.found) {
+			clientAlreadyExist = true;
+		}
+		else {
+			clientAlreadyExist = false;
+			stClient newClient = readClientInfo(accountID);
+			
 
-		clients.push_back(newClient);
-		continueAdding = readString("Client Added Successfully, do you want to add more client? y/n")[0];
-	} while (std::tolower(continueAdding) == 'y');
+			clients.push_back(newClient);
+			continueAdding = readString("Client Added Successfully, do you want to add more client? y/n")[0];
+		}
+		
+	} while (std::tolower(continueAdding) == 'y' || clientAlreadyExist);
 
 	
 	return { MAIN_MENU_SCREEN, true }; // TODO: flag
