@@ -125,6 +125,12 @@ struct stSearchResult {
 	bool found = false;
 };
 
+std::string serializeClient(const stClient &client, const std::string &delim) {
+	return client.accountID + delim + client.pinCode + delim +
+		client.fullName + delim + client.phoneNumber + delim +
+		std::to_string(client.accountBalance);
+}
+
 stClient deserializeClient(std::string line, std::string delim) {
 	stClient client{};
 	std::vector<std::string> splitted = split(line, delim);
@@ -137,6 +143,21 @@ stClient deserializeClient(std::string line, std::string delim) {
 	}
 
 	return client;
+}
+
+void persistClients(const std::vector<stClient>& clients, const std::string& filePath, const std::string& delim) {
+	std::fstream file;
+	file.open(filePath, std::ios::out);
+	if (file.is_open()) {
+		for (stClient c : clients) {
+			std::string line = serializeClient(c, delim);
+			file << line << std::endl;
+		}
+		file.close();
+	}
+	else {
+		std::cout << "\nCan't open file with path " << filePath << std::endl;
+	}
 }
 
 std::vector<stClient> loadClients(std::string filePath, std::string delim) {
@@ -159,6 +180,7 @@ std::vector<stClient> loadClients(std::string filePath, std::string delim) {
 	}
 	return clients;
 }
+
 
 stSearchResult searchClientByAccountID(const std::vector<stClient> &clients, std::string accountID){
 	stClient client{};
@@ -332,7 +354,7 @@ void runApp() {
 		case ADD_NEW_CLIENT_SCREEN:
 			stScreenResult res = showAddNewClientScreen(clients); //changes clients vector
 			if (res.dataChanged)
-				//persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM); //TODO save persistClients
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM); 
 			currentScreen = res.nextScreen;
 			break;
 		}
