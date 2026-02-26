@@ -120,5 +120,8 @@
     <ClCompile Include="45-convert-record-to-line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="46-convert-line-data-to-record.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
