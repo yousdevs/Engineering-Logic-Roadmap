@@ -2,15 +2,77 @@
 #include <vector>
 #include <iomanip>
 #include <string>
+#include <cctype>
+
+bool isNumber(std::string s) {
+	if (s.empty()) return false;
+
+	int start = (s[0] == '-') ? 1 : 0;
+	if (start == 1 && s.length() == 1) return false; // Just a "-" is not a number
+
+	for (int i = start; i < s.length(); i++) {
+		if (!isdigit(s[i])) return false;
+	}
+	return true;
+}
+
+int readValidInteger() {
+	std::string input = "";
+	bool firstInput = true;
+	do {
+		if (!firstInput) {
+			printf("Please enter valid integer");
+		}
+		else {
+			firstInput = false;
+		}
+		std::cin >> input;
+	} while (!isNumber(input));
+	return std::stoi(input);
+}
+
+unsigned int readPositiveInteger() {
+	int integer = 0;
+	do {
+		printf("Please Enter Positive Integer: ");
+		integer = readValidInteger();
+	} while (integer <= 0);
+	return integer;
+}
+
+short readIntegerInRange(short min, short max) {
+	short integer = 0;
+	bool firstInput = true;
+	do {
+		if (!firstInput) {
+			std::cout << "\nPlease Enter Integer Between " << std::to_string(min) << " and " << std::to_string(max) << " :" << std::endl;
+		}
+		else {
+			firstInput = false;
+		}
+		integer = readValidInteger();
+	} while (integer < min || integer > max);
+	return integer;
+}
+
 
 enum enMainMenuOptions {
-    SHOW_CLIENT_LIST = 1,
-    ADD_NEW_CLIENT = 2,
+	SHOW_CLIENT_LIST = 1,
+	ADD_NEW_CLIENT = 2,
 	DELETE_CLIENT = 3,
 	UPDATE_CLIENT_INFO = 4,
 	FIND_CLIENT = 5,
 	EXIT = 6,
+	_FIRST_OPTION = SHOW_CLIENT_LIST,
+	_LAST_OPTION = EXIT,
 };
+
+enum enScreen {
+	APP_EXIT = 0,
+	MAIN_MENU_SCREEN = 1,
+	CLIENTS_LIST_SCREEN = 2,
+};
+
 
 struct stClient {
 	std::string accountID = "";
@@ -25,7 +87,7 @@ struct stMenuItem {
 	std::string label;
 };
 
-void showMenu(std::vector<stMenuItem> menu, std::string headerLabel = "") {
+void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "") {
 	std::string line = std::string(40, '-');
 	
 	std::cout << line << std::endl;
@@ -33,7 +95,7 @@ void showMenu(std::vector<stMenuItem> menu, std::string headerLabel = "") {
 		std::cout << std::setw(25) << headerLabel << std::endl;
 	std::cout << line << std::endl;
 
-	for(stMenuItem item : menu){
+	for(const stMenuItem &item : menu){
 		std::cout << std::setw(10) << "[" << item.ID << "] " << item.label << std::endl;
 	}
 
@@ -41,7 +103,7 @@ void showMenu(std::vector<stMenuItem> menu, std::string headerLabel = "") {
 	std::cout << "Please choose an option: ";
 }
 
-void showClientsScreen(std::vector<stClient> clients) {
+enScreen showClientsScreen(const std::vector<stClient> &clients) {
 	
 	std::string clientList = "Client List (" + std::to_string(clients.size()) + ") Client(s).\n";
 	std::string line = std::string(120, '-') + "\n";
@@ -65,7 +127,7 @@ void showClientsScreen(std::vector<stClient> clients) {
 	std::cout << line;
 
 	// Data
-	for (stClient& client : clients) {
+	for (const stClient& client : clients) {
 		std::cout << "|"
 			<< std::left << std::setw(19) << client.accountID
 			<< "|"
@@ -80,11 +142,14 @@ void showClientsScreen(std::vector<stClient> clients) {
 	}
 
 	std::cout << line;
-	std::cout << "Press any key to go back to main menu...";
+	std::cout << "Press any key to go back to main menu...\n";
+	
+	std::string input = "";
+	std::cin >> input;
+	return MAIN_MENU_SCREEN;
 }
 
-int main()
-{
+enScreen showMainMenuScreen() {
 	std::vector<stMenuItem> mainMenu = {
 		{ SHOW_CLIENT_LIST, "Show Client List"},
 		{ ADD_NEW_CLIENT, "Add New Client"},
@@ -93,14 +158,49 @@ int main()
 		{ FIND_CLIENT, "Find Client"},
 		{ EXIT, "Exit"},
 	};
-	showMenu(mainMenu, "Main Menu");
+	showMenu(mainMenu, "Main Menu Screen");
+
+	int option = readIntegerInRange(enMainMenuOptions::_FIRST_OPTION, enMainMenuOptions::_LAST_OPTION);
+	switch (option) {
+		case SHOW_CLIENT_LIST: 
+			return CLIENTS_LIST_SCREEN;
+		case EXIT:
+			return APP_EXIT;
+		default:
+			return APP_EXIT;
+	}
+
+}
+
+void runApp() {
 
 	std::vector<stClient> clients{
-		{"1", "1234", "Ahmed Omar", "0543334433", 2300},
-		{"1", "1234", "Ahmed Omar", "0543334433", 2300},
-		{"1", "1234", "Ahmed Omar", "0543334433", 2300},
+				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
+				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
+				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
 	};
-	showClientsScreen(clients);
-	return 0;
-    
+
+	enScreen currentScreen = MAIN_MENU_SCREEN;
+
+	while (currentScreen != enScreen::APP_EXIT) {
+		switch (currentScreen) {
+		case MAIN_MENU_SCREEN:
+			currentScreen = showMainMenuScreen();
+			break;
+		case CLIENTS_LIST_SCREEN:
+			currentScreen = showClientsScreen(clients);
+			break;
+		}
+	}
+
+}
+
+int main()
+{
+	
+	
+	runApp();
+
+
+	return 0;  
 }
