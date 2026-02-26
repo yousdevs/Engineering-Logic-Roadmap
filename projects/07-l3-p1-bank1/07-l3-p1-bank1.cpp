@@ -4,6 +4,19 @@
 #include <string>
 #include <cctype>
 
+
+std::string readString(const std::string& message = "") {
+	std::string input;
+
+	if (!message.empty())
+		std::cout << message;
+
+	// Skip any leading whitespace/newlines left in the buffer
+	std::getline(std::cin >> std::ws, input);
+
+	return input;
+}
+
 bool isNumber(std::string s) {
 	if (s.empty()) return false;
 
@@ -21,12 +34,12 @@ int readValidInteger() {
 	bool firstInput = true;
 	do {
 		if (!firstInput) {
-			printf("Please enter valid integer");
+			printf("Please enter valid integer\n");
 		}
 		else {
 			firstInput = false;
 		}
-		std::cin >> input;
+		input = readString();
 	} while (!isNumber(input));
 	return std::stoi(input);
 }
@@ -55,17 +68,7 @@ short readIntegerInRange(short min, short max) {
 	return integer;
 }
 
-std::string readString(const std::string& message = "") {
-	std::string input;
 
-	if (!message.empty())
-		std::cout << message;
-
-	// Skip any leading whitespace/newlines left in the buffer
-	std::getline(std::cin >> std::ws, input);
-
-	return input;
-}
 
 enum enMainMenuOptions {
 	SHOW_CLIENT_LIST = 1,
@@ -117,6 +120,22 @@ stSearchResult searchClientByAccountID(const std::vector<stClient> &clients, std
 		}
 	}
 	return { client, false };
+}
+
+bool isAccountIDTaken(const std::vector<stClient>& clients, const std::string& accountID) {
+	return searchClientByAccountID(clients, accountID).found;
+}
+
+std::string promptForUniqueAccountID(const std::vector<stClient>& clients) {
+	std::string accountID;
+	do {
+		accountID = readString("Enter Account ID: ");
+		if (isAccountIDTaken(clients, accountID)) {
+			std::cout << "Client with ID [" << accountID << "] already exists.";
+		}
+		else break;
+	} while (true);
+	return accountID;
 }
 
 void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "") {
@@ -215,52 +234,31 @@ stClient readClientInfo(std::string accountID) {
 	std::cout << std::endl;
 	newClient.phoneNumber = readString("Phone: ");
 	std::cout << std::endl;
-	std::string balanceInput = readString("Balance: ");
-	double balance = 0;
-	balance = std::stod(balanceInput);
-	newClient.accountBalance = balance;
+	std::cout << "Balance: ";
+	newClient.accountBalance = readValidInteger();
 	return newClient;
 }
 
 stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
-	std::string line = std::string(40, '-');
-	std::cout << line << std::endl;
-	std::cout << std::setw(10) << "Add New Clients Screen" << std::endl;
-	std::cout << line << std::endl;
-	std::cout << "Adding New Client" << std::endl;
+	std::cout << std::string(40, '-') << "\n";
+	std::cout << std::setw(30) << "Add New Client Screen" << "\n";
+	std::cout << std::string(40, '-') << "\n";
 
-	
-	
-	char continueAdding = 'n';
-	bool clientAlreadyExist = false;
-	std::string accountID = "";
-	do {
-		if (clientAlreadyExist) {
-			accountID = readString("Client with ID [" + accountID + "] Already exist, Enter Another Account ID? ");
-			std::cout << std::endl;
-		}
-		else {
-			accountID = readString("Enter Account ID: ");
-			std::cout << std::endl;
-		}
+	bool dataChanged = false;
+	char continueAdding = 'y';
 
-		stSearchResult searchResult = searchClientByAccountID(clients, accountID);
-		if (searchResult.found) {
-			clientAlreadyExist = true;
-		}
-		else {
-			clientAlreadyExist = false;
-			stClient newClient = readClientInfo(accountID);
-			
+	while (std::tolower(continueAdding) == 'y') {
+		std::string accountID = promptForUniqueAccountID(clients);
+		stClient newClient = readClientInfo(accountID);
 
-			clients.push_back(newClient);
-			continueAdding = readString("Client Added Successfully, do you want to add more client? y/n")[0];
-		}
-		
-	} while (std::tolower(continueAdding) == 'y' || clientAlreadyExist);
+		clients.push_back(newClient);
+		dataChanged = true;
 
-	
-	return { MAIN_MENU_SCREEN, true }; // TODO: flag
+		std::string more = readString("Client added. Add another? (y/n): ");
+		continueAdding = more.empty() ? 'n' : more[0];
+	}
+
+	return { MAIN_MENU_SCREEN, dataChanged };
 }
 
 void runApp() {
