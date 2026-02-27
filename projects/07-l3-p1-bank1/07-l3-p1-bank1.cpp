@@ -29,7 +29,7 @@ bool isNumber(std::string s) {
 	return true;
 }
 
-int readValidInteger() {
+int readValidInteger(std::string msg = "") {
 	std::string input = "";
 	bool firstInput = true;
 	do {
@@ -39,7 +39,7 @@ int readValidInteger() {
 		else {
 			firstInput = false;
 		}
-		input = readString();
+		input = readString(msg);
 	} while (!isNumber(input));
 	return std::stoi(input);
 }
@@ -89,9 +89,19 @@ enum enMainMenuOptions {
 	DELETE_CLIENT = 3,
 	UPDATE_CLIENT_INFO = 4,
 	FIND_CLIENT = 5,
-	EXIT = 6,
+	TRANSACTIONS = 6,
+	EXIT = 7,
 	_FIRST_OPTION = SHOW_CLIENT_LIST,
 	_LAST_OPTION = EXIT,
+};
+
+enum enTransactionsMenuOptions {
+	DEPOSIT = 1,
+	WITHDRAW = 2,
+	TOTAL_BALANCES = 3,
+	MAIN_MENU = 4,
+	_FIRST_OPTION_TRANSACTIONS = DEPOSIT,
+	_LAST_OPTION_TRANSACTIONS = enTransactionsMenuOptions::MAIN_MENU,
 };
 
 enum enScreen {
@@ -102,12 +112,17 @@ enum enScreen {
 	DELETE_CLIENT_SCREEN = 4,
 	UPDATE_CLIENT_INFO_SCREEN = 5,
 	FIND_CLIENT_SCREEN = 6,
+	TRANSACTIONS_MENU_SCREEN = 7,
+	DEPOSIT_SCREEN = 8,
+	WITHDRAW_SCREEN = 9,
+	TOTAL_BALANCES_SCREEN = 10,
 };
 
 enum enClientStatus {
 	ACTIVE = 1,
 	DELETED = 2,
 };
+
 
 struct stClient {
 	std::string accountID = "";
@@ -129,8 +144,14 @@ struct stScreenResult {
 };
 
 struct stSearchResult {
-	stClient client = {};
+	stClient* client = nullptr;
 	bool found = false;
+};
+
+struct stTransaction { //TODO: enum type
+	double amount = 0;
+	bool success = false;
+	std::string reason = "";
 };
 
 std::string serializeClient(const stClient &client, const std::string &delim) {
@@ -192,14 +213,14 @@ std::vector<stClient> loadClients(std::string filePath, std::string delim) {
 }
 
 
-stSearchResult searchClientByAccountID(const std::vector<stClient> &clients, std::string accountID){
-	stClient client{};
-	for (const stClient &c : clients) {
+stSearchResult searchClientByAccountID(std::vector<stClient> &clients, const std::string &accountID){
+
+	for (stClient &c : clients) {
 		if (c.accountID == accountID) {
-			return { c, true };
+			return { &c, true };
 		}
 	}
-	return { client, false };
+	return { nullptr, false };
 }
 
 bool deleteClientByAccountID(std::vector<stClient>& clients, const std::string& accountID) {
@@ -236,11 +257,11 @@ bool updateClientByAccountID(std::vector<stClient>& clients, const std::string& 
 	return false;
 }
 
-bool isAccountIDTaken(const std::vector<stClient>& clients, const std::string& accountID) {
+bool isAccountIDTaken(std::vector<stClient>& clients, const std::string& accountID) {
 	return searchClientByAccountID(clients, accountID).found;
 }
 
-std::string promptForUniqueAccountID(const std::vector<stClient>& clients) {
+std::string promptForUniqueAccountID(std::vector<stClient>& clients) {
 	std::string accountID;
 	do {
 		accountID = readString("Enter Account ID: ");
@@ -339,6 +360,7 @@ stScreenResult showMainMenuScreen() {
 		{ DELETE_CLIENT, "Delete Client"},
 		{ UPDATE_CLIENT_INFO, "Update Client Info"},
 		{ FIND_CLIENT, "Find Client"},
+		{ TRANSACTIONS, "Transactions"},
 		{ EXIT, "Exit"},
 	};
 	showMenu(mainMenu, "Main Menu Screen");
@@ -355,6 +377,8 @@ stScreenResult showMainMenuScreen() {
 			return { UPDATE_CLIENT_INFO_SCREEN, false };
 		case FIND_CLIENT:
 			return { FIND_CLIENT_SCREEN, false };
+		case TRANSACTIONS:
+			return { TRANSACTIONS_MENU_SCREEN, false };
 		case EXIT:
 			return { APP_EXIT, false };
 		default:
@@ -417,8 +441,8 @@ stScreenResult showDeleteClientScreen(std::vector<stClient>& clients) {
 
 	std::string accountID = readString("Enter Account ID: ");
 	stSearchResult res = searchClientByAccountID(clients, accountID);
-	if (res.found && res.client.status == ACTIVE) {
-		printClientDetails(res.client);
+	if (res.found && res.client->status == ACTIVE) {
+		printClientDetails(*res.client);
 		std::string input = readString("Are You Sure To Delete This Client ? y/n  ");
 		char choice = 'n';
 		if (!input.empty()) {
@@ -448,8 +472,8 @@ stScreenResult showUpdateClientInfoScreen(std::vector<stClient>& clients) {
 
 	std::string accountID = readString("Enter Account ID: ");
 	stSearchResult res = searchClientByAccountID(clients, accountID);
-	if (res.found && res.client.status == ACTIVE) {
-		printClientDetails(res.client);
+	if (res.found && res.client->status == ACTIVE) {
+		printClientDetails(*res.client);
 		std::string input = readString("Are You Sure To Update This Client ? y/n  ");
 		char choice = 'n';
 		if (!input.empty()) {
@@ -472,13 +496,13 @@ stScreenResult showUpdateClientInfoScreen(std::vector<stClient>& clients) {
 	return { MAIN_MENU_SCREEN, dataChanged };
 }
 
-stScreenResult showFindClientScreen(const std::vector<stClient>& clients) {
+stScreenResult showFindClientScreen(std::vector<stClient>& clients) {
 	showScreenHeader("Find Client Screen");
 
 	std::string accountID = readString("Enter Account ID: ");
 	stSearchResult res = searchClientByAccountID(clients, accountID);
-	if (res.found && res.client.status == ACTIVE) {
-		printClientDetails(res.client);
+	if (res.found && res.client->status == ACTIVE) {
+		printClientDetails(*res.client);
 	}
 	else {
 		std::cout << "Client with account ID (" << accountID << ") was not Found!" << std::endl;
@@ -487,6 +511,197 @@ stScreenResult showFindClientScreen(const std::vector<stClient>& clients) {
 	std::string input = readString("");
 
 	return { MAIN_MENU_SCREEN, false };
+}
+
+stScreenResult showTransactionsMenuScreen() {
+	std::vector<stMenuItem> transactionsMenu = {
+		{ DEPOSIT, "Deposit"},
+		{ WITHDRAW, "Withdraw"},
+		{ TOTAL_BALANCES, "Total Balances"},
+		{ enTransactionsMenuOptions::MAIN_MENU, "Main Menu"},
+	};
+	showMenu(transactionsMenu, "Transactions Menu Screen");
+
+	int option = readIntegerInRange(enTransactionsMenuOptions::_FIRST_OPTION_TRANSACTIONS, enTransactionsMenuOptions::_LAST_OPTION_TRANSACTIONS);
+	switch (option) {
+	case DEPOSIT:
+		return { DEPOSIT_SCREEN , false };
+	case WITHDRAW:
+		return { WITHDRAW_SCREEN, false };
+	case TOTAL_BALANCES:
+		return { TOTAL_BALANCES_SCREEN, false };
+	case enTransactionsMenuOptions::MAIN_MENU:
+		return { MAIN_MENU_SCREEN, false };
+
+	default:
+		return { APP_EXIT, false };
+	}
+}
+
+stSearchResult promptForAccountIDUntilFound(std::vector<stClient> &clients) {
+	std::string accountID = "";
+	stSearchResult res{};
+	while (true) {
+		accountID = readString("Enter Account ID: ");
+		res = searchClientByAccountID(clients, accountID);
+		if (!res.found || res.client->status != ACTIVE) {
+			std::cout << "Client with account ID (" << accountID << ") was not Found!" << std::endl;
+		}
+		else {
+			return res;
+		}
+	}
+	
+}
+
+bool confirmYesNoChoice(const std::string& msg = "") {
+	std::string input = readString(msg);
+	char choice = 'n';
+	if (!input.empty()) {
+		choice = input[0];
+	}
+	return (std::tolower(choice) == 'y');
+}
+
+stTransaction deposit(stClient &client, double amount) {
+	stTransaction transaction{};
+	if (amount <= 0) {
+		transaction.success = false;
+		transaction.reason = "Must Be a Positive Amount";
+		transaction.amount = amount;
+		return transaction;
+	}
+	
+	client.accountBalance += amount;
+	transaction.success = true;
+	transaction.amount = amount;
+	transaction.reason = "New Balance";
+	return transaction;
+}
+
+stTransaction withdraw(stClient& client, double amount) {
+	stTransaction transaction{};
+	if (amount <= 0) {
+		transaction.success = false;
+		transaction.reason = "Must Be a Positive Amount";
+		transaction.amount = amount;
+		return transaction;
+	}
+	else if(amount > client.accountBalance){
+		transaction.success = false;
+		transaction.reason = "Amount Exceeds The Balance, You Can Withdraw Up To: " + std::to_string(client.accountBalance);
+		transaction.amount = amount;
+		return transaction;
+	}
+
+	client.accountBalance -= amount;
+	transaction.success = true;
+	transaction.amount = amount;
+	transaction.reason = "Withdrawal";
+	return transaction;
+}
+
+stScreenResult showDepoistScreen(std::vector<stClient> &clients){
+
+	showScreenHeader("Deposit Screen");
+
+	bool dataChanged = false;
+
+	stSearchResult res = promptForAccountIDUntilFound(clients);
+	
+	printClientDetails(*res.client);
+	double amount = readValidInteger("Please Enter Deposit Amount? ");
+	
+	if (confirmYesNoChoice("Are You Sure You Want Perform This Transaction ? y/n ")) {
+		stTransaction transaction = deposit(*res.client, amount);
+		dataChanged = transaction.success;
+		(dataChanged) ?
+			std::cout << "Done Successfully, New Balance: " << std::to_string(res.client->accountBalance) << std::endl
+			:
+			std::cout << "Failed To Perform Transaction. reason: " << transaction.reason << std::endl;
+	}
+	
+	std::cout << "Type any key and hit enter to go back to Transactions Menu .." << std::endl;
+	std::string input = readString("");
+
+	return { TRANSACTIONS_MENU_SCREEN, dataChanged };
+}
+
+stScreenResult showWithdrawScreen(std::vector<stClient>& clients) {
+	showScreenHeader("Withdraw Screen");
+
+	bool dataChanged = false;
+
+	stSearchResult res = promptForAccountIDUntilFound(clients);
+
+	printClientDetails(*res.client);
+	double amount = readValidInteger("Please Enter Withdraw Amount? ");
+
+	if (confirmYesNoChoice("Are You Sure You Want Perform This Transaction ? y/n  ")) {
+		stTransaction transaction = withdraw(*res.client, amount);
+		dataChanged = transaction.success;
+		(dataChanged) ?
+			std::cout << "Done Successfully, New Balance: " << std::to_string(res.client->accountBalance) << std::endl
+			:
+			std::cout << "Failed To Perform Transaction. reason: " << transaction.reason << std::endl;
+	}
+
+	std::cout << "Type any key and hit enter to go back to Transactions Menu .." << std::endl;
+	std::string input = readString("");
+
+	return { TRANSACTIONS_MENU_SCREEN, dataChanged };
+}
+
+double calcTotalBalances(std::vector<stClient>& clients) {
+	double totalBalances = 0;
+	for (stClient& client : clients) {
+		if (client.status == ACTIVE) {
+			totalBalances += client.accountBalance;
+		}
+	}
+	return totalBalances;
+}
+
+stScreenResult showTotalBalancesScreen(std::vector<stClient>& clients) {
+	std::string clientList = "Client List (" + std::to_string(countActiveClients(clients)) + ") Client(s).\n";
+
+	std::cout << "\n" << std::setw(75) << clientList;
+	std::cout << createLine(120) << std::endl;
+
+	// Header
+	std::cout << "|"
+		<< std::left << std::setw(19) << "Account ID"
+		<< "|"
+		<< std::left << std::setw(29) << "Full Name"
+		<< "|"
+		<< std::right << std::setw(14) << "Balance"
+		<< "|\n";
+
+	std::cout << createLine(120) << std::endl;
+
+	// Data
+	for (const stClient& client : clients) {
+		if (client.status == ACTIVE) {
+			std::cout << "|"
+				<< std::left << std::setw(19) << client.accountID
+				<< "|"
+				<< std::left << std::setw(29) << client.fullName
+				<< "|"
+				<< std::right << std::setw(14) << client.accountBalance
+				<< "|\n";
+		}
+	}
+
+	std::cout << createLine(120) << std::endl;
+
+	double totalBalances = calcTotalBalances(clients);
+	std::cout << std::right << std::setw(14) << "Total Balances: " << std::to_string(totalBalances) << std::endl;
+
+	std::cout << "Press any key to go back to transactions menu...\n";
+
+	std::string input = "";
+	std::cin >> input;
+	return { TRANSACTIONS_MENU_SCREEN , false };
 }
 
 void runApp() {
@@ -506,7 +721,7 @@ void runApp() {
 			currentScreen = showClientsScreen(clients).nextScreen;
 			break;
 		case ADD_NEW_CLIENT_SCREEN: {
-			stScreenResult res = showAddNewClientScreen(clients); //mutation
+			stScreenResult res = showAddNewClientScreen(clients); //mutation Vector → search → pointer → mutate → persist
 			if (res.dataChanged)
 				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 			currentScreen = res.nextScreen;
@@ -529,6 +744,34 @@ void runApp() {
 		case FIND_CLIENT_SCREEN:
 			currentScreen = showFindClientScreen(clients).nextScreen;
 			break;
+		case TRANSACTIONS_MENU_SCREEN: {
+			stScreenResult res = showTransactionsMenuScreen();
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
+		case DEPOSIT_SCREEN: {
+			stScreenResult res = showDepoistScreen(clients);
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
+		case WITHDRAW_SCREEN: {
+			stScreenResult res = showWithdrawScreen(clients);
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
+		case TOTAL_BALANCES_SCREEN: {
+			stScreenResult res = showTotalBalancesScreen(clients);
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
 		default:  currentScreen = MAIN_MENU_SCREEN ;
 		}
 		

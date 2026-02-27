@@ -13,6 +13,9 @@ The goal of this project was to build a CRUD application from scratch without re
 * **Input Validation:** Prevents crashes from invalid data types and handles buffer clearing.
 * **Duplicate Prevention:** Checks for existing Account IDs during the creation process.
 * **Formatted UI:** Uses `iomanip` for structured, tabular data display in the console.
+* **Transaction Management:** Support for deposits, withdrawals, and calculating total bank balances.
+* **Transaction Validation:** Logic to prevent negative deposits or withdrawals that exceed the current balance.
+* **Direct Memory Updates:** Uses pointer-based search results to modify client data directly in memory before persisting to disk.
 
 ## Core Mechanics
 
@@ -20,6 +23,9 @@ The goal of this project was to build a CRUD application from scratch without re
 * **File Persistence:** Data is serialized into a flat text file (`clients.txt`) using a custom delimiter (`#//#`). The project includes custom `split`, `serializeClient`, and `deserializeClient` functions to parse this data back into memory.
 * **Soft Deletions:** Deleting a client does not immediately erase them from the vector or trigger a file rewrite. Instead, their `enClientStatus` is toggled from `ACTIVE` to `DELETED`. The file is only updated with active clients upon screen transitions, preventing unnecessary disk I/O.
 * **Input Sanitization:** Built-in safeguards handle whitespace buffer clearing (`std::ws`) and strict type-checking loops (e.g., ensuring a user inputs a valid integer instead of a string) to prevent console infinite-loop crashes.
+* **Pointer-Based Mutation:** The search logic was refactored to return a memory address (`stClient*`). This allows transaction screens (Deposit/Withdraw) to modify the client's balance directly in the central vector without redundant searches or passing large objects by value.
+* **Transactional Logic:** Implemented validation layers within the `deposit` and `withdraw` functions. These return a `stTransaction` result that captures success status and failure reasons (e.g., insufficient funds), which the UI then uses to provide specific feedback.
+* **Nested State Navigation:** The state machine now handles sub-menus (Transactions Menu). The `runApp()` loop remains the single point of control, ensuring that even with nested menus, the application never creates deep recursive calls.
 
 ## Data Structures
 
