@@ -251,9 +251,17 @@ void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "")
 	std::cout << "Please choose an option: ";
 }
 
+int countActiveClients(const std::vector<stClient>& clients) {
+	int counter = 0;
+	for (const stClient& c : clients) {
+		if (c.status == ACTIVE) counter++;
+	}
+	return counter;
+}
+
 stScreenResult showClientsScreen(const std::vector<stClient> &clients) {
 	
-	std::string clientList = "Client List (" + std::to_string(clients.size()) + ") Client(s).\n";
+	std::string clientList = "Client List (" + std::to_string(countActiveClients(clients)) + ") Client(s).\n";
 
 	std::cout << "\n" << std::setw(75) << clientList;
 	std::cout << createLine(120) << std::endl;
@@ -434,14 +442,14 @@ void runApp() {
 			currentScreen = showClientsScreen(clients).nextScreen;
 			break;
 		case ADD_NEW_CLIENT_SCREEN: {
-			stScreenResult res = showAddNewClientScreen(clients); //changes clients vector
+			stScreenResult res = showAddNewClientScreen(clients); //mutation
 			if (res.dataChanged)
 				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 			currentScreen = res.nextScreen;
 			break;
 		}
-		case DELETE_CLIENT_SCREEN: { //cpp scope for variables
-			stScreenResult res = showDeleteClientScreen(clients); //possibly changes clients vector
+		case DELETE_CLIENT_SCREEN: { 
+			stScreenResult res = showDeleteClientScreen(clients); //possibly mutation
 			if (res.dataChanged)
 				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 			currentScreen = res.nextScreen;
