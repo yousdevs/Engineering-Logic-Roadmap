@@ -89,7 +89,8 @@ enum enMainMenuOptions {
 	DELETE_CLIENT = 3,
 	UPDATE_CLIENT_INFO = 4,
 	FIND_CLIENT = 5,
-	EXIT = 6,
+	TRANSACTIONS = 6,
+	EXIT = 7,
 	_FIRST_OPTION = SHOW_CLIENT_LIST,
 	_LAST_OPTION = EXIT,
 };
@@ -339,6 +340,7 @@ stScreenResult showMainMenuScreen() {
 		{ DELETE_CLIENT, "Delete Client"},
 		{ UPDATE_CLIENT_INFO, "Update Client Info"},
 		{ FIND_CLIENT, "Find Client"},
+		{ TRANSACTIONS, "Transactions"},
 		{ EXIT, "Exit"},
 	};
 	showMenu(mainMenu, "Main Menu Screen");
