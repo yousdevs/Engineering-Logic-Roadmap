@@ -652,6 +652,58 @@ stScreenResult showWithdrawScreen(std::vector<stClient>& clients) {
 	return { TRANSACTIONS_MENU_SCREEN, dataChanged };
 }
 
+double calcTotalBalances(std::vector<stClient>& clients) {
+	double totalBalances = 0;
+	for (stClient& client : clients) {
+		if (client.status == ACTIVE) {
+			totalBalances += client.accountBalance;
+		}
+	}
+	return totalBalances;
+}
+
+stScreenResult showTotalBalancesScreen(std::vector<stClient>& clients) {
+	std::string clientList = "Client List (" + std::to_string(countActiveClients(clients)) + ") Client(s).\n";
+
+	std::cout << "\n" << std::setw(75) << clientList;
+	std::cout << createLine(120) << std::endl;
+
+	// Header
+	std::cout << "|"
+		<< std::left << std::setw(19) << "Account ID"
+		<< "|"
+		<< std::left << std::setw(29) << "Full Name"
+		<< "|"
+		<< std::right << std::setw(14) << "Balance"
+		<< "|\n";
+
+	std::cout << createLine(120) << std::endl;
+
+	// Data
+	for (const stClient& client : clients) {
+		if (client.status == ACTIVE) {
+			std::cout << "|"
+				<< std::left << std::setw(19) << client.accountID
+				<< "|"
+				<< std::left << std::setw(29) << client.fullName
+				<< "|"
+				<< std::right << std::setw(14) << client.accountBalance
+				<< "|\n";
+		}
+	}
+
+	std::cout << createLine(120) << std::endl;
+
+	double totalBalances = calcTotalBalances(clients);
+	std::cout << std::right << std::setw(14) << "Total Balances: " << std::to_string(totalBalances) << std::endl;
+
+	std::cout << "Press any key to go back to transactions menu...\n";
+
+	std::string input = "";
+	std::cin >> input;
+	return { TRANSACTIONS_MENU_SCREEN , false };
+}
+
 void runApp() {
 
 	const std::string PERSISTENCE_FILE_PATH = "clients.txt";
@@ -713,7 +765,13 @@ void runApp() {
 			currentScreen = res.nextScreen;
 			break;
 		}
-
+		case TOTAL_BALANCES_SCREEN: {
+			stScreenResult res = showTotalBalancesScreen(clients);
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
 		default:  currentScreen = MAIN_MENU_SCREEN ;
 		}
 		
