@@ -95,6 +95,15 @@ enum enMainMenuOptions {
 	_LAST_OPTION = EXIT,
 };
 
+enum enTransactionsMenuOptions {
+	DEPOSIT = 1,
+	WITHDRAW = 2,
+	TOTAL_BALANCES = 3,
+	MAIN_MENU = 4,
+	_FIRST_OPTION_TRANSACTIONS = DEPOSIT,
+	_LAST_OPTION_TRANSACTIONS = enTransactionsMenuOptions::MAIN_MENU,
+};
+
 enum enScreen {
 	APP_EXIT = 0,
 	MAIN_MENU_SCREEN = 1,
@@ -103,6 +112,10 @@ enum enScreen {
 	DELETE_CLIENT_SCREEN = 4,
 	UPDATE_CLIENT_INFO_SCREEN = 5,
 	FIND_CLIENT_SCREEN = 6,
+	TRANSACTIONS_MENU_SCREEN = 7,
+	DEPOSIT_SCREEN = 8,
+	WITHDRAW_SCREEN = 9,
+	TOTAL_BALANCES_SCREEN = 10,
 };
 
 enum enClientStatus {
@@ -357,6 +370,8 @@ stScreenResult showMainMenuScreen() {
 			return { UPDATE_CLIENT_INFO_SCREEN, false };
 		case FIND_CLIENT:
 			return { FIND_CLIENT_SCREEN, false };
+		case TRANSACTIONS:
+			return { TRANSACTIONS_MENU_SCREEN, false };
 		case EXIT:
 			return { APP_EXIT, false };
 		default:
@@ -491,6 +506,31 @@ stScreenResult showFindClientScreen(const std::vector<stClient>& clients) {
 	return { MAIN_MENU_SCREEN, false };
 }
 
+stScreenResult showTransactionsMenuScreen() {
+	std::vector<stMenuItem> transactionsMenu = {
+		{ DEPOSIT, "Deposit"},
+		{ WITHDRAW, "Withdraw"},
+		{ TOTAL_BALANCES, "Total Balances"},
+		{ enTransactionsMenuOptions::MAIN_MENU, "Main Menu"},
+	};
+	showMenu(transactionsMenu, "Transactions Menu Screen");
+
+	int option = readIntegerInRange(enTransactionsMenuOptions::_FIRST_OPTION_TRANSACTIONS, enTransactionsMenuOptions::_LAST_OPTION_TRANSACTIONS);
+	switch (option) {
+	case DEPOSIT:
+		return { DEPOSIT_SCREEN , false };
+	case WITHDRAW:
+		return { WITHDRAW_SCREEN, false };
+	case TOTAL_BALANCES:
+		return { TOTAL_BALANCES_SCREEN, false };
+	case enTransactionsMenuOptions::MAIN_MENU:
+		return { MAIN_MENU_SCREEN, false };
+
+	default:
+		return { APP_EXIT, false };
+	}
+}
+
 void runApp() {
 
 	const std::string PERSISTENCE_FILE_PATH = "clients.txt";
@@ -531,6 +571,13 @@ void runApp() {
 		case FIND_CLIENT_SCREEN:
 			currentScreen = showFindClientScreen(clients).nextScreen;
 			break;
+		case TRANSACTIONS_MENU_SCREEN: {
+			stScreenResult res = showTransactionsMenuScreen();
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
 		default:  currentScreen = MAIN_MENU_SCREEN ;
 		}
 		
