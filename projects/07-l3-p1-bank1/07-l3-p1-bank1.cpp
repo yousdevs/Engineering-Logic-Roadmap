@@ -102,6 +102,10 @@ enum enScreen {
 	DELETE_CLIENT_SCREEN = 4,
 };
 
+enum enClientStatus {
+	ACTIVE = 1,
+	DELETED = 2,
+};
 
 struct stClient {
 	std::string accountID = "";
@@ -109,6 +113,7 @@ struct stClient {
 	std::string fullName = "";
 	std::string phoneNumber = "";
 	double accountBalance = 0.0;
+	enClientStatus status = ACTIVE;
 };
 
 struct stMenuItem {
@@ -132,7 +137,7 @@ std::string serializeClient(const stClient &client, const std::string &delim) {
 		std::to_string(client.accountBalance);
 }
 
-stClient deserializeClient(std::string line, std::string delim) {
+stClient deserializeClient(const std::string &line, const std::string& delim) {
 	stClient client{};
 	std::vector<std::string> splitted = split(line, delim);
 	if ((splitted.size() == 5)) {
@@ -151,8 +156,10 @@ void persistClients(const std::vector<stClient>& clients, const std::string& fil
 	file.open(filePath, std::ios::out);
 	if (file.is_open()) {
 		for (stClient c : clients) {
-			std::string line = serializeClient(c, delim);
-			file << line << std::endl;
+			if (c.status == ACTIVE) {
+				std::string line = serializeClient(c, delim);
+				file << line << std::endl;
+			}
 		}
 		file.close();
 	}
@@ -191,6 +198,16 @@ stSearchResult searchClientByAccountID(const std::vector<stClient> &clients, std
 		}
 	}
 	return { client, false };
+}
+
+bool deleteClientByAccountID(std::vector<stClient>& clients, const std::string& accountID) {
+	for (stClient& client : clients) {
+		if (client.accountID == accountID && client.status == ACTIVE) {
+			client.status = DELETED;
+			return true;
+		}
+	}
+	return false;
 }
 
 bool isAccountIDTaken(const std::vector<stClient>& clients, const std::string& accountID) {
@@ -258,17 +275,19 @@ stScreenResult showClientsScreen(const std::vector<stClient> &clients) {
 
 	// Data
 	for (const stClient& client : clients) {
-		std::cout << "|"
-			<< std::left << std::setw(19) << client.accountID
-			<< "|"
-			<< std::left << std::setw(19) << client.pinCode
-			<< "|"
-			<< std::left << std::setw(29) << client.fullName
-			<< "|"
-			<< std::right << std::setw(19) << client.phoneNumber
-			<< "|"
-			<< std::right << std::setw(14) << client.accountBalance
-			<< "|\n";
+		if (client.status == ACTIVE) {
+			std::cout << "|"
+				<< std::left << std::setw(19) << client.accountID
+				<< "|"
+				<< std::left << std::setw(19) << client.pinCode
+				<< "|"
+				<< std::left << std::setw(29) << client.fullName
+				<< "|"
+				<< std::right << std::setw(19) << client.phoneNumber
+				<< "|"
+				<< std::right << std::setw(14) << client.accountBalance
+				<< "|\n";
+		}
 	}
 
 	std::cout << createLine(120) << std::endl;
@@ -340,14 +359,59 @@ stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
 	return { MAIN_MENU_SCREEN, dataChanged };
 }
 
+void printClientDetails(const stClient& client) {
+	std::cout << "\nClient Details\n";
+	std::cout << createLine() << "\n";
+
+	std::cout << std::left << std::setw(15) << "Account ID:"
+		<< std::right << client.accountID << "\n";
+
+	std::cout << std::left << std::setw(15) << "PIN Code:"
+		<< std::right << client.pinCode << "\n";
+
+	std::cout << std::left << std::setw(15) << "Name:"
+		<< std::right << client.fullName << "\n";
+
+	std::cout << std::left << std::setw(15) << "Phone:"
+		<< std::right << client.phoneNumber << "\n";
+
+	std::cout << std::left << std::setw(15) << "Balance:"
+		<< std::right << client.accountBalance << "\n";
+
+	std::cout << createLine() << "\n";
+
+	// reset formatting
+	std::cout << std::endl;
+}
+
 stScreenResult showDeleteClientScreen(std::vector<stClient>& clients) {
 	
 	showScreenHeader("Delete Client Screen");
 
 	bool dataChanged = false;
 
-
-
+	std::string accountID = readString("Enter Account ID: ");
+	stSearchResult res = searchClientByAccountID(clients, accountID);
+	if (res.found && res.client.status == ACTIVE) {
+		printClientDetails(res.client);
+		std::string input = readString("Are You Sure To Delete This Client ? y/n  ");
+		char choice = 'n';
+		if (!input.empty()) {
+			choice = input[0];
+		}
+		if (std::tolower(choice) == 'y') {
+			dataChanged = deleteClientByAccountID(clients, accountID);
+			(dataChanged) ? 
+				std::cout << "Client Deleted Successfully." << std::endl
+			: 
+				std::cout << "Failed To Delete Client." << std::endl;
+		}
+	}
+	else {
+		std::cout << "Client with account ID (" << accountID << ") was not Found!" << std::endl;
+	}
+	std::cout << "Type any key and hit enter to go back to Main Menu .." << std::endl;
+	std::string input = readString("");
 
 	return { MAIN_MENU_SCREEN, dataChanged };
 }
