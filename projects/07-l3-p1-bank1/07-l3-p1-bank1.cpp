@@ -579,6 +579,28 @@ stTransaction deposit(stClient &client, double amount) {
 	return transaction;
 }
 
+stTransaction withdraw(stClient& client, double amount) {
+	stTransaction transaction{};
+	if (amount <= 0) {
+		transaction.success = false;
+		transaction.reason = "Must Be a Positive Amount";
+		transaction.amount = amount;
+		return transaction;
+	}
+	else if(amount > client.accountBalance){
+		transaction.success = false;
+		transaction.reason = "Amount Exceeds The Balance, You Can Withdraw Up To: " + std::to_string(client.accountBalance);
+		transaction.amount = amount;
+		return transaction;
+	}
+
+	client.accountBalance -= amount;
+	transaction.success = true;
+	transaction.amount = amount;
+	transaction.reason = "Withdrawal";
+	return transaction;
+}
+
 stScreenResult showDepoistScreen(std::vector<stClient> &clients){
 
 	showScreenHeader("Deposit Screen");
@@ -590,7 +612,7 @@ stScreenResult showDepoistScreen(std::vector<stClient> &clients){
 	printClientDetails(*res.client);
 	double amount = readValidInteger("Please Enter Deposit Amount? ");
 	
-	if (confirmYesNoChoice("Are You Sure To Update This Client ? y/n  ")) {
+	if (confirmYesNoChoice("Are You Sure You Want Perform This Transaction ? y/n ")) {
 		stTransaction transaction = deposit(*res.client, amount);
 		dataChanged = transaction.success;
 		(dataChanged) ?
@@ -599,6 +621,31 @@ stScreenResult showDepoistScreen(std::vector<stClient> &clients){
 			std::cout << "Failed To Perform Transaction. reason: " << transaction.reason << std::endl;
 	}
 	
+	std::cout << "Type any key and hit enter to go back to Transactions Menu .." << std::endl;
+	std::string input = readString("");
+
+	return { TRANSACTIONS_MENU_SCREEN, dataChanged };
+}
+
+stScreenResult showWithdrawScreen(std::vector<stClient>& clients) {
+	showScreenHeader("Withdraw Screen");
+
+	bool dataChanged = false;
+
+	stSearchResult res = promptForAccountIDUntilFound(clients);
+
+	printClientDetails(*res.client);
+	double amount = readValidInteger("Please Enter Withdraw Amount? ");
+
+	if (confirmYesNoChoice("Are You Sure You Want Perform This Transaction ? y/n  ")) {
+		stTransaction transaction = withdraw(*res.client, amount);
+		dataChanged = transaction.success;
+		(dataChanged) ?
+			std::cout << "Done Successfully, New Balance: " << std::to_string(res.client->accountBalance) << std::endl
+			:
+			std::cout << "Failed To Perform Transaction. reason: " << transaction.reason << std::endl;
+	}
+
 	std::cout << "Type any key and hit enter to go back to Transactions Menu .." << std::endl;
 	std::string input = readString("");
 
@@ -654,6 +701,13 @@ void runApp() {
 		}
 		case DEPOSIT_SCREEN: {
 			stScreenResult res = showDepoistScreen(clients);
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
+		case WITHDRAW_SCREEN: {
+			stScreenResult res = showWithdrawScreen(clients);
 			if (res.dataChanged)
 				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 			currentScreen = res.nextScreen;
