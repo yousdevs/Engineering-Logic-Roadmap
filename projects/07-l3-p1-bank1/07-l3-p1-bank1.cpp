@@ -99,6 +99,7 @@ enum enScreen {
 	MAIN_MENU_SCREEN = 1,
 	CLIENTS_LIST_SCREEN = 2,
 	ADD_NEW_CLIENT_SCREEN = 3,
+	DELETE_CLIENT_SCREEN = 4,
 };
 
 
@@ -208,29 +209,37 @@ std::string promptForUniqueAccountID(const std::vector<stClient>& clients) {
 	return accountID;
 }
 
-void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "") {
-	std::string line = std::string(40, '-');
+std::string createLine(short length = 40, char line = '-') {
+	return  std::string(length, line);
+}
+
+void showScreenHeader(std::string headerLabel, short lineLength = 40, char lineChar = '-') {
 	
-	std::cout << line << std::endl;
+	std::cout << std::endl;
+	std::cout << createLine(lineLength, lineChar) << std::endl;
 	if (headerLabel != "")
 		std::cout << std::setw(25) << headerLabel << std::endl;
-	std::cout << line << std::endl;
+	std::cout << createLine(lineLength, lineChar) << std::endl;
+}
+
+void showMenu(const std::vector<stMenuItem> &menu, std::string headerLabel = "") {
+	
+	showScreenHeader(headerLabel);
 
 	for(const stMenuItem &item : menu){
 		std::cout << std::setw(10) << "[" << item.ID << "] " << item.label << std::endl;
 	}
 
-	std::cout << line << std::endl;
+	std::cout << createLine() << std::endl;
 	std::cout << "Please choose an option: ";
 }
 
 stScreenResult showClientsScreen(const std::vector<stClient> &clients) {
 	
 	std::string clientList = "Client List (" + std::to_string(clients.size()) + ") Client(s).\n";
-	std::string line = std::string(120, '-') + "\n";
 
 	std::cout << "\n" << std::setw(75) << clientList;
-	std::cout << line;
+	std::cout << createLine(120) << std::endl;
 
 	// Header
 	std::cout << "|"
@@ -245,7 +254,7 @@ stScreenResult showClientsScreen(const std::vector<stClient> &clients) {
 		<< std::right << std::setw(14) << "Balance"
 		<< "|\n";
 
-	std::cout << line;
+	std::cout << createLine(120) << std::endl;
 
 	// Data
 	for (const stClient& client : clients) {
@@ -262,7 +271,7 @@ stScreenResult showClientsScreen(const std::vector<stClient> &clients) {
 			<< "|\n";
 	}
 
-	std::cout << line;
+	std::cout << createLine(120) << std::endl;
 	std::cout << "Press any key to go back to main menu...\n";
 	
 	std::string input = "";
@@ -287,6 +296,8 @@ stScreenResult showMainMenuScreen() {
 			return { CLIENTS_LIST_SCREEN , false};
 		case ADD_NEW_CLIENT:
 			return { ADD_NEW_CLIENT_SCREEN, false };
+		case DELETE_CLIENT:
+			return { DELETE_CLIENT_SCREEN, false };
 		case EXIT:
 			return { APP_EXIT, false };
 		default:
@@ -310,9 +321,7 @@ stClient readClientInfo(std::string accountID) {
 }
 
 stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
-	std::cout << std::string(40, '-') << "\n";
-	std::cout << std::setw(30) << "Add New Client Screen" << "\n";
-	std::cout << std::string(40, '-') << "\n";
+	showScreenHeader("Add New Client Screen");
 
 	bool dataChanged = false;
 	char continueAdding = 'y';
@@ -331,15 +340,24 @@ stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
 	return { MAIN_MENU_SCREEN, dataChanged };
 }
 
+stScreenResult showDeleteClientScreen(std::vector<stClient>& clients) {
+	
+	showScreenHeader("Delete Client Screen");
+
+	bool dataChanged = false;
+
+
+
+
+	return { MAIN_MENU_SCREEN, dataChanged };
+}
+
+
 void runApp() {
 
 	const std::string PERSISTENCE_FILE_PATH = "clients.txt";
 	const std::string RECORDS_DELIM = "#//#";
-	std::vector<stClient> clients{
-				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
-				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
-				{"1", "1234", "Ahmed Omar", "0543334433", 2300},
-	};
+	std::vector<stClient> clients{};
 	clients = loadClients(PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 	enScreen currentScreen = MAIN_MENU_SCREEN;
 
@@ -351,12 +369,21 @@ void runApp() {
 		case CLIENTS_LIST_SCREEN:
 			currentScreen = showClientsScreen(clients).nextScreen;
 			break;
-		case ADD_NEW_CLIENT_SCREEN:
+		case ADD_NEW_CLIENT_SCREEN: {
 			stScreenResult res = showAddNewClientScreen(clients); //changes clients vector
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM); 
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 			currentScreen = res.nextScreen;
 			break;
+		}
+		case DELETE_CLIENT_SCREEN: { //cpp scope for variables
+			stScreenResult res = showDeleteClientScreen(clients); //possibly changes clients vector
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
+		default:  currentScreen = MAIN_MENU_SCREEN ;
 		}
 		
 	}
