@@ -101,6 +101,7 @@ enum enScreen {
 	ADD_NEW_CLIENT_SCREEN = 3,
 	DELETE_CLIENT_SCREEN = 4,
 	UPDATE_CLIENT_INFO_SCREEN = 5,
+	FIND_CLIENT_SCREEN = 6,
 };
 
 enum enClientStatus {
@@ -352,6 +353,8 @@ stScreenResult showMainMenuScreen() {
 			return { DELETE_CLIENT_SCREEN, false };
 		case UPDATE_CLIENT_INFO:
 			return { UPDATE_CLIENT_INFO_SCREEN, false };
+		case FIND_CLIENT:
+			return { FIND_CLIENT_SCREEN, false };
 		case EXIT:
 			return { APP_EXIT, false };
 		default:
@@ -469,6 +472,22 @@ stScreenResult showUpdateClientInfoScreen(std::vector<stClient>& clients) {
 	return { MAIN_MENU_SCREEN, dataChanged };
 }
 
+stScreenResult showFindClientScreen(const std::vector<stClient>& clients) {
+	showScreenHeader("Find Client Screen");
+
+	std::string accountID = readString("Enter Account ID: ");
+	stSearchResult res = searchClientByAccountID(clients, accountID);
+	if (res.found && res.client.status == ACTIVE) {
+		printClientDetails(res.client);
+	}
+	else {
+		std::cout << "Client with account ID (" << accountID << ") was not Found!" << std::endl;
+	}
+	std::cout << "Type any key and hit enter to go back to Main Menu .." << std::endl;
+	std::string input = readString("");
+
+	return { MAIN_MENU_SCREEN, false };
+}
 
 void runApp() {
 
@@ -507,6 +526,9 @@ void runApp() {
 			currentScreen = res.nextScreen;
 			break;
 		}
+		case FIND_CLIENT_SCREEN:
+			currentScreen = showFindClientScreen(clients).nextScreen;
+			break;
 		default:  currentScreen = MAIN_MENU_SCREEN ;
 		}
 		
