@@ -100,6 +100,7 @@ enum enScreen {
 	CLIENTS_LIST_SCREEN = 2,
 	ADD_NEW_CLIENT_SCREEN = 3,
 	DELETE_CLIENT_SCREEN = 4,
+	UPDATE_CLIENT_INFO_SCREEN = 5,
 };
 
 enum enClientStatus {
@@ -204,6 +205,30 @@ bool deleteClientByAccountID(std::vector<stClient>& clients, const std::string& 
 	for (stClient& client : clients) {
 		if (client.accountID == accountID && client.status == ACTIVE) {
 			client.status = DELETED;
+			return true;
+		}
+	}
+	return false;
+}
+
+stClient readClientInfo(std::string accountID) {
+	stClient newClient{};
+	newClient.accountID = accountID;
+	newClient.pinCode = readString("PIN Code: ");
+	std::cout << std::endl;
+	newClient.fullName = readString("Full Name: ");
+	std::cout << std::endl;
+	newClient.phoneNumber = readString("Phone: ");
+	std::cout << std::endl;
+	std::cout << "Balance: ";
+	newClient.accountBalance = readValidInteger();
+	return newClient;
+}
+
+bool updateClientByAccountID(std::vector<stClient>& clients, const std::string& accountID) {
+	for (stClient& client : clients) {
+		if (client.accountID == accountID && client.status == ACTIVE) {
+			client = readClientInfo(accountID);
 			return true;
 		}
 	}
@@ -325,6 +350,8 @@ stScreenResult showMainMenuScreen() {
 			return { ADD_NEW_CLIENT_SCREEN, false };
 		case DELETE_CLIENT:
 			return { DELETE_CLIENT_SCREEN, false };
+		case UPDATE_CLIENT_INFO:
+			return { UPDATE_CLIENT_INFO_SCREEN, false };
 		case EXIT:
 			return { APP_EXIT, false };
 		default:
@@ -333,19 +360,6 @@ stScreenResult showMainMenuScreen() {
 
 }
 
-stClient readClientInfo(std::string accountID) {
-	stClient newClient{};
-	newClient.accountID = accountID;
-	newClient.pinCode = readString("PIN Code: ");
-	std::cout << std::endl;
-	newClient.fullName = readString("Full Name: ");
-	std::cout << std::endl;
-	newClient.phoneNumber = readString("Phone: ");
-	std::cout << std::endl;
-	std::cout << "Balance: ";
-	newClient.accountBalance = readValidInteger();
-	return newClient;
-}
 
 stScreenResult showAddNewClientScreen(std::vector<stClient>& clients) {
 	showScreenHeader("Add New Client Screen");
@@ -424,6 +438,37 @@ stScreenResult showDeleteClientScreen(std::vector<stClient>& clients) {
 	return { MAIN_MENU_SCREEN, dataChanged };
 }
 
+stScreenResult showUpdateClientInfoScreen(std::vector<stClient>& clients) {
+	showScreenHeader("Update Client Info Screen");
+
+	bool dataChanged = false;
+
+	std::string accountID = readString("Enter Account ID: ");
+	stSearchResult res = searchClientByAccountID(clients, accountID);
+	if (res.found && res.client.status == ACTIVE) {
+		printClientDetails(res.client);
+		std::string input = readString("Are You Sure To Update This Client ? y/n  ");
+		char choice = 'n';
+		if (!input.empty()) {
+			choice = input[0];
+		}
+		if (std::tolower(choice) == 'y') {
+			dataChanged = updateClientByAccountID(clients, accountID);
+			(dataChanged) ?
+				std::cout << "Client Updated Successfully." << std::endl
+				:
+				std::cout << "Failed To Update Client." << std::endl;
+		}
+	}
+	else {
+		std::cout << "Client with account ID (" << accountID << ") was not Found!" << std::endl;
+	}
+	std::cout << "Type any key and hit enter to go back to Main Menu .." << std::endl;
+	std::string input = readString("");
+
+	return { MAIN_MENU_SCREEN, dataChanged };
+}
+
 
 void runApp() {
 
@@ -450,6 +495,13 @@ void runApp() {
 		}
 		case DELETE_CLIENT_SCREEN: { 
 			stScreenResult res = showDeleteClientScreen(clients); //possibly mutation
+			if (res.dataChanged)
+				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+			currentScreen = res.nextScreen;
+			break;
+		}
+		case UPDATE_CLIENT_INFO_SCREEN: {
+			stScreenResult res = showUpdateClientInfoScreen(clients);
 			if (res.dataChanged)
 				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 			currentScreen = res.nextScreen;
