@@ -33,9 +33,9 @@ YearTimeBreakdown calculateYearTimeBreakdown(int year)
     YearTimeBreakdown breakdown{};
 
     breakdown.totalDays = totalDaysInYear(year);
-    breakdown.totalHours = totalHoursInYear(year);
-    breakdown.totalMinutes = totalMinutesInYear(year);
-    breakdown.totalSeconds = totalSecondsInYear(year);
+    breakdown.totalHours = breakdown.totalDays * 24;
+    breakdown.totalMinutes = breakdown.totalHours * 60;
+    breakdown.totalSeconds = breakdown.totalMinutes * 60;
 
     return breakdown;
 }

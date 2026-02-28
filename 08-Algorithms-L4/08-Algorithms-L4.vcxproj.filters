@@ -27,6 +27,9 @@
     <ClCompile Include="04-count-of-days-hours-minutes-seconds-in-year.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="05-total-days-hours-minutes-seconds-in-month.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">

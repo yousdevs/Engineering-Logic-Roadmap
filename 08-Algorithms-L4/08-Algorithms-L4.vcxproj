@@ -136,7 +136,10 @@
     <ClCompile Include="03-leap-year-one-line-code.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="04-count-of-days-hours-minutes-seconds-in-year.cpp" />
+    <ClCompile Include="04-count-of-days-hours-minutes-seconds-in-year.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="05-total-days-hours-minutes-seconds-in-month.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h" />
