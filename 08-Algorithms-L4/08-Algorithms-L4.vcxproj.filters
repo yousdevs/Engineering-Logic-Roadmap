@@ -30,6 +30,9 @@
     <ClCompile Include="05-total-days-hours-minutes-seconds-in-month.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="06-total-days-in-month-short-logic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">

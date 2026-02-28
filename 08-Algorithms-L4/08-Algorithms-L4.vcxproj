@@ -139,7 +139,10 @@
     <ClCompile Include="04-count-of-days-hours-minutes-seconds-in-year.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="05-total-days-hours-minutes-seconds-in-month.cpp" />
+    <ClCompile Include="05-total-days-hours-minutes-seconds-in-month.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="06-total-days-in-month-short-logic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h" />
