@@ -33,6 +33,9 @@
     <ClCompile Include="06-total-days-in-month-short-logic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="07-days-of-week-name.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
