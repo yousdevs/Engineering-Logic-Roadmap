@@ -24,6 +24,9 @@
     <ClCompile Include="03-leap-year-one-line-code.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="04-count-of-days-hours-minutes-seconds-in-year.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
