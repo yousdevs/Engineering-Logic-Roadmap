@@ -18,6 +18,9 @@
     <ClCompile Include="01-number-to-text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="02-leap-year.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
