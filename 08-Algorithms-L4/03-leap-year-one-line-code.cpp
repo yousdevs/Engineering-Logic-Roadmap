@@ -2,9 +2,7 @@
 #include "my-lib.h"
 
 bool isLeapYear(int year) {
-    if (year % 400 == 0) return true;
-    if (year % 100 != 0 && year % 4 == 0) return true;
-    return false;
+    return (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0));
 }
 
 int main()
@@ -15,4 +13,3 @@ int main()
         std::cout << "\n Yes, leap year"
         : std::cout << "\n No, not leap year";
 }
-

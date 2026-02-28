@@ -21,6 +21,9 @@
     <ClCompile Include="02-leap-year.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="03-leap-year-one-line-code.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
