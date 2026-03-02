@@ -48,6 +48,9 @@
     <ClCompile Include="11-date-from-day-order-in-year.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="12-add-days-to-date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
