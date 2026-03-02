@@ -160,7 +160,10 @@
     <ClCompile Include="11-date-from-day-order-in-year.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="12-add-days-to-date.cpp" />
+    <ClCompile Include="12-add-days-to-date.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="13-compare-dates.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h" />

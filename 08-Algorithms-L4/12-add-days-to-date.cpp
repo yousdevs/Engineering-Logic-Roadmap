@@ -49,10 +49,6 @@ short calculateTotalDaysFromBeginningOfYear(Date date) {
 }
 
 
-
-
-
-
 Date getDateFromDayOrderInYear(short dayOrder, short year) {
     Date date{};
     for (short month = 1; month <= 12; month++) {
