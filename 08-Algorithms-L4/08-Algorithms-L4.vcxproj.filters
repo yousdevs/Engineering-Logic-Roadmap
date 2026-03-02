@@ -66,6 +66,9 @@
     <ClCompile Include="17-diff-in-days.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="18-your-age-in-days.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
