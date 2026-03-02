@@ -36,6 +36,9 @@
     <ClCompile Include="07-days-of-week-name.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="08-month-calendar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
