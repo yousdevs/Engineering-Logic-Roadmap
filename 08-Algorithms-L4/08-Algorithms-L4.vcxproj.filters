@@ -57,6 +57,9 @@
     <ClCompile Include="14-date1-equals-date2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="15-last-day-last-month.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
