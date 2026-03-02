@@ -87,7 +87,7 @@ short totalDaysInMonth(int year, short month)
 }
 
 WeekDay calculateMonthEndWeekDay(short year, short month) {
-   
+
     return calculateWeekDay(year, month, totalDaysInMonth(year, month));
 }
 
@@ -103,9 +103,9 @@ CalendarInfo getCalendarInfo(short year, short month) {
 void printCalendar(short year, short month) {
     CalendarInfo info = getCalendarInfo(year, month);
 
-    std::cout << std::setw(10) << ""
+    std::cout << std::setw(2) << std::string(12, '_')
         << getMonthName(info.month)
-        << " " << year << std::endl;
+        << " " << year << std::string(12, '_') << std::endl;
 
     for (short i = 0; i < 7; i++) {
         std::cout << std::setw(5)
@@ -132,9 +132,16 @@ void printCalendar(short year, short month) {
     std::cout << std::endl;
 }
 
+void printYearCalendar(short year) {
+    for (short i = 1; i <= 12; i++) {
+        printCalendar(year, i);
+        std::cout << std::endl;
+    }
+}
+
 int main()
 {
     int year = mylib::readValidInteger("Please enter a year (e.g., 2000): ");
-    int month = mylib::readValidInteger("Please enter a month (e.g., 2): ");
-    printCalendar(year, month);
+    //int month = mylib::readValidInteger("Please enter a month (e.g., 2): ");
+    printYearCalendar(year);
 }
