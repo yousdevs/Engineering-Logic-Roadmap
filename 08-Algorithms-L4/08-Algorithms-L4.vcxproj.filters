@@ -42,6 +42,9 @@
     <ClCompile Include="09-year-calendar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="10-days-from-beginning-of-year.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
