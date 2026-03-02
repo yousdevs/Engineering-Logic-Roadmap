@@ -56,7 +56,7 @@ bool isLastDayOfYear(Date date) {
 }
 
 bool isLastMonthOfYear(Date date) {
-    return (date.year == 12);
+    return (date.month == 12);
 }
 
 void printBreakdown(short year, short month, short day) {
