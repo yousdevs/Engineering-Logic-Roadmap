@@ -63,6 +63,9 @@
     <ClCompile Include="16-increase-date-by-one-day.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="17-diff-in-days.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
