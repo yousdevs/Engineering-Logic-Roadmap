@@ -90,6 +90,9 @@
     <ClCompile Include="56-is-date1-after-date2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="57-compare-date-function.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
