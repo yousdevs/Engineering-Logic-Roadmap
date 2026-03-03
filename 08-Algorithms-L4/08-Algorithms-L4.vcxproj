@@ -187,7 +187,10 @@
     <ClCompile Include="20-32-increase-date-problems.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="33-46-decrease-date-problems.cpp" />
+    <ClCompile Include="33-46-decrease-date-problems.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="47-53-more-date-problems.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h" />
