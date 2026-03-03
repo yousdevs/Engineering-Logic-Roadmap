@@ -84,6 +84,9 @@
     <ClCompile Include="54-calculate-vacation-days.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="55-calculate-vacation-return-date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
