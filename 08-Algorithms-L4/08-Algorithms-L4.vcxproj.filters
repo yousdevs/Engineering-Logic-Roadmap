@@ -105,6 +105,12 @@
     <ClCompile Include="61-count-overlap-days.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="62-validate-date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="63-64-read-print-date-string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
