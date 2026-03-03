@@ -99,6 +99,9 @@
     <ClCompile Include="59-period-length-in-days.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="60-is-date-within-period.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
