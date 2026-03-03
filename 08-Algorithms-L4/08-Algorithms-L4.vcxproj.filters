@@ -72,6 +72,9 @@
     <ClCompile Include="19-diff-in-negative-days.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="20-32-increase-date-problems.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
