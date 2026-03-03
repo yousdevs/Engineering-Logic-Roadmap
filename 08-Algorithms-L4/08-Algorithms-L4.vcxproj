@@ -220,7 +220,10 @@
     <ClCompile Include="62-validate-date.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="63-64-read-print-date-string.cpp" />
+    <ClCompile Include="63-64-read-print-date-string.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="65-format-date.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h" />

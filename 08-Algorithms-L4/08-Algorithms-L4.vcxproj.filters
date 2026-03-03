@@ -111,6 +111,9 @@
     <ClCompile Include="63-64-read-print-date-string.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="65-format-date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
