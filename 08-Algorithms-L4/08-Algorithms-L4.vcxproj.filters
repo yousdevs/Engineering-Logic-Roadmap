@@ -93,6 +93,9 @@
     <ClCompile Include="57-compare-date-function.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="58-is-overlap-periods.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h">
