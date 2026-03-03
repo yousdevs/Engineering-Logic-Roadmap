@@ -211,7 +211,10 @@
     <ClCompile Include="59-period-length-in-days.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="60-is-date-within-period.cpp" />
+    <ClCompile Include="60-is-date-within-period.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="61-count-overlap-days.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="my-lib.h" />
