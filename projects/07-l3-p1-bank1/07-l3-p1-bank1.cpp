@@ -139,6 +139,11 @@ enum enScreen {
 	TOTAL_BALANCES_SCREEN = 10,
 	LOGIN_SCREEN = 11,
 	MANAGE_USERS_MENU_SCREEN = 12,
+	LIST_USERS_SCREEN = 13,
+	ADD_NEW_USER_SCREEN = 14,
+	DELETE_USER_SCREEN = 15,
+	UPDATE_USER_SCREEN = 16,
+	FIND_USER_SCREEN = 17,
 };
 
 enum enClientStatus {
@@ -190,6 +195,11 @@ struct stScreenResult {
 
 struct stSearchResult {
 	stClient* client = nullptr;
+	bool found = false;
+};
+
+struct stUsersSearchResult {
+	stUser* user = nullptr;
 	bool found = false;
 };
 
@@ -858,22 +868,277 @@ stScreenResult showManageUsersScreen() {
 	int option = readIntegerInRange(enManageUsersMenuOptions::_FIRST_OPTION_MANAGE_USERS, enManageUsersMenuOptions::_LAST_OPTION_MANAGE_USERS);
 	switch (option) {
 	case LIST_USERS:
-		return {};
+		return {LIST_USERS_SCREEN, false};
 	case ADD_NEW_USER:
-		return {};
+		return {ADD_NEW_USER_SCREEN, false};
 	case DELETE_USER:
-		return {};
+		return {DELETE_USER_SCREEN, false};
 	case UPDATE_USER:
-		return {};
+		return {UPDATE_USER_SCREEN, false};
 	case FIND_USER:
-		return {};
+		return {FIND_USER_SCREEN, false};
 	case enManageUsersMenuOptions::MAIN_MENU_MANAGE_USERS_OPTION:
 		return { MAIN_MENU_SCREEN, false };
 
 	default:
 		return { MAIN_MENU_SCREEN, false };
 	}
+}
+
+int countActiveUsers(const std::vector<stUser>& users) {
+	int counter = 0;
+	for (const stUser& u : users) {
+		if (u.status == enUserStatus::Active) counter++;
+	}
+	return counter;
+}
+
+struct stTableCol {
+	std::string header;
+	int width;
+	bool alignLeft;
+};
+
+void printGenericTable(std::string title, std::vector<stTableCol> cols, std::vector<std::vector<std::string>> rows) {
+	int totalWidth = 1;
+	for (stTableCol& col : cols) totalWidth += col.width + 1;
+
+	std::cout << "\n" << std::setw(totalWidth / 2 + title.length() / 2) << title << std::endl;
+	std::cout << createLine(totalWidth) << std::endl;
+
+	std::cout << "|";
+	for (stTableCol& col : cols) {
+		if (col.alignLeft) std::cout << std::left << std::setw(col.width) << col.header << "|";
+		else std::cout << std::right << std::setw(col.width) << col.header << "|";
+	}
+	std::cout << std::endl << createLine(totalWidth) << std::endl;
+
+	for (const std::vector<std::string>& row : rows) {
+		std::cout << "|";
+		for (size_t i = 0; i < cols.size(); i++) {
+			if (cols[i].alignLeft) std::cout << std::left << std::setw(cols[i].width) << row[i] << "|";
+			else std::cout << std::right << std::setw(cols[i].width) << row[i] << "|";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << createLine(totalWidth) << std::endl;
+}
+
+
+stScreenResult showListUsersScreen(const std::vector<stUser>& users, const stUser& currentUser) {
+
+	std::string header = "Users List (" + std::to_string(countActiveUsers(users)) + ") User(s).\n";
+
+	std::vector<stTableCol> columns = {
+		{"UserName", 10, true},           // Left aligned
+		{"Password", 25, true},			// Left aligned
+		{"Permissions", 12, false},      // Right aligned
+	};
+	std::vector<std::vector<std::string>> data{}; 
+
+	for (const stUser& u : users) {
+			if (u.status == enUserStatus::Active) {
+				if (u.permissions == enPermission::PER_FULL_ACCESS && currentUser.permissions != enPermission::PER_FULL_ACCESS) {
+					data.push_back({ u.username, "*****", "*****"});
+				}
+				else {
+					data.push_back({ u.username, u.password, std::to_string(u.permissions) });
+				}
+				
+			}
+		}
+	printGenericTable(header, columns, data);
+
+	confirmYesNoChoice("press any key and hit enter to go back..");
+
+	return { MANAGE_USERS_MENU_SCREEN , false };
+}
+
+stUsersSearchResult searchUsersByUsername(std::vector<stUser>& users, const std::string& username) {
+
+	for (stUser& u : users) {
+		if (u.username == username) {
+			return { &u, true };
+		}
+	}
+	return { nullptr, false };
+}
+
+bool isUsernameTaken(std::vector<stUser>& users, const std::string& username) {
+	return searchUsersByUsername(users, username).found;
+}
+
+std::string promptForUniqueUsername(std::vector<stUser>& users) {
+	std::string username;
+	do {
+		username = readString("Username: ");
+		if (isUsernameTaken(users, username)) {
+			std::cout << "User with username [" << username << "] already exists." << std::endl;
+		}
+		else break;
+	} while (true);
+	return username;
+}
+
+stUser readUserInfo(std::string username) {
+	stUser newUser{};
+	newUser.username = username;
+	newUser.password = readString("Password: ");
+	std::cout << std::endl;
+	//TODO ASk for permissions
+	return newUser;
+}
+
+stScreenResult showAddNewUserScreen(std::vector<stUser>& users) {
+	showScreenHeader("Add New User Screen");
+
+	bool dataChanged = false;
+	bool continueAdding = true;
+
+	while (continueAdding) {
+		continueAdding = false;
+		std::string username = promptForUniqueUsername(users);
+		stUser newUser = readUserInfo(username);
+
+		users.push_back(newUser);
+		dataChanged = true;
+
+		continueAdding = confirmYesNoChoice("User added. Add another? (y/n): ");
+	}
+
+	return { MANAGE_USERS_MENU_SCREEN, dataChanged };
+}
+
+void printUserDetails(const stUser& user) {
+	std::cout << "\nUser Details\n";
+	std::cout << createLine() << "\n";
+
+	std::cout << std::left << std::setw(15) << "Username:"
+		<< std::right << user.username << "\n";
+
+	std::cout << std::left << std::setw(15) << "Password:"
+		<< std::right << user.password << "\n";
+
+	std::cout << std::left << std::setw(15) << "Permissions:"
+		<< std::right << std::to_string(user.permissions) << "\n";
+
+	std::cout << createLine() << "\n";
+
+	// reset formatting
+	std::cout << std::endl;
+}
+
+bool deleteUserByUsername(std::vector<stUser> &users, const std::string &username, const stUser &currentUser){
 	
+	for (stUser& u : users) {
+		if (u.username == username && u.status == enUserStatus::Active) {
+			if (currentUser.permissions != enPermission::PER_FULL_ACCESS && u.permissions == enPermission::PER_FULL_ACCESS) {
+				std::cout << "You cannot Delete this user" << std::endl;
+				return false;
+			}
+			u.status = enUserStatus::Deleted;
+			return true;
+		}
+	}
+	return false;
+}
+
+stScreenResult showDeleteUserScreen(std::vector<stUser>& users, const stUser & currentUser) {
+	
+	showScreenHeader("Delete User Screen");
+
+	bool dataChanged = false;
+
+	std::string username = readString("Enter usename: ");
+	stUsersSearchResult res = searchUsersByUsername(users, username);
+	if (res.found && res.user->status == enUserStatus::Active) {
+
+		if (currentUser.permissions == enPermission::PER_FULL_ACCESS) {
+			printUserDetails(*res.user);
+		}
+		
+		if (confirmYesNoChoice("Are You Sure To Delete This User? y/n  ")) {
+			dataChanged = deleteUserByUsername(users, username, currentUser);
+			(dataChanged) ?
+				std::cout << "User Deleted Successfully." << std::endl
+				:
+				std::cout << "Failed To Delete User." << std::endl;
+		}
+	}
+	else {
+		std::cout << "User with username (" << username << ") was not Found!" << std::endl;
+	}
+	
+	confirmYesNoChoice("Type any key and hit enter to go back to Main Menu ..");
+
+	return { MANAGE_USERS_MENU_SCREEN, dataChanged };
+}
+
+
+bool updateUserByUsername(std::vector<stUser>& users, const std::string& username, const stUser& currentUser) {
+	for (stUser& u : users) {
+		if (u.username == username && u.status == enUserStatus::Active) {
+			if (u.permissions == enPermission::PER_FULL_ACCESS && currentUser.permissions != enPermission::PER_FULL_ACCESS) {
+				std::cout << "You Cannot Update This User Info" << std::endl;
+				return false;
+			}
+			u = readUserInfo(username);
+			return true;
+		}
+	}
+	return false;
+}
+
+stScreenResult showUpdateUserScreen(std::vector<stUser>& users, const stUser& currentUser) {
+
+	showScreenHeader("Update User Info Screen");
+
+	bool dataChanged = false;
+
+	std::string username = readString("username: ");
+	stUsersSearchResult res = searchUsersByUsername(users, username);
+	if (res.found && res.user->status == enUserStatus::Active) {
+		if (currentUser.permissions == enPermission::PER_FULL_ACCESS) {
+			printUserDetails(*res.user);
+		}
+
+		if (confirmYesNoChoice("Are You Sure To Update This User ? y/n  ")) {
+			dataChanged = updateUserByUsername(users, username, currentUser);
+			(dataChanged) ?
+				std::cout << "User Updated Successfully." << std::endl
+				:
+				std::cout << "Failed To Update User." << std::endl;
+		}
+	}
+	else {
+		std::cout << "User with username (" << username << ") was not Found!" << std::endl;
+	}
+	
+	confirmYesNoChoice("Type any key and hit enter to go back..  ");
+
+	return { MANAGE_USERS_MENU_SCREEN, dataChanged };
+}
+
+stScreenResult showFindUserScreen(std::vector<stUser>& users, const stUser& currentUser ) {
+	showScreenHeader("Find User Screen");
+
+	std::string username = readString("Enter Username: ");
+	stUsersSearchResult res = searchUsersByUsername(users, username);
+	if (res.found && res.user->status == enUserStatus::Active) {
+		if (res.user->permissions == enPermission::PER_FULL_ACCESS && currentUser.permissions != enPermission::PER_FULL_ACCESS) {
+			std::cout << "You Don't Have Permissions To View This User Information" << std::endl;
+		}
+		else {
+			printUserDetails(*res.user);
+		}
+	}
+	else {
+		std::cout << "User with username (" << username << ") was not Found!" << std::endl;
+	}
+	
+	confirmYesNoChoice("Type any key and hit enter to go back..");
+
+	return { MANAGE_USERS_MENU_SCREEN, false };
 }
 
 void runMainNavigationLoop(stAppContext &ctx) {
@@ -882,12 +1147,15 @@ void runMainNavigationLoop(stAppContext &ctx) {
 
 	while (true) {
 		switch (currentScreen) {
+
 		case LOGIN_SCREEN:
 			ctx.currentUser = nullptr; //logout
 			return;
+
 		case MAIN_MENU_SCREEN:
 			currentScreen = showMainMenuScreen().nextScreen;
 			break;
+
 		case CLIENTS_LIST_SCREEN:
 			if (hasPermission(*ctx.currentUser, PER_SHOW_CLIENT_LIST)) {
 				currentScreen = showClientsScreen(ctx.clients).nextScreen;
@@ -911,6 +1179,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 				break;
 			}
 		}
+
 		case DELETE_CLIENT_SCREEN: {
 			if (hasPermission(*ctx.currentUser, PER_DELETE_CLIENT)) {
 				stScreenResult res = showDeleteClientScreen(ctx.clients); //possibly mutation
@@ -924,6 +1193,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 				break;
 			}
 		}
+
 		case UPDATE_CLIENT_INFO_SCREEN: {
 			if (hasPermission(*ctx.currentUser, PER_UPDATE_CLIENT_INFO)) {
 				stScreenResult res = showUpdateClientInfoScreen(ctx.clients);
@@ -937,6 +1207,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 				break;
 			}
 		}
+
 		case FIND_CLIENT_SCREEN:
 			if (hasPermission(*ctx.currentUser, PER_FIND_CLIENT)) {
 				currentScreen = showFindClientScreen(ctx.clients).nextScreen;
@@ -946,6 +1217,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 				currentScreen = showAccessDeniedScreen().nextScreen;
 				break;
 			}
+
 		case TRANSACTIONS_MENU_SCREEN: {
 			if (hasPermission(*ctx.currentUser, PER_TRANSACTIONS)) {
 				stScreenResult res = showTransactionsMenuScreen();
@@ -959,6 +1231,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 				break;
 			}
 		}
+
 		case DEPOSIT_SCREEN: {
 			stScreenResult res = showDepoistScreen(ctx.clients);
 			if (res.dataChanged)
@@ -966,6 +1239,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 			currentScreen = res.nextScreen;
 			break;
 		}
+
 		case WITHDRAW_SCREEN: {
 			stScreenResult res = showWithdrawScreen(ctx.clients);
 			if (res.dataChanged)
@@ -973,6 +1247,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 			currentScreen = res.nextScreen;
 			break;
 		}
+
 		case TOTAL_BALANCES_SCREEN: {
 			stScreenResult res = showTotalBalancesScreen(ctx.clients);
 			if (res.dataChanged)
@@ -980,8 +1255,38 @@ void runMainNavigationLoop(stAppContext &ctx) {
 			currentScreen = res.nextScreen;
 			break;
 		}
+
 		case MANAGE_USERS_MENU_SCREEN:
 			currentScreen = showManageUsersScreen().nextScreen;
+			break;
+
+		case LIST_USERS_SCREEN:
+			currentScreen = showListUsersScreen(ctx.users, *ctx.currentUser).nextScreen;
+			break;
+
+		case ADD_NEW_USER_SCREEN: {
+			stScreenResult res = showAddNewUserScreen(ctx.users);
+			//TODO persistUsers
+			currentScreen = res.nextScreen;
+			break;
+		}
+
+		case DELETE_USER_SCREEN: {
+			stScreenResult res = showDeleteUserScreen(ctx.users, *ctx.currentUser);
+			//TODO persist users
+			currentScreen = res.nextScreen;
+			break;
+		}
+
+		case UPDATE_USER_SCREEN: {
+			stScreenResult res = showUpdateUserScreen(ctx.users, *ctx.currentUser);
+			//persist
+			currentScreen = res.nextScreen;
+			break;
+		}
+		
+		case FIND_USER_SCREEN:
+			currentScreen = showFindUserScreen(ctx.users, *ctx.currentUser).nextScreen;
 			break;
 		
 		default:  currentScreen = MAIN_MENU_SCREEN;
@@ -1003,6 +1308,9 @@ void runApp(stAppContext& ctx) {
 	}
 }
 
+
+
+
 int main()
 {
 	stAppContext ctx{};
@@ -1012,7 +1320,7 @@ int main()
 
 	ctx.clients = loadClients(ctx.clientsFilePath, ctx.delim);
 	ctx.users = loadUsers(ctx.usersFilePath, ctx.delim);
-	
+
 	//ctx.users.push_back({"1", "1"});
 	//loginScreen(ctx);
 	runApp(ctx);
