@@ -123,11 +123,16 @@ enum enClientStatus {
 	DELETED = 2,
 };
 
+enum enUserStatus {
+	Active = 1,
+	Deleted = 2,
+};
 
 struct stUser {
 	std::string username = "";
 	std::string password = "";
 	//Permissions
+	enUserStatus status = enUserStatus::Active;
 };
 
 struct stClient {
@@ -170,9 +175,63 @@ struct stTransaction { //TODO: enum type
 	bool success = false;
 	std::string reason = "";
 };
+//
 
+std::string serializeUser(const stUser& user, const std::string& delim) {
+	return user.username + delim + user.password + delim;//TODO Permissions
+}
 
+stUser deserializeUser(const std::string& line, const std::string& delim) {
+	stUser user{};
+	std::vector<std::string> splitted = split(line, delim);
+	if ((splitted.size() == 2)) {
+		user.username = splitted[0];
+		user.password = splitted[1];
+		//TODO Permissions
+	}
 
+	return user;
+}
+
+void persistUsers(const std::vector<stUser>& users, const std::string& filePath, const std::string& delim) {
+	std::fstream file;
+	file.open(filePath, std::ios::out);
+	if (file.is_open()) {
+		for (stUser u : users) {
+			if (u.status == enUserStatus::Active) {
+				std::string line = serializeUser(u, delim);
+				file << line << std::endl;
+			}
+		}
+		file.close();
+	}
+	else {
+		std::cout << "\nCan't open file with path " << filePath << std::endl;
+	}
+}
+
+std::vector<stUser> loadUsers(std::string filePath, std::string delim) {
+	std::vector<stUser> users{};
+	std::fstream file;
+	file.open(filePath, std::ios::in);
+	if (file.is_open()) {
+		std::string line = "";
+		while (std::getline(file, line)) {
+			if (line.empty()) continue;
+
+			stUser user = deserializeUser(line, delim);
+			if (!user.username.empty())   // avoid pushing invalid users
+				users.push_back(user);
+		}
+		file.close();
+	}
+	else {
+		std::cout << "\nCan't open file with path " << filePath << std::endl;
+	}
+	return users;
+}
+
+//
 std::string serializeClient(const stClient &client, const std::string &delim) {
 	return client.accountID + delim + client.pinCode + delim +
 		client.fullName + delim + client.phoneNumber + delim +
@@ -723,12 +782,13 @@ stScreenResult showTotalBalancesScreen(std::vector<stClient>& clients) {
 	return { TRANSACTIONS_MENU_SCREEN , false };
 }
 
-void runApp() {
+void runApp(stAppContext ctx) {
 
-	const std::string PERSISTENCE_FILE_PATH = "clients.txt";
-	const std::string RECORDS_DELIM = "#//#";
-	std::vector<stClient> clients{};
-	clients = loadClients(PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+
+	//const std::string PERSISTENCE_FILE_PATH = "clients.txt";
+	//const std::string RECORDS_DELIM = "#//#";
+	//std::vector<stClient> clients{};
+	//clients = loadClients(PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 	enScreen currentScreen = MAIN_MENU_SCREEN;
 
 	while (currentScreen != enScreen::APP_EXIT) {
@@ -737,57 +797,57 @@ void runApp() {
 			currentScreen = showMainMenuScreen().nextScreen;
 			break;
 		case CLIENTS_LIST_SCREEN:
-			currentScreen = showClientsScreen(clients).nextScreen;
+			currentScreen = showClientsScreen(ctx.clients).nextScreen;
 			break;
 		case ADD_NEW_CLIENT_SCREEN: {
-			stScreenResult res = showAddNewClientScreen(clients); //mutation Vector → search → pointer → mutate → persist
+			stScreenResult res = showAddNewClientScreen(ctx.clients); //mutation Vector → search → pointer → mutate → persist
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 		case DELETE_CLIENT_SCREEN: { 
-			stScreenResult res = showDeleteClientScreen(clients); //possibly mutation
+			stScreenResult res = showDeleteClientScreen(ctx.clients); //possibly mutation
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 		case UPDATE_CLIENT_INFO_SCREEN: {
-			stScreenResult res = showUpdateClientInfoScreen(clients);
+			stScreenResult res = showUpdateClientInfoScreen(ctx.clients);
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 		case FIND_CLIENT_SCREEN:
-			currentScreen = showFindClientScreen(clients).nextScreen;
+			currentScreen = showFindClientScreen(ctx.clients).nextScreen;
 			break;
 		case TRANSACTIONS_MENU_SCREEN: {
 			stScreenResult res = showTransactionsMenuScreen();
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 		case DEPOSIT_SCREEN: {
-			stScreenResult res = showDepoistScreen(clients);
+			stScreenResult res = showDepoistScreen(ctx.clients);
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 		case WITHDRAW_SCREEN: {
-			stScreenResult res = showWithdrawScreen(clients);
+			stScreenResult res = showWithdrawScreen(ctx.clients);
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 		case TOTAL_BALANCES_SCREEN: {
-			stScreenResult res = showTotalBalancesScreen(clients);
+			stScreenResult res = showTotalBalancesScreen(ctx.clients);
 			if (res.dataChanged)
-				persistClients(clients, PERSISTENCE_FILE_PATH, RECORDS_DELIM);
+				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
@@ -800,9 +860,16 @@ void runApp() {
 
 int main()
 {
+	stAppContext ctx{};
+	ctx.clientsFilePath = "clients.txt";
+	ctx.usersFilePath = "users.txt";
+	ctx.delim = "#//#";
+
+	ctx.clients = loadClients(ctx.clientsFilePath, ctx.delim);
+	ctx.users = loadUsers(ctx.usersFilePath, ctx.delim);
 	
 	
-	runApp();
+	runApp(ctx);
 
 
 	return 0;  
