@@ -124,6 +124,12 @@ enum enClientStatus {
 };
 
 
+struct stUser {
+	std::string username = "";
+	std::string password = "";
+	//Permissions
+};
+
 struct stClient {
 	std::string accountID = "";
 	std::string pinCode = "";
@@ -132,6 +138,17 @@ struct stClient {
 	double accountBalance = 0.0;
 	enClientStatus status = ACTIVE;
 };
+
+struct stAppContext {
+	std::vector<stUser> users{};
+	std::vector<stClient> clients{};
+	stUser* currentUser = nullptr;
+	
+	std::string clientsFilePath = "";
+	std::string usersFilePath = "";
+	std::string delim = "";
+};
+
 
 struct stMenuItem {
 	short ID;
@@ -153,6 +170,8 @@ struct stTransaction { //TODO: enum type
 	bool success = false;
 	std::string reason = "";
 };
+
+
 
 std::string serializeClient(const stClient &client, const std::string &delim) {
 	return client.accountID + delim + client.pinCode + delim +
