@@ -782,13 +782,24 @@ stScreenResult showTotalBalancesScreen(std::vector<stClient>& clients) {
 	return { TRANSACTIONS_MENU_SCREEN , false };
 }
 
+
+void loginScreen(stAppContext& ctx) {
+	showScreenHeader("Login Screen");
+	std::string username = readString("Username: ");
+	std::string password = readString("Password: ");
+	
+	for (stUser& u : ctx.users) {
+		if (u.username == username && u.password == password) {
+			ctx.currentUser = &u;
+			std::cout << "Login Successful!" << std::endl;
+			return;
+		}
+	}
+	std::cout << "Invalid Credentials." << std::endl;
+}
+
 void runApp(stAppContext ctx) {
 
-
-	//const std::string PERSISTENCE_FILE_PATH = "clients.txt";
-	//const std::string RECORDS_DELIM = "#//#";
-	//std::vector<stClient> clients{};
-	//clients = loadClients(PERSISTENCE_FILE_PATH, RECORDS_DELIM);
 	enScreen currentScreen = MAIN_MENU_SCREEN;
 
 	while (currentScreen != enScreen::APP_EXIT) {
@@ -868,8 +879,9 @@ int main()
 	ctx.clients = loadClients(ctx.clientsFilePath, ctx.delim);
 	ctx.users = loadUsers(ctx.usersFilePath, ctx.delim);
 	
-	
-	runApp(ctx);
+	ctx.users.push_back({"1", "1"});
+	loginScreen(ctx);
+	//runApp(ctx);
 
 
 	return 0;  
