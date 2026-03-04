@@ -1307,21 +1307,24 @@ void runMainNavigationLoop(stAppContext &ctx) {
 
 		case ADD_NEW_USER_SCREEN: {
 			stScreenResult res = showAddNewUserScreen(ctx.users, *ctx.currentUser);
-			//TODO persistUsers
+			if (res.dataChanged)
+				persistUsers(ctx.users, ctx.usersFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 
 		case DELETE_USER_SCREEN: {
 			stScreenResult res = showDeleteUserScreen(ctx.users, *ctx.currentUser);
-			//TODO persist users
+			if (res.dataChanged)
+				persistUsers(ctx.users, ctx.usersFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
 
 		case UPDATE_USER_SCREEN: {
 			stScreenResult res = showUpdateUserScreen(ctx.users, *ctx.currentUser);
-			//persist
+			if (res.dataChanged)
+				persistUsers(ctx.users, ctx.usersFilePath, ctx.delim);
 			currentScreen = res.nextScreen;
 			break;
 		}
