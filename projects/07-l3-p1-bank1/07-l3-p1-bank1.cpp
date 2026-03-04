@@ -1291,8 +1291,15 @@ void runMainNavigationLoop(stAppContext &ctx) {
 		}
 
 		case MANAGE_USERS_MENU_SCREEN:
-			currentScreen = showManageUsersScreen().nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, enPermission::PER_MANAGE_USERS)) {
+				currentScreen = showManageUsersScreen().nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
+			
 
 		case LIST_USERS_SCREEN:
 			currentScreen = showListUsersScreen(ctx.users, *ctx.currentUser).nextScreen;
