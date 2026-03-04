@@ -16,6 +16,9 @@ The goal of this project was to build a CRUD application from scratch without re
 * **Transaction Management:** Support for deposits, withdrawals, and calculating total bank balances.
 * **Transaction Validation:** Logic to prevent negative deposits or withdrawals that exceed the current balance.
 * **Direct Memory Updates:** Uses pointer-based search results to modify client data directly in memory before persisting to disk.
+* **Authentication System:** Integrated login/logout flow with session persistence via a currentUser pointer.
+* **User Management:** Full CRUD support for system users, including credentials and permission settings.
+* **Role-Based Access:** Granular authorization using bitmasking to restrict access to specific screens.
 
 ## Core Mechanics
 
@@ -26,11 +29,12 @@ The goal of this project was to build a CRUD application from scratch without re
 * **Pointer-Based Mutation:** The search logic was refactored to return a memory address (`stClient*`). This allows transaction screens (Deposit/Withdraw) to modify the client's balance directly in the central vector without redundant searches or passing large objects by value.
 * **Transactional Logic:** Implemented validation layers within the `deposit` and `withdraw` functions. These return a `stTransaction` result that captures success status and failure reasons (e.g., insufficient funds), which the UI then uses to provide specific feedback.
 * **Nested State Navigation:** The state machine now handles sub-menus (Transactions Menu). The `runApp()` loop remains the single point of control, ensuring that even with nested menus, the application never creates deep recursive calls.
+* **Bitmask Authorization:** Replaced boolean flags with a bitwise permission system. Uses Bitwise AND (&) for gatekeeping and OR (|) for assignment, allowing multiple permissions to be stored in a single integer.
+* **Context-Driven State:** Introduced stAppContext to bundle clients, users, and session data. This allows for dependency injection across the application, removing the need for global variables.
+* **Dual-Loop Flow:** The runApp function now manages two distinct lifecycles: a top-level Authentication loop and a nested Navigation loop, ensuring the UI state is reset on logout.
 
 ## Data Structures
-
-The main entity is the `stClient` struct:
-
+The application manages two primary entities and a central application context to handle state:
 ```cpp
 struct stClient {
     std::string accountID;
@@ -39,6 +43,29 @@ struct stClient {
     std::string phoneNumber;
     double accountBalance;
     enClientStatus status;
+};
+
+enum enPermission {
+    ALL = -1,
+    LIST_CLIENTS = 1 << 0,
+    ADD_CLIENT = 1 << 1,
+    // ... other flags
+};
+
+struct stUser {
+    std::string username;
+    std::string password;
+    int permissions;
+    enUserStatus status;
+};
+
+struct stAppContext {
+    std::vector<stClient>& clients;
+    std::vector<stUser>& users;
+    stUser* currentUser;
+    std::string clientsFilePath;
+    std::string usersFilePath;
+    std::string delim;
 };
 
 ```
@@ -60,7 +87,14 @@ g++ -std=c++11 main.cpp -o bank_system
 ./bank_system
 
 ```
+4. Initial Login: Use the default administrative credentials to access the system:
+
+```
+Username: admin
+
+Password: 1234
+```
 
 
 
-**Note:** The application will generate a `clients.txt` file in the same directory upon first writing data. Ensure the directory has proper write permissions.
+**Note:** The application will generate a `clients.txt` and `users.txt` files in the same directory upon first writing data. Ensure the directory has proper write permissions.
