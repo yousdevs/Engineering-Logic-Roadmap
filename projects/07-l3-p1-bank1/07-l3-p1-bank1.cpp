@@ -82,6 +82,15 @@ std::vector <std::string> split(std::string str, std::string delim = " ") {
 }
 
 
+enum enPermission {
+	PER_SHOW_CLIENT_LIST	=	1 << 0,
+	PER_ADD_NEW_CLIENT		=	1 << 1,
+	PER_DELETE_CLIENT		=	1 << 2,
+	PER_UPDATE_CLIENT_INFO	=	1 << 3,
+	PER_FIND_CLIENT			=	1 << 4,
+	PER_TRANSACTIONS		=	1 << 5,
+	//TODO manage users
+};
 
 enum enMainMenuOptions {
 	SHOW_CLIENT_LIST = 1,
@@ -176,6 +185,8 @@ struct stTransaction { //TODO: enum type
 	std::string reason = "";
 };
 //
+
+
 
 std::string serializeUser(const stUser& user, const std::string& delim) {
 	return user.username + delim + user.password + delim;//TODO Permissions
