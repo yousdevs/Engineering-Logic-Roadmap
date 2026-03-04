@@ -90,9 +90,9 @@ enum enMainMenuOptions {
 	UPDATE_CLIENT_INFO = 4,
 	FIND_CLIENT = 5,
 	TRANSACTIONS = 6,
-	EXIT = 7,
+	LOGOUT = 7,
 	_FIRST_OPTION = SHOW_CLIENT_LIST,
-	_LAST_OPTION = EXIT,
+	_LAST_OPTION = LOGOUT,
 };
 
 enum enTransactionsMenuOptions {
@@ -105,7 +105,6 @@ enum enTransactionsMenuOptions {
 };
 
 enum enScreen {
-	APP_EXIT = 0,
 	MAIN_MENU_SCREEN = 1,
 	CLIENTS_LIST_SCREEN = 2,
 	ADD_NEW_CLIENT_SCREEN = 3,
@@ -116,6 +115,7 @@ enum enScreen {
 	DEPOSIT_SCREEN = 8,
 	WITHDRAW_SCREEN = 9,
 	TOTAL_BALANCES_SCREEN = 10,
+	LOGIN_SCREEN = 11,
 };
 
 enum enClientStatus {
@@ -161,7 +161,7 @@ struct stMenuItem {
 };
 
 struct stScreenResult {
-	enScreen nextScreen = APP_EXIT;
+	enScreen nextScreen = MAIN_MENU_SCREEN;
 	bool dataChanged = false;
 };
 
@@ -439,7 +439,7 @@ stScreenResult showMainMenuScreen() {
 		{ UPDATE_CLIENT_INFO, "Update Client Info"},
 		{ FIND_CLIENT, "Find Client"},
 		{ TRANSACTIONS, "Transactions"},
-		{ EXIT, "Exit"},
+		{ LOGOUT, "Logout"},
 	};
 	showMenu(mainMenu, "Main Menu Screen");
 
@@ -457,10 +457,10 @@ stScreenResult showMainMenuScreen() {
 			return { FIND_CLIENT_SCREEN, false };
 		case TRANSACTIONS:
 			return { TRANSACTIONS_MENU_SCREEN, false };
-		case EXIT:
-			return { APP_EXIT, false };
+		case LOGOUT:
+			return { LOGIN_SCREEN, false };
 		default:
-			return { APP_EXIT, false };
+			return { LOGIN_SCREEN, false };
 	}
 
 }
@@ -612,7 +612,7 @@ stScreenResult showTransactionsMenuScreen() {
 		return { MAIN_MENU_SCREEN, false };
 
 	default:
-		return { APP_EXIT, false };
+		return { MAIN_MENU_SCREEN, false };
 	}
 }
 
@@ -798,12 +798,15 @@ void loginScreen(stAppContext& ctx) {
 	std::cout << "Invalid Credentials." << std::endl;
 }
 
-void runMainNavigationLoop(stAppContext ctx) {
+void runMainNavigationLoop(stAppContext &ctx) {
 
 	enScreen currentScreen = MAIN_MENU_SCREEN;
 
-	while (currentScreen != enScreen::APP_EXIT) {
+	while (true) {
 		switch (currentScreen) {
+		case LOGIN_SCREEN:
+			ctx.currentUser = nullptr;
+			return;
 		case MAIN_MENU_SCREEN:
 			currentScreen = showMainMenuScreen().nextScreen;
 			break;
@@ -868,7 +871,7 @@ void runMainNavigationLoop(stAppContext ctx) {
 	}
 }
 
-void runApp(stAppContext ctx) {
+void runApp(stAppContext& ctx) {
 
 	while (true) {
 
