@@ -83,6 +83,7 @@ std::vector <std::string> split(std::string str, std::string delim = " ") {
 
 
 enum enPermission {
+	PER_FULL_ACCESS			=	-1,
 	PER_SHOW_CLIENT_LIST	=	1 << 0,
 	PER_ADD_NEW_CLIENT		=	1 << 1,
 	PER_DELETE_CLIENT		=	1 << 2,
@@ -140,7 +141,7 @@ enum enUserStatus {
 struct stUser {
 	std::string username = "";
 	std::string password = "";
-	//Permissions
+	int permissions = 0;
 	enUserStatus status = enUserStatus::Active;
 };
 
@@ -186,7 +187,15 @@ struct stTransaction { //TODO: enum type
 };
 //
 
+bool hasPermission(const stUser& user, enPermission permission) {
+	
+	if (user.permissions == enPermission::PER_FULL_ACCESS) {
+		return true;
+	}
 
+	//Use bitwise AND to see if the specific bit is set
+	return (user.permissions & permission) == permission;
+}
 
 std::string serializeUser(const stUser& user, const std::string& delim) {
 	return user.username + delim + user.password + delim;//TODO Permissions
