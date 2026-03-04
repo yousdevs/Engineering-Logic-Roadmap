@@ -100,7 +100,8 @@ enum enMainMenuOptions {
 	UPDATE_CLIENT_INFO = 4,
 	FIND_CLIENT = 5,
 	TRANSACTIONS = 6,
-	LOGOUT = 7,
+	MANAGE_USERS = 7,
+	LOGOUT = 8,
 	_FIRST_OPTION = SHOW_CLIENT_LIST,
 	_LAST_OPTION = LOGOUT,
 };
@@ -112,6 +113,17 @@ enum enTransactionsMenuOptions {
 	MAIN_MENU = 4,
 	_FIRST_OPTION_TRANSACTIONS = DEPOSIT,
 	_LAST_OPTION_TRANSACTIONS = enTransactionsMenuOptions::MAIN_MENU,
+};
+
+enum enManageUsersMenuOptions {
+	LIST_USERS = 1,
+	ADD_NEW_USER = 2,
+	DELETE_USER = 3,
+	UPDATE_USER = 4,
+	FIND_USER = 5,
+	MAIN_MENU_MANAGE_USERS_OPTION = 6,
+	_FIRST_OPTION_MANAGE_USERS = LIST_USERS,
+	_LAST_OPTION_MANAGE_USERS = enManageUsersMenuOptions::MAIN_MENU_MANAGE_USERS_OPTION,
 };
 
 enum enScreen {
@@ -126,6 +138,7 @@ enum enScreen {
 	WITHDRAW_SCREEN = 9,
 	TOTAL_BALANCES_SCREEN = 10,
 	LOGIN_SCREEN = 11,
+	MANAGE_USERS_MENU_SCREEN = 12,
 };
 
 enum enClientStatus {
@@ -459,6 +472,7 @@ stScreenResult showMainMenuScreen() {
 		{ UPDATE_CLIENT_INFO, "Update Client Info"},
 		{ FIND_CLIENT, "Find Client"},
 		{ TRANSACTIONS, "Transactions"},
+		{ MANAGE_USERS, "Manage Users"},
 		{ LOGOUT, "Logout"},
 	};
 	showMenu(mainMenu, "Main Menu Screen");
@@ -477,6 +491,8 @@ stScreenResult showMainMenuScreen() {
 			return { FIND_CLIENT_SCREEN, false };
 		case TRANSACTIONS:
 			return { TRANSACTIONS_MENU_SCREEN, false };
+		case MANAGE_USERS:
+			return { MANAGE_USERS_MENU_SCREEN, false };
 		case LOGOUT:
 			return { LOGIN_SCREEN, false };
 		default:
@@ -827,6 +843,39 @@ void loginScreen(stAppContext& ctx) {
 	std::cout << "Invalid Credentials." << std::endl;
 }
 
+stScreenResult showManageUsersScreen() {
+	
+	std::vector<stMenuItem> manageUsersMenu = {
+		{ LIST_USERS, "List Users"},
+		{ ADD_NEW_USER, "Add New User"},
+		{ DELETE_USER, "Delete User"},
+		{ UPDATE_USER, "Update User"},
+		{ FIND_USER, "Find User"},
+		{ enManageUsersMenuOptions::MAIN_MENU_MANAGE_USERS_OPTION, "Main Menu"},
+	};
+	showMenu(manageUsersMenu, "Manage Users Menu Screen");
+
+	int option = readIntegerInRange(enManageUsersMenuOptions::_FIRST_OPTION_MANAGE_USERS, enManageUsersMenuOptions::_LAST_OPTION_MANAGE_USERS);
+	switch (option) {
+	case LIST_USERS:
+		return {};
+	case ADD_NEW_USER:
+		return {};
+	case DELETE_USER:
+		return {};
+	case UPDATE_USER:
+		return {};
+	case FIND_USER:
+		return {};
+	case enManageUsersMenuOptions::MAIN_MENU_MANAGE_USERS_OPTION:
+		return { MAIN_MENU_SCREEN, false };
+
+	default:
+		return { MAIN_MENU_SCREEN, false };
+	}
+	
+}
+
 void runMainNavigationLoop(stAppContext &ctx) {
 
 	enScreen currentScreen = MAIN_MENU_SCREEN;
@@ -834,7 +883,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 	while (true) {
 		switch (currentScreen) {
 		case LOGIN_SCREEN:
-			ctx.currentUser = nullptr;
+			ctx.currentUser = nullptr; //logout
 			return;
 		case MAIN_MENU_SCREEN:
 			currentScreen = showMainMenuScreen().nextScreen;
@@ -931,6 +980,10 @@ void runMainNavigationLoop(stAppContext &ctx) {
 			currentScreen = res.nextScreen;
 			break;
 		}
+		case MANAGE_USERS_MENU_SCREEN:
+			currentScreen = showManageUsersScreen().nextScreen;
+			break;
+		
 		default:  currentScreen = MAIN_MENU_SCREEN;
 		}
 
