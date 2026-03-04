@@ -798,7 +798,7 @@ void loginScreen(stAppContext& ctx) {
 	std::cout << "Invalid Credentials." << std::endl;
 }
 
-void runApp(stAppContext ctx) {
+void runMainNavigationLoop(stAppContext ctx) {
 
 	enScreen currentScreen = MAIN_MENU_SCREEN;
 
@@ -817,7 +817,7 @@ void runApp(stAppContext ctx) {
 			currentScreen = res.nextScreen;
 			break;
 		}
-		case DELETE_CLIENT_SCREEN: { 
+		case DELETE_CLIENT_SCREEN: {
 			stScreenResult res = showDeleteClientScreen(ctx.clients); //possibly mutation
 			if (res.dataChanged)
 				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
@@ -862,11 +862,23 @@ void runApp(stAppContext ctx) {
 			currentScreen = res.nextScreen;
 			break;
 		}
-		default:  currentScreen = MAIN_MENU_SCREEN ;
+		default:  currentScreen = MAIN_MENU_SCREEN;
 		}
-		
-	}
 
+	}
+}
+
+void runApp(stAppContext ctx) {
+
+	while (true) {
+
+		if (ctx.currentUser == nullptr) {
+			loginScreen(ctx);
+			continue;
+		}
+
+		runMainNavigationLoop(ctx);
+	}
 }
 
 int main()
@@ -880,8 +892,8 @@ int main()
 	ctx.users = loadUsers(ctx.usersFilePath, ctx.delim);
 	
 	ctx.users.push_back({"1", "1"});
-	loginScreen(ctx);
-	//runApp(ctx);
+	//loginScreen(ctx);
+	runApp(ctx);
 
 
 	return 0;  
