@@ -90,7 +90,7 @@ enum enPermission {
 	PER_UPDATE_CLIENT_INFO	=	1 << 3,
 	PER_FIND_CLIENT			=	1 << 4,
 	PER_TRANSACTIONS		=	1 << 5,
-	//TODO manage users
+	PER_MANAGE_USERS		=	1 << 6,
 };
 
 enum enMainMenuOptions {
@@ -944,7 +944,6 @@ stScreenResult showListUsersScreen(const std::vector<stUser>& users, const stUse
 				else {
 					data.push_back({ u.username, u.password, std::to_string(u.permissions) });
 				}
-				
 			}
 		}
 	printGenericTable(header, columns, data);
@@ -989,7 +988,39 @@ stUser readUserInfo(std::string username) {
 	return newUser;
 }
 
-stScreenResult showAddNewUserScreen(std::vector<stUser>& users) {
+bool assignPermissions(stUser& user, const stUser& currentUser) {
+
+	if (currentUser.permissions != enPermission::PER_FULL_ACCESS) {
+		std::cout << "\nAccess Denied. You do not have permission to assign rights." << std::endl;
+		return false;
+	}
+
+
+	if (confirmYesNoChoice("Assign Full Access? ")) {
+		user.permissions = enPermission::PER_FULL_ACCESS;
+	}
+	else {
+		user.permissions = 0;
+		std::cout << "Do You Want To Allow Access To:" << std::endl;
+		if (confirmYesNoChoice("show client list? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_SHOW_CLIENT_LIST;
+		if (confirmYesNoChoice("Add new client? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_ADD_NEW_CLIENT;
+		if (confirmYesNoChoice("Delete client? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_DELETE_CLIENT;
+		if (confirmYesNoChoice("Update client? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_UPDATE_CLIENT_INFO;
+		if (confirmYesNoChoice("Find Client? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_FIND_CLIENT;
+		if (confirmYesNoChoice("Transactions? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_TRANSACTIONS;
+		if (confirmYesNoChoice("Manage Users? y/n  "))
+			user.permissions = user.permissions | enPermission::PER_MANAGE_USERS;
+		}
+	return true;
+}
+
+stScreenResult showAddNewUserScreen(std::vector<stUser>& users, const stUser currentUser) {
 	showScreenHeader("Add New User Screen");
 
 	bool dataChanged = false;
@@ -999,6 +1030,10 @@ stScreenResult showAddNewUserScreen(std::vector<stUser>& users) {
 		continueAdding = false;
 		std::string username = promptForUniqueUsername(users);
 		stUser newUser = readUserInfo(username);
+		if (!assignPermissions(newUser, currentUser)) {
+			confirmYesNoChoice("failed to add new user, press any key and hit enter to go back..  ");
+			return { MANAGE_USERS_MENU_SCREEN, dataChanged };
+		}
 
 		users.push_back(newUser);
 		dataChanged = true;
@@ -1074,7 +1109,6 @@ stScreenResult showDeleteUserScreen(std::vector<stUser>& users, const stUser & c
 	return { MANAGE_USERS_MENU_SCREEN, dataChanged };
 }
 
-
 bool updateUserByUsername(std::vector<stUser>& users, const std::string& username, const stUser& currentUser) {
 	for (stUser& u : users) {
 		if (u.username == username && u.status == enUserStatus::Active) {
@@ -1083,7 +1117,7 @@ bool updateUserByUsername(std::vector<stUser>& users, const std::string& usernam
 				return false;
 			}
 			u = readUserInfo(username);
-			return true;
+			return assignPermissions(u, currentUser);;
 		}
 	}
 	return false;
@@ -1265,7 +1299,7 @@ void runMainNavigationLoop(stAppContext &ctx) {
 			break;
 
 		case ADD_NEW_USER_SCREEN: {
-			stScreenResult res = showAddNewUserScreen(ctx.users);
+			stScreenResult res = showAddNewUserScreen(ctx.users, *ctx.currentUser);
 			//TODO persistUsers
 			currentScreen = res.nextScreen;
 			break;
