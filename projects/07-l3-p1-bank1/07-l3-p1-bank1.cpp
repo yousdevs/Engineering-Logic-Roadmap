@@ -198,16 +198,16 @@ bool hasPermission(const stUser& user, enPermission permission) {
 }
 
 std::string serializeUser(const stUser& user, const std::string& delim) {
-	return user.username + delim + user.password + delim;//TODO Permissions
+	return user.username + delim + user.password + delim + std::to_string(user.permissions);
 }
 
 stUser deserializeUser(const std::string& line, const std::string& delim) {
 	stUser user{};
 	std::vector<std::string> splitted = split(line, delim);
-	if ((splitted.size() == 2)) {
+	if ((splitted.size() == 3)) {
 		user.username = splitted[0];
 		user.password = splitted[1];
-		//TODO Permissions
+		user.permissions = std::stoi(splitted[2]);
 	}
 
 	return user;
@@ -802,6 +802,15 @@ stScreenResult showTotalBalancesScreen(std::vector<stClient>& clients) {
 	return { TRANSACTIONS_MENU_SCREEN , false };
 }
 
+stScreenResult showAccessDeniedScreen() {
+	showScreenHeader("Access Denied");
+	std::cout << "You don't have permission to do this" << std::endl;
+	std::cout << "Please Contact Your Admin." << std::endl;
+	createLine();
+
+	confirmYesNoChoice("Go back main menu? y/n"); // just for pause
+	return { MAIN_MENU_SCREEN, false };
+}
 
 void loginScreen(stAppContext& ctx) {
 	showScreenHeader("Login Screen");
@@ -831,38 +840,75 @@ void runMainNavigationLoop(stAppContext &ctx) {
 			currentScreen = showMainMenuScreen().nextScreen;
 			break;
 		case CLIENTS_LIST_SCREEN:
-			currentScreen = showClientsScreen(ctx.clients).nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, PER_SHOW_CLIENT_LIST)) {
+				currentScreen = showClientsScreen(ctx.clients).nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
+			
 		case ADD_NEW_CLIENT_SCREEN: {
-			stScreenResult res = showAddNewClientScreen(ctx.clients); //mutation Vector → search → pointer → mutate → persist
-			if (res.dataChanged)
-				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
-			currentScreen = res.nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, PER_ADD_NEW_CLIENT)) {
+				stScreenResult res = showAddNewClientScreen(ctx.clients); //mutation Vector → search → pointer → mutate → persist
+				if (res.dataChanged)
+					persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
+				currentScreen = res.nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
 		}
 		case DELETE_CLIENT_SCREEN: {
-			stScreenResult res = showDeleteClientScreen(ctx.clients); //possibly mutation
-			if (res.dataChanged)
-				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
-			currentScreen = res.nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, PER_DELETE_CLIENT)) {
+				stScreenResult res = showDeleteClientScreen(ctx.clients); //possibly mutation
+				if (res.dataChanged)
+					persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
+				currentScreen = res.nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
 		}
 		case UPDATE_CLIENT_INFO_SCREEN: {
-			stScreenResult res = showUpdateClientInfoScreen(ctx.clients);
-			if (res.dataChanged)
-				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
-			currentScreen = res.nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, PER_UPDATE_CLIENT_INFO)) {
+				stScreenResult res = showUpdateClientInfoScreen(ctx.clients);
+				if (res.dataChanged)
+					persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
+				currentScreen = res.nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
 		}
 		case FIND_CLIENT_SCREEN:
-			currentScreen = showFindClientScreen(ctx.clients).nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, PER_FIND_CLIENT)) {
+				currentScreen = showFindClientScreen(ctx.clients).nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
 		case TRANSACTIONS_MENU_SCREEN: {
-			stScreenResult res = showTransactionsMenuScreen();
-			if (res.dataChanged)
-				persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
-			currentScreen = res.nextScreen;
-			break;
+			if (hasPermission(*ctx.currentUser, PER_TRANSACTIONS)) {
+				stScreenResult res = showTransactionsMenuScreen();
+				if (res.dataChanged)
+					persistClients(ctx.clients, ctx.clientsFilePath, ctx.delim);
+				currentScreen = res.nextScreen;
+				break;
+			}
+			else {
+				currentScreen = showAccessDeniedScreen().nextScreen;
+				break;
+			}
 		}
 		case DEPOSIT_SCREEN: {
 			stScreenResult res = showDepoistScreen(ctx.clients);
@@ -914,7 +960,7 @@ int main()
 	ctx.clients = loadClients(ctx.clientsFilePath, ctx.delim);
 	ctx.users = loadUsers(ctx.usersFilePath, ctx.delim);
 	
-	ctx.users.push_back({"1", "1"});
+	//ctx.users.push_back({"1", "1"});
 	//loginScreen(ctx);
 	runApp(ctx);
 
