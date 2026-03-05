@@ -59,7 +59,7 @@ Client deserializeClient(const std::string& line, const std::string& delim) {
 		client.pinCode = splitted[1];
 		client.name = splitted[2];
 		client.phoneNumber = splitted[3];
-		client.balanceCents = std::stol(splitted[4]);
+		client.balanceCents = std::stoll(splitted[4]);
 	}
 
 	return client;
@@ -106,6 +106,11 @@ std::vector<Client> loadClients(std::string filePath, std::string delim) {
 
 int main() {
 
+	AppContext ctx{};
+	ctx.clientFilePath = "clients.txt";
+	ctx.delim = "#//#";
+	ctx.clients = loadClients(ctx.clientFilePath, ctx.delim);
+	
 
 	std::cout << "Hello, world" << std::endl;
 	return 0;
