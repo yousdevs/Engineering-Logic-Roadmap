@@ -6,6 +6,7 @@ out/
 x64/
 x86/
 Generated\ Files/
+.idb
 
 ## Solution and Project User Settings
 *.user
