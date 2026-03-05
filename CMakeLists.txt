@@ -6,6 +6,8 @@ project(EngineeringLogicRoadmap VERSION 1.0 DESCRIPTION "Programming Advices Sol
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+# Generate compile_commands.json for IntelliSense
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Enable folder grouping in IDEs (like Visual Studio)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -26,4 +28,5 @@ add_subdirectory(08-Algorithms-L4)
 add_subdirectory(projects/05-l2-p1-rock-paper-scissors)
 add_subdirectory(projects/05-l2-p2-math-quiz-game)
 add_subdirectory(projects/07-l3-p1-bank1)
+add_subdirectory(projects/08-l4-p2-atm-sys)
 #add_subdirectory(projects/ProjectB)
