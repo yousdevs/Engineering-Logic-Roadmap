@@ -27,6 +27,17 @@ std::vector<std::string> split(const std::string& str, const std::string& delim 
 	return tokens;
 }
 
+
+enum Screen {
+	SCREEN_LOGIN,
+	SCREEN_MAIN_MENU,
+	SCREEN_QUICK_WITHDRAW,
+	SCREEN_NORMAL_WITHDRAW,
+	SCREEN_DEPOSIT,
+	SCREEN_BALANCE_INQUIRY,
+};
+
+
 struct Client {
 	std::string accountID = "";
 	std::string pinCode = "";
@@ -103,6 +114,43 @@ std::vector<Client> loadClients(std::string filePath, std::string delim) {
 	return clients;
 }
 
+Screen showLogin(AppContext& ctx) {
+	return Screen::SCREEN_MAIN_MENU;
+}
+
+typedef Screen(*ScreenHandler)(AppContext&);
+
+struct Route {
+	Screen screen;
+	ScreenHandler handler;
+};
+
+Route routes[] = {
+	{SCREEN_LOGIN, showLogin},
+	//{SCREEN_MAIN_MENU, showMainMenu},
+	//{SCREEN_DEPOSIT, showDeposit},
+	//{SCREEN_WITHDRAW, showWithdraw}
+};
+
+Screen dispatch(Screen screen, AppContext& ctx)
+{
+	for (Route& r : routes)
+	{
+		if (r.screen == screen)
+			return r.handler(ctx);
+	}
+	return SCREEN_LOGIN;
+}
+
+void runApp(AppContext& ctx)
+{
+	Screen current = SCREEN_LOGIN;
+
+	while (true)
+	{
+		current = dispatch(current, ctx);
+	}
+}
 
 int main() {
 
@@ -110,7 +158,7 @@ int main() {
 	ctx.clientFilePath = "clients.txt";
 	ctx.delim = "#//#";
 	ctx.clients = loadClients(ctx.clientFilePath, ctx.delim);
-	
+
 
 	std::cout << "Hello, world" << std::endl;
 	return 0;
