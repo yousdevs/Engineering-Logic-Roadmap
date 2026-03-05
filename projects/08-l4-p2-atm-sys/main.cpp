@@ -35,6 +35,14 @@ struct Client {
 	long long balanceCents = 0;
 };
 
+struct AppContext {
+	Client *currentClient = nullptr;
+	std::vector<Client> clients{};
+	
+	std::string clientFilePath = "";
+	std::string delim = "";
+};
+
 std::string serializeClient(const Client& client, const std::string& delim) {
 
 	return client.accountID + delim + client.pinCode + delim +
@@ -94,6 +102,7 @@ std::vector<Client> loadClients(std::string filePath, std::string delim) {
 	}
 	return clients;
 }
+
 
 int main() {
 
