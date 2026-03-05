@@ -91,6 +91,16 @@ int readIntegerInRange(int min, int max) {
 	return integer;
 }
 
+void pressEnterToGoBack() {
+	std::cout << "\nPress Enter to go back...";
+
+	// Clear the Enter left in the buffer by previous inputs
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+	// Wait for the next Enter keypress
+	std::cin.get();
+}
+
 enum Screen {
 	SCREEN_LOGIN,
 	SCREEN_MAIN_MENU,
@@ -268,6 +278,27 @@ Screen showMainMenu(AppContext& ctx) {
 	return mapOptionToScreen(menuItems, choice);
 }
 
+double centsToDollars(long long cents) {
+	return static_cast<double>(cents) / 100.0;
+}
+
+double getBalance(const Client& client) {
+	return centsToDollars(client.balanceCents);
+}
+
+Screen showBalanceInquiry(AppContext& ctx) {
+
+	showScreenHeader("Balance Inquiry Screen");
+
+	if (!ctx.currentClient)
+		return Screen::SCREEN_LOGIN;
+
+	printf("Your Balance is: $%.2f\n", getBalance(*ctx.currentClient));
+
+	pressEnterToGoBack();
+	return Screen::SCREEN_MAIN_MENU;
+}
+
 typedef Screen(*ScreenHandler)(AppContext&);
 
 struct Route {
@@ -278,7 +309,7 @@ struct Route {
 Route routes[] = {
 	{SCREEN_LOGIN, showLogin},
 	{SCREEN_MAIN_MENU, showMainMenu},
-	//{SCREEN_DEPOSIT, showDeposit},
+	{SCREEN_BALANCE_INQUIRY, showBalanceInquiry},
 	//{SCREEN_WITHDRAW, showWithdraw}
 };
 
@@ -308,7 +339,7 @@ int main() {
 	ctx.clientFilePath = "clients.txt";
 	ctx.delim = "#//#";
 	ctx.clients = loadClients(ctx.clientFilePath, ctx.delim);
-
+	
 	runApp(ctx);
 
 	std::cout << "Hello, world" << std::endl;
