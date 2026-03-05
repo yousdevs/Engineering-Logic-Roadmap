@@ -40,6 +40,57 @@ std::string readString(const std::string& message = "") {
 	return input;
 }
 
+bool isNumber(std::string s) {
+	if (s.empty()) return false;
+
+	int start = (s[0] == '-') ? 1 : 0;
+	if (start == 1 && s.length() == 1) return false; // Just a "-" is not a number
+
+	for (int i = start; i < s.length(); i++) {
+		if (!isdigit(s[i])) return false;
+	}
+	return true;
+}
+
+int readValidInteger(std::string msg = "") {
+	std::string input = "";
+	bool firstInput = true;
+	do {
+		if (!firstInput) {
+			printf("Please enter valid integer\n");
+		}
+		else {
+			firstInput = false;
+		}
+		input = readString(msg);
+	} while (!isNumber(input));
+	return std::stoi(input);
+}
+
+unsigned int readPositiveInteger() {
+	int integer = 0;
+	do {
+		printf("Please Enter Positive Integer: ");
+		integer = readValidInteger();
+	} while (integer <= 0);
+	return integer;
+}
+
+int readIntegerInRange(int min, int max) {
+	int integer = 0;
+	bool firstInput = true;
+	do {
+		if (!firstInput) {
+			std::cout << "\nPlease Enter Integer Between " << std::to_string(min) << " and " << std::to_string(max) << " :" << std::endl;
+		}
+		else {
+			firstInput = false;
+		}
+		integer = readValidInteger();
+	} while (integer < min || integer > max);
+	return integer;
+}
+
 enum Screen {
 	SCREEN_LOGIN,
 	SCREEN_MAIN_MENU,
@@ -166,6 +217,56 @@ Screen showLogin(AppContext& ctx) {
 	return Screen::SCREEN_LOGIN;
 }
 
+struct MenuItem {
+	int option = 0;
+	Screen screen = Screen::SCREEN_LOGIN;
+	std::string label = "";
+};
+
+void printMenu(const std::vector<MenuItem>& items, std::string headerLabel = "") {
+
+	showScreenHeader(headerLabel);
+
+	for (const MenuItem& item : items) {
+		std::cout << std::setw(10) << "[" << item.option << "] " << item.label << std::endl;
+	}
+
+	std::cout << createLine() << std::endl;
+	std::cout << "Please choose an option: ";
+}
+
+int readOption(const std::vector<MenuItem>& items) {
+	int firstOption = items[0].option;
+	int lastOption = items[items.size()-1].option;
+	return readIntegerInRange(firstOption, lastOption);
+}
+
+Screen mapOptionToScreen(const std::vector<MenuItem>& items, int option) {
+
+	for (const MenuItem& item : items) {
+		if (item.option == option) {
+			return item.screen;
+		}
+	}
+	return Screen::SCREEN_MAIN_MENU;
+}
+
+Screen showMainMenu(AppContext& ctx) {
+
+	std::vector<MenuItem> menuItems = {
+		{1, Screen::SCREEN_QUICK_WITHDRAW, "Quick Withdraw"},
+		{2, Screen::SCREEN_NORMAL_WITHDRAW, "Normal Withdraw"},
+		{3, Screen::SCREEN_DEPOSIT, "Deposit"},
+		{4, Screen::SCREEN_BALANCE_INQUIRY, "Balance Inquiry"},
+		{5, Screen::SCREEN_LOGIN,   "Logout"},
+	};
+
+	printMenu(menuItems, "Main Menu");
+
+	int choice = readOption(menuItems);
+
+	return mapOptionToScreen(menuItems, choice);
+}
 
 typedef Screen(*ScreenHandler)(AppContext&);
 
@@ -176,7 +277,7 @@ struct Route {
 
 Route routes[] = {
 	{SCREEN_LOGIN, showLogin},
-	//{SCREEN_MAIN_MENU, showMainMenu},
+	{SCREEN_MAIN_MENU, showMainMenu},
 	//{SCREEN_DEPOSIT, showDeposit},
 	//{SCREEN_WITHDRAW, showWithdraw}
 };
