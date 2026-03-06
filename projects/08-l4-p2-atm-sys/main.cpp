@@ -102,6 +102,7 @@ void pressEnterToGoBack() {
 }
 
 enum Screen {
+	NONE,
 	SCREEN_LOGIN,
 	SCREEN_MAIN_MENU,
 	SCREEN_QUICK_WITHDRAW,
@@ -231,6 +232,7 @@ struct MenuItem {
 	int option = 0;
 	Screen screen = Screen::SCREEN_LOGIN;
 	std::string label = "";
+	long long value = 0;
 };
 
 void printMenu(const std::vector<MenuItem>& items, std::string headerLabel = "") {
@@ -299,6 +301,103 @@ Screen showBalanceInquiry(AppContext& ctx) {
 	return Screen::SCREEN_MAIN_MENU;
 }
 
+long long dollarsToCents(double dollars) {
+	return static_cast<long long> (dollars * 100.0);
+}
+
+enum TransactionType {
+	Withdrawal,
+	Deposit,
+};
+
+struct Transaction {
+	TransactionType type = TransactionType::Withdrawal;
+	long long amountInCents = 0;
+	std::string validationError = "";
+	bool success = false;
+};
+
+const long long ATM_WITHDRAW_STEP = 500;
+
+Transaction executeWithdrawal(Client& client, long long amountInCents){
+
+	Transaction tx{};
+	tx.type = TransactionType::Withdrawal;
+	tx.amountInCents = amountInCents;
+
+	if (amountInCents <= 0) {
+		tx.validationError = "Amount must be greater than zero.";
+		return tx;
+	}
+
+	if (amountInCents % ATM_WITHDRAW_STEP != 0) {
+		tx.validationError = "Amount must be a multiple of 5 dollars.";
+		return tx;
+	}
+
+	if (amountInCents > client.balanceCents) {
+		tx.validationError = "Amount exceeds client balance.";
+		return tx;
+	}
+
+	client.balanceCents -= amountInCents;
+	tx.success = true;
+
+	return tx;
+}
+
+Transaction withdraw(AppContext& ctx, long long amountInCents){
+
+	Transaction tx = executeWithdrawal(*ctx.currentClient, amountInCents);
+
+	if (tx.success)
+	{
+		persistClients(ctx.clients, ctx.clientFilePath, ctx.delim);
+	}
+
+	return tx;
+}
+
+Screen showQuickWithdraw(AppContext& ctx) {
+	
+	std::vector<MenuItem> menuItems = {
+		{1, Screen::NONE, "20$", 20},
+		{2, Screen::NONE, "50$", 50},
+		{3, Screen::NONE, "100$", 100},
+		{4, Screen::SCREEN_MAIN_MENU, "Back to Menu", 0}
+	};
+
+	printMenu(menuItems, "Quick Withdraw Menu");
+
+	int choice = readOption(menuItems);
+
+	MenuItem selected;
+
+	for (const MenuItem& item : menuItems)
+	{
+		if (item.option == choice)
+		{
+			selected = item;
+			break;
+		}
+	}
+
+	if (selected.screen != Screen::NONE)
+		return selected.screen;
+
+	long long amountInCents = dollarsToCents(selected.value);
+	Transaction tx = withdraw(ctx, amountInCents);
+
+	if (!tx.success)
+		std::cout << tx.validationError << std::endl;
+	else
+		printf("Done Successfully. Your new balance is: $%.2f\n", getBalance(*ctx.currentClient));
+
+	pressEnterToGoBack();
+	
+	return Screen::SCREEN_MAIN_MENU;
+}
+
 typedef Screen(*ScreenHandler)(AppContext&);
 
 struct Route {
@@ -310,7 +409,7 @@ Route routes[] = {
 	{SCREEN_LOGIN, showLogin},
 	{SCREEN_MAIN_MENU, showMainMenu},
 	{SCREEN_BALANCE_INQUIRY, showBalanceInquiry},
-	//{SCREEN_WITHDRAW, showWithdraw}
+	{SCREEN_QUICK_WITHDRAW, showQuickWithdraw}
 };
 
 Screen dispatch(Screen screen, AppContext& ctx)
