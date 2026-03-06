@@ -4,6 +4,50 @@
 #include <fstream>
 #include <iomanip>
 
+
+const long long ATM_WITHDRAW_STEP = 500;
+
+
+enum Screen {
+	NONE,
+	SCREEN_LOGIN,
+	SCREEN_MAIN_MENU,
+	SCREEN_QUICK_WITHDRAW,
+	SCREEN_NORMAL_WITHDRAW,
+	SCREEN_DEPOSIT,
+	SCREEN_BALANCE_INQUIRY,
+};
+
+enum TransactionType {
+	Withdrawal,
+	Deposit,
+};
+
+
+struct Client {
+	std::string accountID = "";
+	std::string pinCode = "";
+	std::string name = "";
+	std::string phoneNumber = "";
+	long long balanceCents = 0;
+};
+
+struct Transaction {
+	TransactionType type = TransactionType::Withdrawal;
+	long long amountInCents = 0;
+	std::string validationError = "";
+	bool success = false;
+};
+
+struct AppContext {
+	Client* currentClient = nullptr;
+	std::vector<Client> clients{};
+
+	std::string clientFilePath = "";
+	std::string delim = "";
+};
+
+
 std::vector<std::string> split(const std::string& str, const std::string& delim = " ") {
 	std::vector<std::string> tokens;
 	size_t start = 0;
@@ -116,32 +160,31 @@ void pressEnterToGoBack() {
 	std::cin.get();
 }
 
-enum Screen {
-	NONE,
-	SCREEN_LOGIN,
-	SCREEN_MAIN_MENU,
-	SCREEN_QUICK_WITHDRAW,
-	SCREEN_NORMAL_WITHDRAW,
-	SCREEN_DEPOSIT,
-	SCREEN_BALANCE_INQUIRY,
-};
+std::string createLine(short length = 40, char line = '-') {
+	return  std::string(length, line);
+}
 
+void showScreenHeader(std::string headerLabel, short lineLength = 40, char lineChar = '-') {
 
-struct Client {
-	std::string accountID = "";
-	std::string pinCode = "";
-	std::string name = "";
-	std::string phoneNumber = "";
-	long long balanceCents = 0;
-};
+	std::cout << std::endl;
+	std::cout << createLine(lineLength, lineChar) << std::endl;
+	if (headerLabel != "")
+		std::cout << std::setw((lineLength / 2) + (headerLabel.length() / 2)) << headerLabel << std::endl;
+	std::cout << createLine(lineLength, lineChar) << std::endl;
+}
 
-struct AppContext {
-	Client *currentClient = nullptr;
-	std::vector<Client> clients{};
-	
-	std::string clientFilePath = "";
-	std::string delim = "";
-};
+long long dollarsToCents(double dollars) {
+	return static_cast<long long> (dollars * 100.0);
+}
+
+double centsToDollars(long long cents) {
+	return static_cast<double>(cents) / 100.0;
+}
+
+double getBalance(const Client& client) {
+	return centsToDollars(client.balanceCents);
+}
+
 
 std::string serializeClient(const Client& client, const std::string& delim) {
 
@@ -203,18 +246,6 @@ std::vector<Client> loadClients(std::string filePath, std::string delim) {
 	return clients;
 }
 
-std::string createLine(short length = 40, char line = '-') {
-	return  std::string(length, line);
-}
-
-void showScreenHeader(std::string headerLabel, short lineLength = 40, char lineChar = '-') {
-
-	std::cout << std::endl;
-	std::cout << createLine(lineLength, lineChar) << std::endl;
-	if (headerLabel != "")
-		std::cout << std::setw((lineLength/2) + (headerLabel.length()/2)) << headerLabel << std::endl;
-	std::cout << createLine(lineLength, lineChar) << std::endl;
-}
 
 bool login(AppContext& ctx, std::string accoundID, std::string pinCode) {
 
@@ -227,21 +258,79 @@ bool login(AppContext& ctx, std::string accoundID, std::string pinCode) {
 	return false;
 }
 
-Screen showLogin(AppContext& ctx) {
+Transaction executeWithdrawal(Client& client, long long amountInCents) {
 
-	showScreenHeader("Login Screen");
+	Transaction tx{};
+	tx.type = TransactionType::Withdrawal;
+	tx.amountInCents = amountInCents;
 
-	std::string accountID = readString("Account Number: ");
-	std::string pin = readString("PIN: ");
-
-	if (login(ctx, accountID, pin)) {
-		std::cout << "Login Successful!" << std::endl;
-		return Screen::SCREEN_MAIN_MENU;
+	if (amountInCents <= 0) {
+		tx.validationError = "Amount must be greater than zero.";
+		return tx;
 	}
-	
-	std::cout << "Invalid Credentials." << std::endl;
-	return Screen::SCREEN_LOGIN;
+
+	if (amountInCents % ATM_WITHDRAW_STEP != 0) {
+		tx.validationError = "Amount must be a multiple of 5 dollars.";
+		return tx;
+	}
+
+	if (amountInCents > client.balanceCents) {
+		tx.validationError = "Amount exceeds client balance.";
+		return tx;
+	}
+
+	client.balanceCents -= amountInCents;
+	tx.success = true;
+
+	return tx;
 }
+
+Transaction executeDeposit(Client& client, long long amountInCents) {
+
+	Transaction tx{};
+	tx.type = TransactionType::Deposit;
+	tx.amountInCents = amountInCents;
+
+	if (amountInCents <= 0) {
+		tx.validationError = "Amount must be greater than zero.";
+		return tx;
+	}
+
+	if (amountInCents % ATM_WITHDRAW_STEP != 0) {
+		tx.validationError = "Amount must be a multiple of 5 dollars.";
+		return tx;
+	}
+
+	client.balanceCents += amountInCents;
+	tx.success = true;
+
+	return tx;
+}
+
+Transaction withdraw(AppContext& ctx, long long amountInCents) {
+
+	Transaction tx = executeWithdrawal(*ctx.currentClient, amountInCents);
+
+	if (tx.success)
+	{
+		persistClients(ctx.clients, ctx.clientFilePath, ctx.delim);
+	}
+
+	return tx;
+}
+
+Transaction deposit(AppContext& ctx, long long amountInCents) {
+
+	Transaction tx = executeDeposit(*ctx.currentClient, amountInCents);
+
+	if (tx.success)
+	{
+		persistClients(ctx.clients, ctx.clientFilePath, ctx.delim);
+	}
+
+	return tx;
+}
+
 
 struct MenuItem {
 	int option = 0;
@@ -278,6 +367,23 @@ Screen mapOptionToScreen(const std::vector<MenuItem>& items, int option) {
 	return Screen::SCREEN_MAIN_MENU;
 }
 
+
+Screen showLogin(AppContext& ctx) {
+
+	showScreenHeader("Login Screen");
+
+	std::string accountID = readString("Account Number: ");
+	std::string pin = readString("PIN: ");
+
+	if (login(ctx, accountID, pin)) {
+		std::cout << "Login Successful!" << std::endl;
+		return Screen::SCREEN_MAIN_MENU;
+	}
+
+	std::cout << "Invalid Credentials." << std::endl;
+	return Screen::SCREEN_LOGIN;
+}
+
 Screen showMainMenu(AppContext& ctx) {
 
 	std::vector<MenuItem> menuItems = {
@@ -295,14 +401,6 @@ Screen showMainMenu(AppContext& ctx) {
 	return mapOptionToScreen(menuItems, choice);
 }
 
-double centsToDollars(long long cents) {
-	return static_cast<double>(cents) / 100.0;
-}
-
-double getBalance(const Client& client) {
-	return centsToDollars(client.balanceCents);
-}
-
 Screen showBalanceInquiry(AppContext& ctx) {
 
 	showScreenHeader("Balance Inquiry Screen");
@@ -316,65 +414,8 @@ Screen showBalanceInquiry(AppContext& ctx) {
 	return Screen::SCREEN_MAIN_MENU;
 }
 
-long long dollarsToCents(double dollars) {
-	return static_cast<long long> (dollars * 100.0);
-}
-
-enum TransactionType {
-	Withdrawal,
-	Deposit,
-};
-
-struct Transaction {
-	TransactionType type = TransactionType::Withdrawal;
-	long long amountInCents = 0;
-	std::string validationError = "";
-	bool success = false;
-};
-
-const long long ATM_WITHDRAW_STEP = 500;
-
-Transaction executeWithdrawal(Client& client, long long amountInCents){
-
-	Transaction tx{};
-	tx.type = TransactionType::Withdrawal;
-	tx.amountInCents = amountInCents;
-
-	if (amountInCents <= 0) {
-		tx.validationError = "Amount must be greater than zero.";
-		return tx;
-	}
-
-	if (amountInCents % ATM_WITHDRAW_STEP != 0) {
-		tx.validationError = "Amount must be a multiple of 5 dollars.";
-		return tx;
-	}
-
-	if (amountInCents > client.balanceCents) {
-		tx.validationError = "Amount exceeds client balance.";
-		return tx;
-	}
-
-	client.balanceCents -= amountInCents;
-	tx.success = true;
-
-	return tx;
-}
-
-Transaction withdraw(AppContext& ctx, long long amountInCents){
-
-	Transaction tx = executeWithdrawal(*ctx.currentClient, amountInCents);
-
-	if (tx.success)
-	{
-		persistClients(ctx.clients, ctx.clientFilePath, ctx.delim);
-	}
-
-	return tx;
-}
-
 Screen showQuickWithdraw(AppContext& ctx) {
-	
+
 	std::vector<MenuItem> menuItems = {
 		{1, Screen::NONE, "20$", 20},
 		{2, Screen::NONE, "50$", 50},
@@ -409,17 +450,17 @@ Screen showQuickWithdraw(AppContext& ctx) {
 		printf("Done Successfully. Your new balance is: $%.2f\n", getBalance(*ctx.currentClient));
 
 	pressEnterToGoBack();
-	
+
 	return Screen::SCREEN_MAIN_MENU;
 }
 
 Screen showNormalWithdraw(AppContext& ctx) {
 
 	showScreenHeader("Normal Withdraw Screen");
-	
+
 	double inputAmount = readDouble("Enter Amount: ");
 	long long amountInCents = dollarsToCents(inputAmount);
-	
+
 	Transaction tx = withdraw(ctx, amountInCents);
 
 	if (!tx.success)
@@ -430,40 +471,6 @@ Screen showNormalWithdraw(AppContext& ctx) {
 	pressEnterToGoBack();
 
 	return Screen::SCREEN_MAIN_MENU;
-}
-
-Transaction executeDeposit(Client& client, long long amountInCents) {
-
-	Transaction tx{};
-	tx.type = TransactionType::Deposit;
-	tx.amountInCents = amountInCents;
-
-	if (amountInCents <= 0) {
-		tx.validationError = "Amount must be greater than zero.";
-		return tx;
-	}
-
-	if (amountInCents % ATM_WITHDRAW_STEP != 0) {
-		tx.validationError = "Amount must be a multiple of 5 dollars.";
-		return tx;
-	}
-
-	client.balanceCents += amountInCents;
-	tx.success = true;
-
-	return tx;
-}
-
-Transaction deposit(AppContext& ctx, long long amountInCents) {
-
-	Transaction tx = executeDeposit(*ctx.currentClient, amountInCents);
-
-	if (tx.success)
-	{
-		persistClients(ctx.clients, ctx.clientFilePath, ctx.delim);
-	}
-
-	return tx;
 }
 
 Screen showDeposit(AppContext& ctx) {
@@ -484,6 +491,7 @@ Screen showDeposit(AppContext& ctx) {
 
 	return Screen::SCREEN_MAIN_MENU;
 }
+
 
 typedef Screen(*ScreenHandler)(AppContext&);
 
@@ -511,6 +519,7 @@ Screen dispatch(Screen screen, AppContext& ctx)
 	return SCREEN_LOGIN;
 }
 
+
 void runApp(AppContext& ctx)
 {
 	Screen current = SCREEN_LOGIN;
@@ -521,6 +530,7 @@ void runApp(AppContext& ctx)
 	}
 }
 
+
 int main() {
 
 	AppContext ctx{};
@@ -530,6 +540,5 @@ int main() {
 	
 	runApp(ctx);
 
-	std::cout << "Hello, world" << std::endl;
 	return 0;
 }
