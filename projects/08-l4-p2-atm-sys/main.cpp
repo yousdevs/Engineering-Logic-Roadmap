@@ -432,6 +432,59 @@ Screen showNormalWithdraw(AppContext& ctx) {
 	return Screen::SCREEN_MAIN_MENU;
 }
 
+Transaction executeDeposit(Client& client, long long amountInCents) {
+
+	Transaction tx{};
+	tx.type = TransactionType::Deposit;
+	tx.amountInCents = amountInCents;
+
+	if (amountInCents <= 0) {
+		tx.validationError = "Amount must be greater than zero.";
+		return tx;
+	}
+
+	if (amountInCents % ATM_WITHDRAW_STEP != 0) {
+		tx.validationError = "Amount must be a multiple of 5 dollars.";
+		return tx;
+	}
+
+	client.balanceCents += amountInCents;
+	tx.success = true;
+
+	return tx;
+}
+
+Transaction deposit(AppContext& ctx, long long amountInCents) {
+
+	Transaction tx = executeDeposit(*ctx.currentClient, amountInCents);
+
+	if (tx.success)
+	{
+		persistClients(ctx.clients, ctx.clientFilePath, ctx.delim);
+	}
+
+	return tx;
+}
+
+Screen showDeposit(AppContext& ctx) {
+
+	showScreenHeader("Deposit Screen");
+
+	double inputAmount = readDouble("Enter Amount: ");
+	long long amountInCents = dollarsToCents(inputAmount);
+
+	Transaction tx = deposit(ctx, amountInCents);
+
+	if (!tx.success)
+		std::cout << tx.validationError << std::endl;
+	else
+		printf("Done Successfully. Your new balance is: $%.2f\n", getBalance(*ctx.currentClient));
+
+	pressEnterToGoBack();
+
+	return Screen::SCREEN_MAIN_MENU;
+}
+
 typedef Screen(*ScreenHandler)(AppContext&);
 
 struct Route {
@@ -444,7 +497,8 @@ Route routes[] = {
 	{SCREEN_MAIN_MENU, showMainMenu},
 	{SCREEN_BALANCE_INQUIRY, showBalanceInquiry},
 	{SCREEN_QUICK_WITHDRAW, showQuickWithdraw},
-	{SCREEN_NORMAL_WITHDRAW, showNormalWithdraw}
+	{SCREEN_NORMAL_WITHDRAW, showNormalWithdraw},
+	{SCREEN_DEPOSIT, showDeposit}
 };
 
 Screen dispatch(Screen screen, AppContext& ctx)
