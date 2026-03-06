@@ -67,6 +67,21 @@ int readValidInteger(std::string msg = "") {
 	return std::stoi(input);
 }
 
+double readDouble(std::string msg = "") {
+	std::string input = "";
+	bool firstInput = true;
+	do {
+		if (!firstInput) {
+			printf("Please enter valid integer\n");
+		}
+		else {
+			firstInput = false;
+		}
+		input = readString(msg);
+	} while (!isNumber(input));
+	return std::stod(input);
+}
+
 unsigned int readPositiveInteger() {
 	int integer = 0;
 	do {
@@ -398,6 +413,25 @@ Screen showQuickWithdraw(AppContext& ctx) {
 	return Screen::SCREEN_MAIN_MENU;
 }
 
+Screen showNormalWithdraw(AppContext& ctx) {
+
+	showScreenHeader("Normal Withdraw Screen");
+	
+	double inputAmount = readDouble("Enter Amount: ");
+	long long amountInCents = dollarsToCents(inputAmount);
+	
+	Transaction tx = withdraw(ctx, amountInCents);
+
+	if (!tx.success)
+		std::cout << tx.validationError << std::endl;
+	else
+		printf("Done Successfully. Your new balance is: $%.2f\n", getBalance(*ctx.currentClient));
+
+	pressEnterToGoBack();
+
+	return Screen::SCREEN_MAIN_MENU;
+}
+
 typedef Screen(*ScreenHandler)(AppContext&);
 
 struct Route {
@@ -409,7 +443,8 @@ Route routes[] = {
 	{SCREEN_LOGIN, showLogin},
 	{SCREEN_MAIN_MENU, showMainMenu},
 	{SCREEN_BALANCE_INQUIRY, showBalanceInquiry},
-	{SCREEN_QUICK_WITHDRAW, showQuickWithdraw}
+	{SCREEN_QUICK_WITHDRAW, showQuickWithdraw},
+	{SCREEN_NORMAL_WITHDRAW, showNormalWithdraw}
 };
 
 Screen dispatch(Screen screen, AppContext& ctx)
