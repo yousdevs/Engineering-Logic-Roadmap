@@ -98,3 +98,27 @@ public:
 // =================================================================
 // IMPLEMENTATION SECTION
 // =================================================================
+
+inline StringLib::StringLib(){
+    _value = "";
+}
+
+inline StringLib::StringLib(const std::string& value) {
+    _value = value;
+}
+
+inline void StringLib::setValue(const std::string& value) {
+    _value = value;
+}
+
+inline std::string StringLib::getValue() const {
+    return _value;
+}
+
+inline size_t StringLib::length(const std::string& text) {
+    return text.length();
+}
+
+inline size_t StringLib::length() const {
+    return _value.length();
+}
