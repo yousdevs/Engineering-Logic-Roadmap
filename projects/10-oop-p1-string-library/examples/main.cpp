@@ -43,6 +43,10 @@ int main() {
     // count characters
     cout << "'Apple Mac' Uppercase characters count: " << StringLib::countCharacters("Apple Mac", StringLib::CharacterType::Uppercase) << endl;
 
+    // Trim example
+    StringLib trimExample("   padded text   ");
+    trimExample.trim();
+    cout << "\nTrimmed text: '" << trimExample.getValue() << "'" << endl;
 
 
 	return 0;

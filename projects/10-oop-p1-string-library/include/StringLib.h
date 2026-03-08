@@ -314,3 +314,42 @@ inline size_t StringLib::countSpecificCharacter(char letter, bool matchCase) con
     return StringLib::countSpecificCharacter(_value, letter, matchCase);
 }
 
+inline std::string StringLib::trimLeft(const std::string& text) {
+    
+    size_t i = 0;
+
+    while (i < text.length() && text[i] == ' ') {
+        i++;
+    }
+
+    return text.substr(i);
+}
+
+inline void StringLib::trimLeft() {
+    _value = StringLib::trimLeft(_value);
+}
+
+inline std::string StringLib::trimRight(const std::string& text) {
+    
+    if (text.empty()) return "";
+
+    size_t i = text.length();
+
+    while (i > 0 && text[i - 1] == ' ') {
+        --i;
+    }
+
+    return text.substr(0, i);
+}
+
+inline void StringLib::trimRight() {
+    _value = StringLib::trimRight(_value);
+}
+
+inline std::string StringLib::trim(const std::string& text) {
+    return StringLib::trimLeft(StringLib::trimRight(text));
+}
+
+inline void StringLib::trim() {
+    _value = StringLib::trim(_value);
+}
