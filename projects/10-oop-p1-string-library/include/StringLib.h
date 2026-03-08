@@ -122,3 +122,100 @@ inline size_t StringLib::length(const std::string& text) {
 inline size_t StringLib::length() const {
     return _value.length();
 }
+
+inline std::string StringLib::toUpper(const std::string& text) {
+    std::string uppered;
+    uppered.reserve(text.length());
+    for (size_t i = 0; i < text.length(); i++) {
+        uppered.push_back(static_cast<char>(std::toupper(text[i])));
+    }
+    return uppered;
+}
+
+inline void StringLib::toUpper() {
+    _value = StringLib::toUpper(_value);
+}
+
+inline std::string StringLib::toLower(const std::string& text) {
+    std::string lowered;
+    for (size_t i = 0; i < text.length(); i++) {
+        lowered.push_back(static_cast<char>(std::tolower(text[i])));
+    }
+    return lowered;
+}
+
+inline void StringLib::toLower() {
+    _value = StringLib::toLower(_value);
+}
+
+inline char StringLib::invertCase(char character) {
+    return std::islower(character) ? static_cast<char>(std::toupper(character)) : static_cast<char>(std::tolower(character));
+}
+
+inline std::string StringLib::invertCase(const std::string& text) {
+    std::string inverted;
+    inverted.reserve(text.length());
+    for (size_t i = 0; i < text.length(); i++) {
+        inverted.push_back(StringLib::invertCase(text[i]));
+    }
+    return inverted;
+}
+
+inline void StringLib::invertCase() {
+    _value = StringLib::invertCase(_value);
+}
+
+inline std::string StringLib::capitalizeWords(const std::string& text) {
+    std::string capitalized;
+    capitalized.reserve(text.length());
+
+    bool isFirstChar = true;
+    for (size_t i = 0; i < text.length(); i++) {
+        char c = text[i];
+
+        if (isFirstChar && c != ' ') {
+            capitalized.push_back(static_cast<char>(std::toupper(c)));
+            isFirstChar = false;
+        }
+        else {
+            capitalized.push_back(c);
+            isFirstChar = (c == ' ');
+        }
+    }
+
+    return capitalized;
+}
+
+inline void StringLib::capitalizeWords() {
+    _value = StringLib::capitalizeWords(_value);
+}
+
+inline std::string StringLib::decapitalizeWords(const std::string& text) {
+    std::string deCapitalized;
+    deCapitalized.reserve(text.length());
+
+    bool isFirstChar = true;
+    for (size_t i = 0; i < text.length(); i++) {
+        char c = text[i];
+
+        if (isFirstChar && c != ' ') {
+            deCapitalized.push_back(static_cast<char>(std::tolower(c)));
+            isFirstChar = false;
+        }
+        else {
+            deCapitalized.push_back(c);
+            isFirstChar = (c == ' ');
+        }
+    }
+
+    return deCapitalized;
+}
+
+inline void StringLib::decapitalizeWords() {
+    _value = StringLib::decapitalizeWords(_value);
+}
+
+
+
+
+

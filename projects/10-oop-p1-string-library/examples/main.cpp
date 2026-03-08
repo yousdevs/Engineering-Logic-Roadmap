@@ -17,6 +17,19 @@ int main() {
     cout << "Length: " << text.length() << endl;
     cout << "Length of 'Apple': " << StringLib::length("Apple") << endl;
 
+    // Case transformations
+    StringLib upperTest = text;
+    upperTest.toUpper();
+    cout << "Uppercase: " << upperTest.getValue() << endl;
+
+    StringLib lowerTest = text;
+    lowerTest.toLower();
+    cout << "Lowercase: " << lowerTest.getValue() << endl;
+
+    StringLib invertTest = text;
+    invertTest.invertCase();
+    cout << "Invert case: " << invertTest.getValue() << endl;
 	
+
 	return 0;
 }
