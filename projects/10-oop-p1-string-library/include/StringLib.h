@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <cctype>
 
 class StringLib{
 
@@ -138,6 +139,7 @@ inline void StringLib::toUpper() {
 
 inline std::string StringLib::toLower(const std::string& text) {
     std::string lowered;
+    lowered.reserve(text.length());
     for (size_t i = 0; i < text.length(); i++) {
         lowered.push_back(static_cast<char>(std::tolower(text[i])));
     }
@@ -215,7 +217,100 @@ inline void StringLib::decapitalizeWords() {
     _value = StringLib::decapitalizeWords(_value);
 }
 
+inline size_t StringLib::countWords(const std::string& text) {
+    size_t counter = 0;
+    bool isFirstChar = true;
 
+    for (size_t i = 0; i < text.length(); i++) {
+        char c = text[i];
 
+        if (c != ' ' && isFirstChar) {
+            counter++;
+            isFirstChar = false;
+        }
+        else if (c == ' ') {
+            isFirstChar = true;
+        }
+    }
 
+    return counter;
+}
+
+inline size_t StringLib::countWords() const {
+    return StringLib::countWords(_value);
+}
+
+inline bool StringLib::isVowel(char character) {
+    character = static_cast<char>(std::tolower(character));
+
+    return character == 'a' ||
+        character == 'e' ||
+        character == 'i' ||
+        character == 'o' ||
+        character == 'u';
+}
+
+inline size_t StringLib::countVowels(const std::string& text) {
+    size_t counter = 0;
+    for (size_t i = 0; i < text.length(); i++) {
+        if (StringLib::isVowel(text[i])) counter++;
+    }
+    return counter;
+}
+
+inline size_t StringLib::countVowels() const {
+    return StringLib::countVowels(_value);
+}
+
+inline size_t StringLib::countCharacters(const std::string& text, StringLib::CharacterType type) {
+    if (type == CharacterType::All)
+        return text.length();
+
+    size_t counter = 0;
+
+    for (size_t i = 0; i < text.length(); i++) {
+
+        if (type == CharacterType::Uppercase && std::isupper(text[i]))
+            counter++;
+
+        else if (type == CharacterType::Lowercase && std::islower(text[i]))
+            counter++;
+    }
+
+    return counter;
+}
+
+inline size_t StringLib::countUppercase(const std::string& text) {
+    return StringLib::countCharacters(text, StringLib::CharacterType::Uppercase);
+}
+
+inline size_t StringLib::countUppercase() const {
+    return StringLib::countUppercase(_value);
+}
+
+inline size_t StringLib::countLowercase(const std::string& text) {
+    return StringLib::countCharacters(text, StringLib::CharacterType::Lowercase);
+}
+
+inline size_t StringLib::countLowercase() const {
+    return StringLib::countLowercase(_value);
+}
+
+inline size_t StringLib::countSpecificCharacter(const std::string& text, char letter, bool matchCase) {
+    size_t counter = 0;
+    for (size_t i = 0; i < text.length(); i++) {
+        if (matchCase) {
+            if (text[i] == letter) counter++;
+        }
+        else {
+            if (static_cast<char>(std::tolower(letter)) ==
+                static_cast<char>(std::tolower(text[i]))) counter++;
+        }
+    }
+    return counter;
+}
+
+inline size_t StringLib::countSpecificCharacter(char letter, bool matchCase) const {
+    return StringLib::countSpecificCharacter(_value, letter, matchCase);
+}
 

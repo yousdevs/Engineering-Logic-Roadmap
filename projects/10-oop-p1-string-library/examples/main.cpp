@@ -30,6 +30,20 @@ int main() {
     invertTest.invertCase();
     cout << "Invert case: " << invertTest.getValue() << endl;
 	
+    // Word count
+    cout << "Word count: " << text.countWords() << endl;
+    // Vowel counting
+    cout << "Vowel count: " << text.countVowels() << endl;
+    // count UpperCase
+    cout << "UpperCase count: " << text.countUppercase() << endl;
+    // count LowerCase
+    cout << "LowerCase count: " << text.countLowercase() << endl;
+    // count specific character:
+    cout << "'L' character count: " << text.countSpecificCharacter('L', false) << endl;
+    // count characters
+    cout << "'Apple Mac' Uppercase characters count: " << StringLib::countCharacters("Apple Mac", StringLib::CharacterType::Uppercase) << endl;
+
+
 
 	return 0;
 }
