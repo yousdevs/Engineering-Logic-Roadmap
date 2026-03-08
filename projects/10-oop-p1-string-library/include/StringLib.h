@@ -353,3 +353,135 @@ inline std::string StringLib::trim(const std::string& text) {
 inline void StringLib::trim() {
     _value = StringLib::trim(_value);
 }
+
+inline std::vector<std::string> StringLib::split(const std::string& text, const std::string& delimiter) {
+    std::vector<std::string> tokens;
+    size_t start = 0;
+    size_t end = text.find(delimiter);
+
+    // Iteratively find delimiters and extract substrings
+    while (end != std::string::npos) {
+        std::string word = text.substr(start, end - start);
+
+        // Skip empty tokens (occurs with consecutive delimiters)
+        if (!word.empty()) {
+            tokens.push_back(word);
+        }
+
+        // Move indices forward past the current delimiter
+        start = end + delimiter.length();
+        end = text.find(delimiter, start);
+    }
+
+    // Capture the final segment after the last delimiter
+    std::string lastWord = text.substr(start);
+    if (!lastWord.empty()) {
+        tokens.push_back(lastWord);
+    }
+
+    return tokens;
+}
+
+inline std::vector<std::string> StringLib::split(const std::string& delimiter) const {
+    return StringLib::split(_value, delimiter);
+}
+
+inline std::string StringLib::join(const std::vector<std::string>& words, const std::string& delimiter) {
+    
+    if (words.empty()) {
+        return "";
+    }
+
+    std::string joined;
+
+    for (size_t i = 0; i < words.size(); i++) {
+        joined += words[i];
+
+        // Only add the delimiter if this is NOT the last element
+        if (i < words.size() - 1) {
+            joined += delimiter;
+        }
+    }
+
+    return joined;
+}
+
+inline std::string StringLib::join(const std::string words[], size_t length, const std::string& delimiter) {
+    if (length == 0) {
+        return "";
+    }
+
+    std::string joined = "";
+
+    for (size_t i = 0; i < length; i++) {
+        joined += words[i];
+
+        // Only add the delimiter if this is NOT the last element
+        if (i < length - 1) {
+            joined += delimiter;
+        }
+    }
+
+    return joined;
+}
+
+inline std::string StringLib::replace(const std::string& text, const std::string& target, const std::string& replacement, bool matchCase){
+    
+    if (text.empty()) return "";
+
+    std::vector<std::string> tokens = StringLib::split(text, " ");
+
+    for (std::string& token : tokens) {
+        if (matchCase) {
+            if (token == target) token = replacement;
+        }
+        else {
+            if (StringLib::toLower(token) == StringLib::toLower(target)) {
+                token = replacement;
+            }
+        }
+    }
+
+    return StringLib::join(tokens, " ");
+}
+
+inline void StringLib::replace(const std::string& target, const std::string& replacement, bool matchCase) {
+    _value = StringLib::replace(_value, target, replacement, matchCase);
+}
+
+inline std::string StringLib::reverseWords(const std::string& text) {
+    
+    if (text.empty()) return "";
+
+    std::vector<std::string> tokens = StringLib::split(text, " ");
+
+    std::vector<std::string> reversedTokens;
+    reversedTokens.reserve(tokens.size());
+
+    for (size_t i = tokens.size(); i > 0; --i) {
+        reversedTokens.push_back(tokens[i - 1]);
+    }
+
+    return StringLib::join(reversedTokens, " ");
+}
+
+inline void StringLib::reverseWords() {
+    _value = StringLib::reverseWords(_value);
+}
+
+inline std::string StringLib::removePunctuation(const std::string& text) {
+    std::string newText;
+    newText.reserve(text.length());
+
+    for (size_t i = 0; i < text.length(); i++)
+    {
+        if (!std::ispunct(text[i])) newText += text[i];
+    }
+
+    return newText;
+}
+
+inline void StringLib::removePunctuation() {
+    _value = StringLib::removePunctuation(_value);
+}
+
