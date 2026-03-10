@@ -251,3 +251,25 @@ inline void CalendarDate::setYear(short year) {
 inline short CalendarDate::getYear() const {
     return _year;
 }
+
+// System Time & Validation
+inline CalendarDate CalendarDate::getSystemDate() {
+    return CalendarDate();
+}
+
+inline bool CalendarDate::isValidDate(const CalendarDate& date) {
+    
+    short month = date.getMonth();
+    short year = date.getYear();
+    short day = date.getDay();
+
+    if (CalendarDate::isLastMonthInYear(month) || year < 1) return false;
+    
+    if (day > CalendarDate::numberOfDaysInMonth(month, year) || day < 1) return false;
+
+    return true;
+}
+
+inline bool CalendarDate::isValid() const {
+    return CalendarDate::isValidDate(CalendarDate(getDay(), getMonth(), getYear()));
+}

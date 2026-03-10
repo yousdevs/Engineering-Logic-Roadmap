@@ -29,5 +29,14 @@ int main() {
 
 	cout << "Updated date: " << d3 << endl;
 
+	cout << "\n===== Validation =====\n";
+
+	//CalendarDate invalidDate(31, 2, 2024);
+
+	//cout << "Is d2 valid? " << d2.isValid() << endl;
+	//cout << "Is invalidDate valid? " << invalidDate.isValid() << endl;
+
+
+
 	return 0;
 }
