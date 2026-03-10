@@ -84,7 +84,28 @@ int main() {
 
 	cout << "Date from order 200 in 2023: "
 		<< CalendarDate::getDateFromDayOrderInYear(200, 2023) << endl;
+	/*
+	cout << "\n===== Add Date Operations =====\n";
 
+	CalendarDate addTest(28, 2, 2024);
+
+	cout << "Original: " << addTest << endl;
+
+	addTest.addOneDay();
+	cout << "Add one day: " << addTest << endl;
+
+	addTest.addDays(10);
+	cout << "Add 10 days: " << addTest << endl;
+
+	addTest.increaseDateByOneWeek();
+	cout << "Add week: " << addTest << endl;
+
+	addTest.increaseDateByOneMonth();
+	cout << "Add month: " << addTest << endl;
+
+	addTest.increaseDateByOneYear();
+	cout << "Add year: " << addTest << endl;
+	*/
 
 
 
