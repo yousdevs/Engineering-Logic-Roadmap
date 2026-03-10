@@ -42,6 +42,49 @@ int main() {
 
 	//cout << CalendarDate::generateYearCalendar(2024);
 
+	cout << "\n===== Leap Year =====\n";
+
+	cout << "2024 leap year? "
+		<< CalendarDate::isLeapYear(2024) << endl;
+
+	cout << "d2 leap year? "
+		<< d2.isLeapYear() << endl;
+
+
+	cout << "\n===== Days / Time Calculations =====\n";
+
+	cout << "Days in year: "
+		<< CalendarDate::numberOfDaysInYear(2024) << endl;
+
+	cout << "Days in month: "
+		<< CalendarDate::numberOfDaysInMonth(2, 2024) << endl;
+
+	cout << "Hours in month: "
+		<< CalendarDate::numberOfHoursInMonth(2, 2024) << endl;
+
+	cout << "Minutes in year: "
+		<< CalendarDate::numberOfMinutesInYear(2024) << endl;
+
+
+	cout << "\n===== Day / Month Names =====\n";
+
+	cout << "Day order: "
+		<< CalendarDate::dayOfWeekOrder(10, 3, 2024) << endl;
+
+	cout << "Day short name: "
+		<< CalendarDate::dayShortName(10, 3, 2024) << endl;
+
+	cout << "Month short name: "
+		<< CalendarDate::monthShortName(3) << endl;
+
+
+	cout << "\n===== Days From Beginning Of Year =====\n";
+
+	cout << CalendarDate::daysFromBeginningOfYear(10, 3, 2024) << endl;
+
+	cout << "Date from order 200 in 2023: "
+		<< CalendarDate::getDateFromDayOrderInYear(200, 2023) << endl;
+
 
 
 

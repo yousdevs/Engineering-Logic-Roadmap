@@ -334,3 +334,155 @@ inline std::string CalendarDate::generateYearCalendar() const {
     return CalendarDate::generateYearCalendar(getYear());
 }
 
+// Calendar Mechanics
+inline bool CalendarDate::isLeapYear(short year) {
+    return (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0));
+}
+
+inline bool CalendarDate::isLeapYear() const {
+    return CalendarDate::isLeapYear(getYear());
+}
+
+inline short CalendarDate::numberOfDaysInYear(short year) {
+    return (CalendarDate::isLeapYear(year)) ? 366 : 365;
+}
+
+inline short CalendarDate::numberOfDaysInYear() const {
+    return CalendarDate::numberOfDaysInYear(getYear());
+}
+
+inline short CalendarDate::numberOfHoursInYear(short year) {
+    return CalendarDate::numberOfDaysInYear(year) * 24;
+}
+
+inline short CalendarDate::numberOfHoursInYear() const {
+    return CalendarDate::numberOfHoursInYear(getYear());
+}
+
+inline int CalendarDate::numberOfMinutesInYear(short year) {
+    return CalendarDate::numberOfHoursInYear(year) * 60;
+}
+
+inline int CalendarDate::numberOfMinutesInYear() const {
+    return CalendarDate::numberOfMinutesInYear(getYear());
+}
+
+inline int CalendarDate::numberOfSecondsInYear(short year) {
+    return CalendarDate::numberOfMinutesInYear(year) * 60;
+}
+
+inline int CalendarDate::numberOfSecondsInYear() const {
+    return CalendarDate::numberOfSecondsInYear(getYear());
+}
+
+inline short CalendarDate::numberOfDaysInMonth(short month, short year) {
+    if (month < 1 || month > 12) return 0;
+    const short daysInMonthes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    return (month == 2 && CalendarDate::isLeapYear(year))? 29 : daysInMonthes[month - 1];
+}
+
+inline short CalendarDate::numberOfDaysInMonth() const {
+    return CalendarDate::numberOfDaysInMonth(getMonth(), getYear());
+}
+
+inline short CalendarDate::numberOfHoursInMonth(short month, short year) {
+    return CalendarDate::numberOfDaysInMonth(month, year) * 24;
+}
+
+inline short CalendarDate::numberOfHoursInMonth() const {
+    return CalendarDate::numberOfHoursInMonth(getMonth(), getYear());
+}
+
+inline int numberOfMinutesInMonth(short month, short year) {
+    return CalendarDate::numberOfHoursInMonth(month, year) * 60;
+}
+
+inline int CalendarDate::numberOfMinutesInMonth() const {
+    return CalendarDate::numberOfMinutesInMonth(getMonth(), getYear());
+}
+
+inline int CalendarDate::numberOfSecondsInMonth(short month, short year) {
+    return CalendarDate::numberOfMinutesInMonth(month, year) * 60;
+}
+
+inline int CalendarDate::numberOfSecondsInMonth() const {
+    return CalendarDate::numberOfSecondsInMonth(getMonth(), getYear());
+}
+
+inline short CalendarDate::dayOfWeekOrder(short day, short month, short year) {
+    /*
+    * Gregorian
+    * returns day of week order between 0 (Sunday) and 6 (Satarday)
+    */
+    short a = (14 - month) / 12;
+    short y = year - a;
+    short m = month + (12 * a) - 2;
+    short d = (day + y + (y / 4) - (y / 100) + (y / 400) + ((31 * m) / 12));
+    d = d % 7;
+
+    return d;
+}
+
+inline short CalendarDate::dayOfWeekOrder() const {
+    return CalendarDate::dayOfWeekOrder(getDay(), getMonth(), getYear());
+}
+
+inline std::string CalendarDate::dayShortName(short dayOfWeekOrder) {
+    if (dayOfWeekOrder < 0 || dayOfWeekOrder > 6) return "Invalid day order.";
+    const std::string dayNames[7] = {
+        "Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"
+    };
+    return dayNames[dayOfWeekOrder].substr(0, 3);
+}
+
+inline std::string CalendarDate::dayShortName(short day, short month, short year) {
+    return CalendarDate::dayShortName(CalendarDate::dayOfWeekOrder(day, month, year));
+}
+
+inline std::string CalendarDate::dayShortName() const {
+    return CalendarDate::dayShortName(getDay(), getMonth(), getYear());
+}
+
+inline std::string CalendarDate::monthShortName(short monthNumber) {
+    if (monthNumber < 1 || monthNumber > 12) return "Invalid month number";
+
+    const std::string monthNames[12] = {
+        "January", "February", "March", "April",
+        "May", "June", "July", "August", "September",
+        "October", "November", "December"
+    };
+    return monthNames[monthNumber - 1].substr(0, 3);
+}
+
+inline std::string CalendarDate::monthShortName() const {
+    return CalendarDate::monthShortName(getMonth());
+}
+
+// Date Arithmetic Mechanics
+inline short CalendarDate::daysFromBeginningOfYear(short day, short month, short year) {
+    short total = 0;
+    for (short i = 1; i < month; i++) {
+        total += CalendarDate::numberOfDaysInMonth(i, year);
+    }
+    total += day;
+    return total;
+}
+
+inline short CalendarDate::daysFromBeginningOfYear() const {
+    return CalendarDate::daysFromBeginningOfYear(getDay(), getMonth(), getYear());
+}
+
+inline CalendarDate CalendarDate::getDateFromDayOrderInYear(short dateOrderInYear, short year) {
+    
+    short month = 1;
+
+    while (dateOrderInYear > CalendarDate::numberOfDaysInMonth(month, year))
+    {
+        dateOrderInYear -= CalendarDate::numberOfDaysInMonth(month, year);
+        month++;
+    }
+
+    return CalendarDate(dateOrderInYear, month, year);
+}
+
