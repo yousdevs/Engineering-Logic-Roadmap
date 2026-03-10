@@ -226,3 +226,28 @@ inline std::ostream& operator<<(std::ostream& os, const CalendarDate& date) {
         << date._year;
     return os;
 }
+
+// Getters & Setters
+inline void CalendarDate::setDay(short day) {
+    _day = day;
+}
+
+inline short CalendarDate::getDay() const {
+    return _day;
+}
+
+inline void CalendarDate::setMonth(short month) {
+    _month = month;
+}
+
+inline short CalendarDate::getMonth() const {
+    return _month;
+}
+
+inline void CalendarDate::setYear(short year) {
+    _year = year;
+}
+
+inline short CalendarDate::getYear() const {
+    return _year;
+}

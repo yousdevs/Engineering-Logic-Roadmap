@@ -17,5 +17,17 @@ int main() {
 	cout << d3 << endl;
 	//cout << d4 << endl;
 
+	cout << "\n===== Getters / Setters =====\n";
+
+	d3.setDay(20);
+	d3.setMonth(6);
+	d3.setYear(2025);
+
+	cout << "Day: " << d3.getDay() << endl;
+	cout << "Month: " << d3.getMonth() << endl;
+	cout << "Year: " << d3.getYear() << endl;
+
+	cout << "Updated date: " << d3 << endl;
+
 	return 0;
 }
