@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
 
 #include "StringLib.h"
 
@@ -273,3 +275,62 @@ inline bool CalendarDate::isValidDate(const CalendarDate& date) {
 inline bool CalendarDate::isValid() const {
     return CalendarDate::isValidDate(CalendarDate(getDay(), getMonth(), getYear()));
 }
+
+// Output & Formatting
+inline std::string CalendarDate::dateToString(const CalendarDate& date) {
+    return (date.getDay() < 10 ? "0" : "") + std::to_string(date.getDay()) + "/" 
+        + (date.getMonth() < 10 ? "0" : "") + std::to_string(date.getMonth()) + "/"
+        + std::to_string(date.getYear());
+}
+
+inline std::string CalendarDate::dateToString() const {
+    return CalendarDate::dateToString(CalendarDate(getDay(), getMonth(), getYear()));
+}
+
+inline std::string CalendarDate::generateMonthCalendar(short month, short year){
+    std::ostringstream c;
+
+    c << std::setw(20)
+        << CalendarDate::monthShortName(month) << " "
+        << year << "\n";
+
+    for (short i = 0; i < 7; i++)
+        c << std::setw(5) << CalendarDate::dayShortName(i);
+
+    c << "\n";
+
+    short totalDays = CalendarDate::numberOfDaysInMonth(month, year);
+    short monthStartWeekday = CalendarDate::dayOfWeekOrder(1, month, year);
+
+    for (short i = 0; i < monthStartWeekday; i++)
+        c << std::setw(5) << "";
+
+    for (short day = 1; day <= totalDays; day++)
+    {
+        c << std::setw(5) << day;
+
+        if ((monthStartWeekday + day) % 7 == 0)
+            c << "\n";
+    }
+
+    c << "\n";
+
+    return c.str();
+}
+
+inline std::string CalendarDate::generateMonthCalendar() const {
+    return CalendarDate::generateMonthCalendar(getMonth(), getYear());
+}
+
+inline std::string CalendarDate::generateYearCalendar(short year) {
+    std::string c;
+    for (short i = 1; i <= 12; i++) {
+        c += CalendarDate::generateMonthCalendar(i, year);
+    }
+    return c;
+}
+
+inline std::string CalendarDate::generateYearCalendar() const {
+    return CalendarDate::generateYearCalendar(getYear());
+}
+

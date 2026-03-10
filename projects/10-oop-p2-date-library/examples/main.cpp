@@ -36,6 +36,13 @@ int main() {
 	//cout << "Is d2 valid? " << d2.isValid() << endl;
 	//cout << "Is invalidDate valid? " << invalidDate.isValid() << endl;
 
+	//cout << "\n===== Calendar Generation =====\n";
+
+	//cout << CalendarDate::generateMonthCalendar(3, 2024);
+
+	//cout << CalendarDate::generateYearCalendar(2024);
+
+
 
 
 	return 0;
