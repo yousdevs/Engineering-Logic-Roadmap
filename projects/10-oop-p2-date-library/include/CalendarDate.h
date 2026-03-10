@@ -5,6 +5,8 @@
 #include <vector>
 #include <ctime>
 
+#include "StringLib.h"
+
 
 class CalendarDate {
 private:
@@ -174,4 +176,53 @@ public:
 
 // =================================================================
 // IMPLEMENTATION SECTION
-// =================================================================
+// =================================================================
+
+inline CalendarDate::CalendarDate() {
+    std::time_t t = std::time(nullptr);
+    struct tm now;
+
+#if defined(_WIN32)
+    // The :: ensures we use the global C-runtime function
+    (void)::localtime_s(&now, &t);
+#else
+    localtime_r(&t, &now);
+#endif
+
+    _day = static_cast<short>(now.tm_mday);
+    _month = static_cast<short>(now.tm_mon + 1);
+    _year = static_cast<short>(now.tm_year + 1900);
+}
+
+inline CalendarDate::CalendarDate(const std::string& stringDate) {
+    std::vector<std::string> tokens = StringLib::split(stringDate, "/");
+    if (tokens.size() == 3) {
+        _day = static_cast<short>(std::stoi(tokens.at(0)));
+        _month = static_cast<short>(std::stoi(tokens.at(1)));
+        _year = static_cast<short>(std::stoi(tokens.at(2)));
+    }
+    else {
+        throw std::invalid_argument("Date must be in dd/mm/yyyy format");
+    }
+}
+
+inline CalendarDate::CalendarDate(short day, short month, short year){
+    _day = day;
+    _month = month;
+    _year = year;
+}
+
+inline CalendarDate::CalendarDate(short dateOrderInYear, short year) {
+    CalendarDate c = CalendarDate::getDateFromDayOrderInYear(dateOrderInYear, year);
+    _day = c.getDay();
+    _month = c.getMonth();
+    _year = c.getYear();
+}
+
+inline std::ostream& operator<<(std::ostream& os, const CalendarDate& date) {
+
+    os << (date._day < 10 ? "0" : "") << date._day << "/"
+        << (date._month < 10 ? "0" : "") << date._month << "/"
+        << date._year;
+    return os;
+}
