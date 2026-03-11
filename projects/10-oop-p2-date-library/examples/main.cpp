@@ -10,12 +10,12 @@ int main() {
 	CalendarDate d1;                         // system date
 	CalendarDate d2("10/3/2024");            // string constructor
 	CalendarDate d3(15, 5, 2022);            // day month year
-	//CalendarDate d4(120, 2023);              // day order in year
+	CalendarDate d4(120, 2023);              // day order in year
 
 	cout << d1 << endl;
 	cout << d2 << endl;
 	cout << d3 << endl;
-	//cout << d4 << endl;
+	cout << d4 << endl;
 
 	cout << "\n===== Getters / Setters =====\n";
 
@@ -31,16 +31,10 @@ int main() {
 
 	cout << "\n===== Validation =====\n";
 
-	//CalendarDate invalidDate(31, 2, 2024);
+	CalendarDate invalidDate(31, 2, 2024);
 
-	//cout << "Is d2 valid? " << d2.isValid() << endl;
-	//cout << "Is invalidDate valid? " << invalidDate.isValid() << endl;
-
-	//cout << "\n===== Calendar Generation =====\n";
-
-	//cout << CalendarDate::generateMonthCalendar(3, 2024);
-
-	//cout << CalendarDate::generateYearCalendar(2024);
+	cout << "Is d2 valid? " << d2.isValid() << endl;
+	cout << "Is invalidDate valid? " << invalidDate.isValid() << endl;
 
 	cout << "\n===== Leap Year =====\n";
 
@@ -84,7 +78,7 @@ int main() {
 
 	cout << "Date from order 200 in 2023: "
 		<< CalendarDate::getDateFromDayOrderInYear(200, 2023) << endl;
-	/*
+	
 	cout << "\n===== Add Date Operations =====\n";
 
 	CalendarDate addTest(28, 2, 2024);
@@ -105,7 +99,7 @@ int main() {
 
 	addTest.increaseDateByOneYear();
 	cout << "Add year: " << addTest << endl;
-	*/
+	
 
 	
 	cout << "\n===== Decrease Date Operations =====\n";
@@ -148,6 +142,56 @@ int main() {
 	if (result == CalendarDate::CompareResult::Before)
 		cout << "c1 before c2\n";
 
+	
+	cout << "\n===== Difference In Days =====\n";
+
+	cout << "Difference: "
+		<< CalendarDate::getDifferenceInDays(c1, c2) << endl;
+
+
+	cout << "\n===== Age Calculation =====\n";
+
+	CalendarDate birth(21, 3, 2001);
+
+	cout << "Age in days: "
+		<< CalendarDate::calculateAgeInDays(birth) << endl;
+	
+
+	cout << "\n===== End Of Period =====\n";
+
+	cout << "Days until end of week: "
+		<< c1.daysUntilEndOfWeek() << endl;
+
+	cout << "Days until end of month: "
+		<< c1.daysUntilEndOfMonth() << endl;
+
+	cout << "Days until end of year: "
+		<< c1.daysUntilEndOfYear() << endl;
+
+
+	cout << "\n===== Business Days =====\n";
+
+	CalendarDate from(1, 3, 2024);
+	CalendarDate to(20, 3, 2024);
+
+	cout << "Business days: "
+		<< CalendarDate::calculateBusinessDays(from, to) << endl;
+
+
+	cout << "\n===== Vacation =====\n";
+
+	CalendarDate vacationStart(1, 3, 2024);
+
+	cout << "Vacation return date: "
+		<< CalendarDate::calculateVacationReturnDate(vacationStart, 10)
+		<< endl;
+
+
+	cout << "\n===== Calendar Generation =====\n";
+
+	cout << CalendarDate::generateMonthCalendar(3, 2024);
+
+	cout << CalendarDate::generateYearCalendar(2024);
 
 	return 0;
 }

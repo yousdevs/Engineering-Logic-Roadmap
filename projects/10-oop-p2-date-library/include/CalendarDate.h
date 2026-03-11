@@ -265,7 +265,7 @@ inline bool CalendarDate::isValidDate(const CalendarDate& date) {
     short year = date.getYear();
     short day = date.getDay();
 
-    if (CalendarDate::isLastMonthInYear(month) || year < 1) return false;
+    if (month < 1 || month > 12 || year < 1) return false;
     
     if (day > CalendarDate::numberOfDaysInMonth(month, year) || day < 1) return false;
 
@@ -393,7 +393,7 @@ inline short CalendarDate::numberOfHoursInMonth() const {
     return CalendarDate::numberOfHoursInMonth(getMonth(), getYear());
 }
 
-inline int numberOfMinutesInMonth(short month, short year) {
+inline int CalendarDate::numberOfMinutesInMonth(short month, short year) {
     return CalendarDate::numberOfHoursInMonth(month, year) * 60;
 }
 
@@ -490,7 +490,7 @@ inline CalendarDate CalendarDate::getDateFromDayOrderInYear(short dateOrderInYea
 inline CalendarDate CalendarDate::addOneDay(const CalendarDate& date) {
 
     if (CalendarDate::isLastDayInMonth(date)) {
-        if (CalendarDate::isLastMonthInYear(date.getYear())) {
+        if (CalendarDate::isLastMonthInYear(date.getMonth())) {
             return CalendarDate(1, 1, date.getYear() + 1);
         }
         else {
@@ -507,7 +507,7 @@ inline void CalendarDate::addOneDay() {
     setYear(temp.getYear());
 }
 
-inline CalendarDate addDays(const CalendarDate& date, short days) {
+inline CalendarDate CalendarDate::addDays(const CalendarDate& date, short days) {
     CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
     for (short i = 0; i < days; i++) {
         newDate.addOneDay();
@@ -922,4 +922,165 @@ inline CalendarDate::CompareResult CalendarDate::compare(const CalendarDate& dat
 inline CalendarDate::CompareResult CalendarDate::compare(const CalendarDate& date2) const {
 
     return CalendarDate::compare(*this, date2);
+}
+
+// Utility & Difference
+inline void CalendarDate::swapDates(CalendarDate& date1, CalendarDate& date2) {
+
+    std::swap(date1, date2);
+}
+
+inline int CalendarDate::getDifferenceInDays(const CalendarDate& date1, const CalendarDate& date2, bool includeEndDay) {
+    
+    if (CalendarDate::isEqual(date1, date2))
+        return includeEndDay ? 1 : 0;
+
+    CalendarDate d1 = date1;
+    CalendarDate d2 = date2;
+
+    int sign = 1;
+
+    if (CalendarDate::isAfter(d1, d2)){
+        CalendarDate::swapDates(d1, d2);
+        sign = -1;
+    }
+
+    int days = 0;
+
+    while (CalendarDate::isBefore(d1, d2)){
+        d1 = CalendarDate::addOneDay(d1);
+        days++;
+    }
+
+    return includeEndDay ? sign * (days + 1) : sign * days;
+}
+
+inline int CalendarDate::getDifferenceInDays(const CalendarDate& date2, bool includeEndDay) const {
+
+    return CalendarDate::getDifferenceInDays(*this, date2, includeEndDay);
+}
+
+inline short CalendarDate::calculateAgeInDays(const CalendarDate& dateOfBirth) {
+    
+    return CalendarDate::getDifferenceInDays(dateOfBirth, CalendarDate::getSystemDate());
+}
+
+// Business & Vacations
+inline bool CalendarDate::isLastDayInMonth(const CalendarDate& date) {
+
+    return (CalendarDate::numberOfDaysInMonth(date.getMonth(), date.getYear()) ==
+        date.getDay());
+}
+
+inline bool CalendarDate::isLastDayInMonth() const {
+    
+    return CalendarDate::isLastDayInMonth(*this);
+}
+
+inline bool CalendarDate::isLastMonthInYear(short month) {
+    
+    return month == 12;
+}
+
+inline bool CalendarDate::isEndOfWeek(const CalendarDate& date) {
+    
+    return (CalendarDate::dayOfWeekOrder(date.getDay(), date.getMonth(), date.getYear())
+        == 6);
+}
+
+inline bool CalendarDate::isEndOfWeek() const {
+    
+    return CalendarDate::isEndOfWeek(*this);
+}
+
+inline bool CalendarDate::isWeekend(const CalendarDate& date) {
+
+    short satardayOrder = 6;
+    short sundayOrder = 0;
+    short dayOfWeekOrder = CalendarDate::dayOfWeekOrder(date.getDay(), date.getMonth(), date.getYear());
+    return (dayOfWeekOrder
+        == satardayOrder || dayOfWeekOrder == sundayOrder);
+}
+
+inline bool CalendarDate::isWeekend() const {
+    
+    return CalendarDate::isWeekend(*this);
+}
+
+inline bool CalendarDate::isBusinessDay(const CalendarDate& date) {
+
+    return !(CalendarDate::isWeekend(date));
+}
+
+inline bool CalendarDate::isBusinessDay() const {
+
+    return CalendarDate::isBusinessDay(*this);
+}
+
+inline short CalendarDate::daysUntilEndOfWeek(const CalendarDate& date) {
+    
+    if (CalendarDate::isEndOfWeek(date)) return 0;
+    short order = CalendarDate::dayOfWeekOrder(date.getDay(), date.getMonth(), date.getYear());
+    return 7 - order - 1; // 7 - 0 - 1 = 6, 7 - 1 - 1 = 5, 7 - 6 - 1 = 0
+}
+
+inline short CalendarDate::daysUntilEndOfWeek() const {
+    
+    return CalendarDate::daysUntilEndOfWeek(*this);
+}
+
+inline short CalendarDate::daysUntilEndOfMonth(const CalendarDate& date) {
+    
+    return (CalendarDate::numberOfDaysInMonth(date.getMonth(), date.getYear())
+        - date.getDay()); // 31 - 6 = 25, 31 - 31 = 0
+}
+
+inline short CalendarDate::daysUntilEndOfMonth() const {
+    
+    return CalendarDate::daysUntilEndOfMonth(*this);
+}
+
+inline short CalendarDate::daysUntilEndOfYear(const CalendarDate& date) {
+    
+    return (CalendarDate::numberOfDaysInYear(date.getYear())
+        - CalendarDate::daysFromBeginningOfYear(date.getDay(), date.getMonth(), date.getYear()));
+}
+
+inline short CalendarDate::daysUntilEndOfYear() const {
+    
+    return CalendarDate::daysUntilEndOfYear(*this);
+}
+
+inline short CalendarDate::calculateBusinessDays(const CalendarDate& dateFrom, const CalendarDate& dateTo) {
+    
+    short days = 0;
+    CalendarDate d1 = dateFrom;
+    CalendarDate d2 = dateTo;
+
+    while (!CalendarDate::isEqual(d1, d2)) {
+        
+        if (CalendarDate::isBusinessDay(d1))
+            days++;
+        d1.addOneDay();
+    }
+    return days;
+}
+
+inline short CalendarDate::calculateVacationDays(const CalendarDate& dateFrom, const CalendarDate& dateTo) {
+
+    return CalendarDate::calculateBusinessDays(dateFrom, dateTo);
+}
+
+inline CalendarDate CalendarDate::calculateVacationReturnDate(const CalendarDate& dateFrom, short vacationDays) {
+
+    CalendarDate start = dateFrom;
+    
+    short days = vacationDays;
+    while (days > 0) {
+        if (CalendarDate::isBusinessDay(start))
+            days--;
+        start.addOneDay();
+    }
+
+    return start;
 }
