@@ -77,5 +77,18 @@ int main() {
     for (int i = 0; i < arrSize; i++) cout << strArr[i] << " ";
     cout << "\n\n";
 
+    // Tabs example
+    cout << "Tab example:" << UtilityLib::tabs(3) << "Indented text\n\n";
+
+    // Encrypt and decrypt text
+    std::string message = "HelloWorld";
+    short keyVal = 3;
+    std::string encrypted = UtilityLib::encryptText(message, keyVal);
+    std::string decrypted = UtilityLib::decryptText(encrypted, keyVal);
+
+    cout << "Original message: " << message << endl;
+    cout << "Encrypted message: " << encrypted << endl;
+    cout << "Decrypted message: " << decrypted << "\n";
+
 	return 0;
 }

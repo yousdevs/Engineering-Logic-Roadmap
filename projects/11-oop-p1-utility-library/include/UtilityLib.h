@@ -64,16 +64,13 @@ public:
     static void shuffleArray(std::string arr[], int length);
 
 
-    /*-------------------------------------
-        Formatting
-    -------------------------------------*/
-
+   
+    // formatting
+    
     static std::string tabs(short count);
 
 
-    /*-------------------------------------
-        Simple Text Encryption
-    -------------------------------------*/
+    // simple Text Encryption
 
     static std::string encryptText(const std::string& text, short key);
     static std::string decryptText(const std::string& text, short key);
@@ -236,3 +233,40 @@ inline void UtilityLib::shuffleArray(std::string arr[], int length) {
     }
 }
 
+// formatting
+
+inline std::string UtilityLib::tabs(short count) {
+    
+    std::string t;
+    t.reserve(count);
+
+    for (short i = 0; i < count; i++) {
+        t += "\t";
+    }
+    return t;
+}
+
+
+// simple Text Encryption
+
+inline std::string UtilityLib::encryptText(const std::string& text, short key) {
+
+    std::string encrypted;
+    encrypted.reserve(text.length());
+
+    for (const char& t : text) {
+        encrypted += static_cast<char>(t + key);
+    }
+    return encrypted;
+}
+
+inline std::string UtilityLib::decryptText(const std::string& text, short key) {
+
+    std::string decrypted;
+    decrypted.reserve(text.length());
+
+    for (const char& t : text) {
+        decrypted += static_cast<char>(t - key);
+    }
+    return decrypted;
+}
