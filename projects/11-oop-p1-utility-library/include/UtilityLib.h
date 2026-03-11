@@ -25,16 +25,13 @@ public:
     static char getRandomCharacter(CharType type);
 
 
-   
     // random Text Generation
 
     static std::string generateWord(CharType type, short length);
     static std::string generateKey(CharType type = CharType::CapitalLetter);
 
 
-    /*-------------------------------------
-        Random Data Utilities
-    -------------------------------------*/
+    // random Data Utilities
 
     static void fillArrayWithRandomInts(int arr[], int length, int min, int max);
 
@@ -52,9 +49,7 @@ public:
     );
 
 
-    /*-------------------------------------
-        Swap Utilities
-    -------------------------------------*/
+    //Swap Utilities
 
     static void swapValues(int& a, int& b);
     static void swapValues(double& a, double& b);
@@ -63,9 +58,7 @@ public:
     static void swapValues(std::string& a, std::string& b);
 
 
-    /*-------------------------------------
-        Array Utilities
-    -------------------------------------*/
+    // Array Utilities
 
     static void shuffleArray(int arr[], int length);
     static void shuffleArray(std::string arr[], int length);
@@ -152,5 +145,94 @@ inline std::string UtilityLib::generateKey(CharType type) {
     }
 
     return key;
+}
+
+
+// random Data Utilities
+
+inline void UtilityLib::fillArrayWithRandomInts(int arr[], int length, int min, int max) {
+    
+    for (int i = 0; i < length; i++) {
+        arr[i] = UtilityLib::getRandomInt(min, max);
+    }
+}
+
+inline void UtilityLib::fillArrayWithRandomWords(
+    std::string arr[],
+    int length,
+    CharType type,
+    short wordLength
+) {
+    for (int i = 0; i < length; i++) {
+        arr[i] = UtilityLib::generateWord(type, wordLength);
+    }
+}
+
+inline void UtilityLib::fillArrayWithRandomKeys(
+    std::string arr[],
+    int length,
+    CharType type
+) {
+    for (int i = 0; i < length; i++) {
+        arr[i] = UtilityLib::generateKey(type);
+    }
+}
+
+//Swap Utilities
+
+inline void UtilityLib::swapValues(int& a, int& b) {
+    
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+inline void UtilityLib::swapValues(double& a, double& b) {
+    
+    double temp = a;
+    a = b;
+    b = temp;
+}
+
+inline void UtilityLib::swapValues(bool& a, bool& b) {
+
+    bool temp = a;
+    a = b;
+    b = temp;
+}
+
+inline void UtilityLib::swapValues(char& a, char& b) {
+
+    char temp = a;
+    a = b;
+    b = temp;
+}
+
+inline void UtilityLib::swapValues(std::string& a, std::string& b) {
+
+    std::string temp = a;
+    a = b;
+    b = temp;
+}
+
+
+// Array Utilities
+
+inline void UtilityLib::shuffleArray(int arr[], int length) {
+    // Loop backward from the last element down to the second element
+    for (int i = length - 1; i > 0; i--) {
+        // Pick a random index from 0 to i
+        int j = UtilityLib::getRandomInt(0, i);
+
+        // Swap the current element with the randomly selected one
+        UtilityLib::swapValues(arr[i], arr[j]);
+    }
+}
+
+inline void UtilityLib::shuffleArray(std::string arr[], int length) {
+    for (int i = length - 1; i > 0; i--) {
+        int j = UtilityLib::getRandomInt(0, i);
+        UtilityLib::swapValues(arr[i], arr[j]);
+    }
 }
 
