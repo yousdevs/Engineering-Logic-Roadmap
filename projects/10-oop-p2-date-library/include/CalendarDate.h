@@ -862,3 +862,64 @@ inline void CalendarDate::decreaseDateByOneMillennium() {
     setMonth(newDate.getMonth());
     setYear(newDate.getYear());
 }
+
+// Comparisons
+inline bool CalendarDate::isBefore(const CalendarDate& date1, const CalendarDate& date2) {
+    
+    if (date1.getYear() != date2.getYear())
+        return date1.getYear() < date2.getYear();
+
+    if (date1.getMonth() != date2.getMonth())
+        return date1.getMonth() < date2.getMonth();
+
+    return date1.getDay() < date2.getDay();
+}
+
+inline bool CalendarDate::isBefore(const CalendarDate& date2) const {
+    
+    return CalendarDate::isBefore(*this, date2);
+}
+
+inline bool CalendarDate::isEqual(const CalendarDate& date1, const CalendarDate& date2) {
+
+    return (date1.getYear() == date2.getYear() &&
+        date1.getMonth() == date2.getMonth() &&
+        date1.getDay() == date2.getDay());
+}
+
+inline bool CalendarDate::isEqual(const CalendarDate& date2) const {
+
+    return CalendarDate::isEqual(*this, date2);
+}
+
+inline bool CalendarDate::isAfter(const CalendarDate& date1, const CalendarDate& date2) {
+    
+    if (date1.getYear() != date2.getYear())
+        return date1.getYear() > date2.getYear();
+
+    if (date1.getMonth() != date2.getMonth())
+        return date1.getMonth() > date2.getMonth();
+
+    return date1.getDay() > date2.getDay();
+}
+
+inline bool CalendarDate::isAfter(const CalendarDate& date2) const {
+    
+    return CalendarDate::isAfter(*this, date2);
+}
+
+inline CalendarDate::CompareResult CalendarDate::compare(const CalendarDate& date1, const CalendarDate& date2){
+
+    if (CalendarDate::isBefore(date1, date2))
+        return CalendarDate::CompareResult::Before;
+
+    if (CalendarDate::isBefore(date2, date1))
+        return CalendarDate::CompareResult::After;
+
+    return CalendarDate::CompareResult::Equal;
+}
+
+inline CalendarDate::CompareResult CalendarDate::compare(const CalendarDate& date2) const {
+
+    return CalendarDate::compare(*this, date2);
+}

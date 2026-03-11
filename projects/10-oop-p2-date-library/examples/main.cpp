@@ -126,6 +126,28 @@ int main() {
 	subTest.decreaseDateByOneYear();
 	cout << "Minus year: " << subTest << endl;
 	
+	cout << "\n===== Date Comparison =====\n";
+
+	CalendarDate c1(10, 3, 2024);
+	CalendarDate c2(15, 3, 2024);
+
+	cout << "c1 before c2: "
+		<< CalendarDate::isBefore(c1, c2) << endl;
+
+	cout << "c1 equal c2: "
+		<< CalendarDate::isEqual(c1, c2) << endl;
+
+	cout << "c1 after c2: "
+		<< CalendarDate::isAfter(c1, c2) << endl;
+
+
+	cout << "\n===== Compare Enum =====\n";
+
+	CalendarDate::CompareResult result = CalendarDate::compare(c1, c2);
+
+	if (result == CalendarDate::CompareResult::Before)
+		cout << "c1 before c2\n";
+
 
 	return 0;
 }
