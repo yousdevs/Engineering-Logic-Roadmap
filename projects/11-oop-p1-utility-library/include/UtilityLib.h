@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <ctime>
 
 class UtilityLib {
 
@@ -16,9 +17,7 @@ public:
         SpecialCharacter = 5
     };
 
-    /*-------------------------------------
-        Random Engine
-    -------------------------------------*/
+    // random Engine
 
     static void seedRandom();
 
@@ -26,9 +25,8 @@ public:
     static char getRandomCharacter(CharType type);
 
 
-    /*-------------------------------------
-        Random Text Generation
-    -------------------------------------*/
+   
+    // random Text Generation
 
     static std::string generateWord(CharType type, short length);
     static std::string generateKey(CharType type = CharType::CapitalLetter);
@@ -87,3 +85,72 @@ public:
     static std::string encryptText(const std::string& text, short key);
     static std::string decryptText(const std::string& text, short key);
 };
+
+/*-------------------------------------
+            Implementation
+-------------------------------------*/
+
+inline void UtilityLib::seedRandom() {
+    // Seed the random number generator with the current time.
+    // This ensures that we get a different sequence of random numbers on each run.
+    srand((unsigned)time(NULL));
+}
+
+inline int UtilityLib::getRandomInt(int min, int max) {
+    
+    return rand() % (max - min + 1) + min;
+}
+
+inline char UtilityLib::getRandomCharacter(CharType type) {
+
+    switch (type) {
+    case CharType::CapitalLetter:
+        return static_cast<char>(UtilityLib::getRandomInt('A', 'Z'));
+
+    case CharType::SmallLetter:
+        return static_cast<char>(UtilityLib::getRandomInt('a', 'z'));
+
+    case CharType::Digit:
+        return static_cast<char>(UtilityLib::getRandomInt('0', '9'));
+
+    case CharType::SpecialCharacter:
+        return static_cast<char>(UtilityLib::getRandomInt(33, 47));
+
+    case CharType::Mixed:
+        return getRandomCharacter(static_cast<CharType>(UtilityLib::getRandomInt(1, 3)));
+
+    default:
+        return getRandomCharacter(CharType::CapitalLetter);
+    }
+}
+
+inline std::string UtilityLib::generateWord(CharType type, short length) {
+    
+    std::string word;
+    word.reserve(length);
+
+    for (short i = 0; i < length; i++) {
+        word += UtilityLib::getRandomCharacter(type);
+    }
+    return word;
+}
+
+inline std::string UtilityLib::generateKey(CharType type) {
+
+    const int KEY_GROUPS = 4;
+    const int WORD_LENGTH = 4;
+    const char DELIM = '-';
+
+    std::string key;
+    key.reserve((KEY_GROUPS * WORD_LENGTH) + (KEY_GROUPS - 1));
+
+    key += UtilityLib::generateWord(type, WORD_LENGTH);
+
+    for (int i = 1; i < KEY_GROUPS; i++) {
+        key += DELIM;
+        key += UtilityLib::generateWord(type, WORD_LENGTH);
+    }
+
+    return key;
+}
+
