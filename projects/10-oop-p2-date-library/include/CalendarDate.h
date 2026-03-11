@@ -674,3 +674,191 @@ inline void CalendarDate::increaseDateByOneMillennium() {
     setMonth(newDate.getMonth());
     setYear(newDate.getYear());
 }
+
+// Subtracting Time
+inline CalendarDate CalendarDate::decreaseDateByOneDay(const CalendarDate& date) {
+    if (date.getDay() == 1) {
+        if (date.getMonth() == 1) {
+            return CalendarDate(CalendarDate::numberOfDaysInMonth(12, date.getYear()-1), 12, date.getYear() - 1);
+        }
+        else {
+            return CalendarDate( CalendarDate::numberOfDaysInMonth(date.getMonth()-1, date.getYear()), date.getMonth()-1, date.getYear());
+        }
+    }
+    return CalendarDate(date.getDay() - 1, date.getMonth(), date.getYear());
+}
+
+inline void CalendarDate::decreaseDateByOneDay() {
+    CalendarDate newDate = CalendarDate::decreaseDateByOneDay(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByOneWeek(const CalendarDate& date) {
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    for (short i = 0; i < 7; i++) {
+        newDate.decreaseDateByOneDay();
+    }
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByOneWeek() {
+   
+    CalendarDate newDate = CalendarDate::decreaseDateByOneWeek(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByXWeeks(short weeks, const CalendarDate& date) {
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    for (short i = 0; i < weeks; i++) {
+        newDate.decreaseDateByOneWeek();
+    }
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByXWeeks(short weeks) {
+    CalendarDate newDate = CalendarDate::decreaseDateByXWeeks(weeks, CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByOneMonth(const CalendarDate& date) {
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+
+    if (newDate.getMonth() == 1) {
+        newDate.setMonth(12);
+        newDate.setYear(newDate.getYear() - 1);
+    }
+    else {
+        newDate.setMonth(newDate.getMonth() - 1);
+    }
+
+    short daysInNewMonth = CalendarDate::numberOfDaysInMonth(newDate.getMonth(), newDate.getYear());
+
+    if (newDate.getDay() > daysInNewMonth)
+        newDate.setDay(daysInNewMonth);
+
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByOneMonth() {
+    CalendarDate newDate = CalendarDate::decreaseDateByOneMonth(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByXMonths(short months, const CalendarDate& date) {
+    
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    for (short i = 0; i < months; i++) {
+        newDate.decreaseDateByOneMonth();
+    }
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByXMonths(short months) {
+    CalendarDate newDate = CalendarDate::decreaseDateByXMonths(months, CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByOneYear(const CalendarDate& date) {
+
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    newDate.setYear(newDate.getYear() - 1);
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByOneYear() {
+
+    CalendarDate newDate = CalendarDate::decreaseDateByOneYear(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByXYears(short years, const CalendarDate& date) {
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    for (short i = 0; i < years; i++) {
+        newDate.decreaseDateByOneYear();
+    }
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByXYears(short years) {
+
+    CalendarDate newDate = CalendarDate::decreaseDateByXYears(years, CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByOneDecade(const CalendarDate& date) {
+    
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    newDate.decreaseDateByXYears(10);
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByOneDecade() {
+
+    CalendarDate newDate = CalendarDate::decreaseDateByOneDecade(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByXDecades(short decades, const CalendarDate& date) {
+
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    for (short i = 0; i < decades; i++) {
+        newDate.decreaseDateByOneDecade();
+    }
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByXDecades(short decades) {
+    
+    CalendarDate newDate = CalendarDate::decreaseDateByXDecades(decades, CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByOneCentury(const CalendarDate& date) {
+    
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    newDate.decreaseDateByXDecades(10);
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByOneCentury() {
+    
+    CalendarDate newDate = CalendarDate::decreaseDateByOneCentury(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}
+
+inline CalendarDate CalendarDate::decreaseDateByOneMillennium(const CalendarDate& date) {
+    
+    CalendarDate newDate(date.getDay(), date.getMonth(), date.getYear());
+    for (short i = 0; i < 10; i++) {
+        newDate.decreaseDateByOneCentury();
+    }
+    return newDate;
+}
+
+inline void CalendarDate::decreaseDateByOneMillennium() {
+    
+    CalendarDate newDate = CalendarDate::decreaseDateByOneMillennium(CalendarDate(getDay(), getMonth(), getYear()));
+    setDay(newDate.getDay());
+    setMonth(newDate.getMonth());
+    setYear(newDate.getYear());
+}

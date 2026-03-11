@@ -107,7 +107,25 @@ int main() {
 	cout << "Add year: " << addTest << endl;
 	*/
 
+	
+	cout << "\n===== Decrease Date Operations =====\n";
 
+	CalendarDate subTest(10, 3, 2024);
+
+	cout << "Original: " << subTest << endl;
+
+	subTest.decreaseDateByOneDay();
+	cout << "Minus one day: " << subTest << endl;
+
+	subTest.decreaseDateByOneWeek();
+	cout << "Minus week: " << subTest << endl;
+
+	subTest.decreaseDateByOneMonth();
+	cout << "Minus month: " << subTest << endl;
+
+	subTest.decreaseDateByOneYear();
+	cout << "Minus year: " << subTest << endl;
+	
 
 	return 0;
 }
