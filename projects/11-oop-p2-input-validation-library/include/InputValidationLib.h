@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <cctype>
 
 class InputValidationLib {
 
@@ -124,3 +125,55 @@ inline bool InputValidationLib::isDouble(const std::string& str) {
     }
 }
 
+// Numeric Input
+
+inline int InputValidationLib::readInt(const std::string& errorMessage) {
+    
+    std::string input = InputValidationLib::readLine();
+
+    while (!InputValidationLib::isInteger(input)) {
+
+        std::cout << errorMessage;
+        input = InputValidationLib::readLine();
+    }
+    
+    return std::stoi(input);
+}
+
+inline int InputValidationLib::readIntInRange(int min, int max, const std::string& errorMessage) {
+
+    int input = InputValidationLib::readInt(errorMessage);
+
+    while (!InputValidationLib::isNumberInRange(input, min, max)) {
+        
+        std::cout << errorMessage;
+        input = InputValidationLib::readInt(errorMessage);
+    }
+
+    return input;
+}
+
+inline double InputValidationLib::readDouble(const std::string& errorMessage) {
+
+    std::string input = InputValidationLib::readLine();
+
+    while ( !InputValidationLib::isDouble(input) ) {
+
+        std::cout << errorMessage;
+        input = InputValidationLib::readLine();
+    }
+
+    return std::stod(input);
+}
+
+inline double InputValidationLib::readDoubleInRange(double min, double max, const std::string& errorMessage) {
+    
+    double input = InputValidationLib::readDouble(errorMessage);
+
+    while (!InputValidationLib::isNumberInRange(input, min, max)) {
+        std::cout << errorMessage;
+        input = InputValidationLib::readDouble(errorMessage);
+    }
+
+    return input;
+}
