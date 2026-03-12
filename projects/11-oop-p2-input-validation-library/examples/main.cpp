@@ -21,4 +21,5 @@ int main() {
         std::cout << "User chose YES\n";
     else
         std::cout << "User chose NO\n";
+
 }

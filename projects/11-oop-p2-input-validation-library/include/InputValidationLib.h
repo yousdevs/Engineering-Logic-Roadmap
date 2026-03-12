@@ -13,6 +13,9 @@ public:
     template<typename T>
     static bool isNumberInRange(T value, T min, T max);
 
+    static bool isInteger(const std::string& str);
+
+    static bool isDouble(const std::string& str);
 
     // Numeric Input
 
@@ -81,3 +84,43 @@ inline bool InputValidationLib::readYesNo(const std::string& message) {
         std::cout << "Invalid input.\n";
     }
 }
+
+
+// Numeric Validation
+
+template<typename T>
+inline bool InputValidationLib::isNumberInRange(T value, T min, T max) {
+    return value >= min && value <= max;
+}
+
+inline bool InputValidationLib::isInteger(const std::string& str) {
+    
+    if (str.empty()) return false;
+
+    try {
+        size_t pos;
+        std::stoi(str, &pos);
+
+        // ensure the whole string was parsed
+        return pos == str.length();
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+inline bool InputValidationLib::isDouble(const std::string& str) {
+    
+    if (str.empty()) return false;
+
+    try {
+        size_t pos;
+        std::stod(str, &pos);
+
+        return pos == str.length();
+    }
+    catch (...) {
+        return false;
+    }
+}
+
