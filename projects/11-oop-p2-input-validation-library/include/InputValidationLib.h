@@ -48,3 +48,36 @@ public:
         const std::string& message = "Enter y/n: "
     );
 };
+
+// Implementation section
+
+// Text Input
+
+inline std::string InputValidationLib::readLine() {
+    
+    std::string input;
+    std::getline(std::cin >> std::ws, input);
+    return input;
+}
+
+// Yes / No Input
+
+inline bool InputValidationLib::readYesNo(const std::string& message) {
+
+    char c;
+
+    while (true) {
+
+        std::cout << message;
+        std::string input = InputValidationLib::readLine();
+        if (!input.empty())
+            c = input[0];
+
+        c = std::tolower(c);
+
+        if (c == 'y') return true;
+        if (c == 'n') return false;
+
+        std::cout << "Invalid input.\n";
+    }
+}
