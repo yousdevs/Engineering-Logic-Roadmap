@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../domain/entities/Client.hpp"
+#include "../domain/entities/User.hpp"
 
 int main()
 {
@@ -16,6 +17,17 @@ int main()
     catch (std::invalid_argument& e) {
         std::cout << e.what();
     }
-    
+
+    User u("username", "password", 2);
+    std::cout << "\n" << u.getUsername();
+
+    try {
+      u.changePassword("22");
+    } catch (std::invalid_argument& e) {
+      std::cout << "\n" << e.what();
+    }
+    if (u.verifyPassword("password")) {
+      std::cout << "\n" << "Password correct";
+    }
     return 0;
 }
