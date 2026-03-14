@@ -1,7 +1,9 @@
 #include "FileClientRepository.hpp"
 #include "FileUtils.hpp"
+#include "../../libs/StringLib.h"
 #include <sstream>
 #include <stdexcept>
+
 
 FileClientRepository::FileClientRepository(const std::string& filePath)
     : _filePath(filePath) {}
@@ -36,32 +38,29 @@ void FileClientRepository::_saveAll(const std::vector<Client>& clients) {
 
 Client FileClientRepository::_deserialize(const std::string& line) const {
   
-    std::stringstream ss(line);
+    std::vector<std::string> parts = StringLib::split(line, "|");
 
-    std::string accountId;
-    std::string firstName;
-    std::string lastName;
-    std::string phone;
-    std::string pin;
-    std::string balanceStr;
-    
-    std::getline(ss, accountId, '|');
-    std::getline(ss, firstName, '|');
-    std::getline(ss, lastName, '|');
-    std::getline(ss, phone, '|');
-    std::getline(ss, pin, '|');
-    std::getline(ss, balanceStr, '|');
-    
-    long long balance = std::stoll(balanceStr);
+    std::string accountId = parts[0];
+    std::string firstName = parts[1];
+    std::string lastName = parts[2];
+    std::string phone = parts[3];
+    std::string pin = parts[4];
+    long long balance = std::stoll(parts[5]);
 
     return Client(accountId, firstName, lastName, phone, pin, balance);
 }
 
 std::string FileClientRepository::_serialize(const Client& client) const {
 
-    return client.getAccountId() + "|" + client.getFirstName() + "|" +
-         client.getLastName() + "|" + client.getPhone() + "|" +
-         client.getPin() + "|" + std::to_string(client.getBalance());
+    return StringLib::join({
+
+        client.getAccountId(),
+        client.getFirstName(),
+        client.getLastName(),
+        client.getPhone(),
+        client.getPin(),
+        std::to_string(client.getBalance())
+      }, "|");
 }
 
 std::vector<Client> FileClientRepository::findAll() const {

@@ -1,6 +1,7 @@
 #include "FileUserRepository.hpp"
 #include "../../domain/entities/User.hpp"
 #include "FileUtils.hpp"
+#include "../../libs/StringLib.h"
 
 #include <vector>
 #include <optional>
@@ -40,29 +41,24 @@ void FileUserRepository::_saveAll(const std::vector<User>& users) {
 
 User FileUserRepository::_deserialize(const std::string& line) const{
 
-    std::stringstream ss(line);
+    std::vector<std::string> parts = StringLib::split(line, "|");
 
-    std::string username;
+    std::string username = parts[0];
 
-    std::string passwordHash;
+    std::string passwordHash = parts[1];
 
-    std::string permissionsStr;
-
-    std::getline(ss, username, '|');
-    std::getline(ss, passwordHash, '|');
-    std::getline(ss, permissionsStr, '|');
-
-    int permissions = std::stoi(permissionsStr);
+    int permissions = std::stoi(parts[2]);
 
     return User(username, passwordHash, permissions);
 }
 
 std::string FileUserRepository::_serialize(const User& user) const {
 
-    return user.getUsername() + "|" + user.getPasswordHash() +
-         "|" +
-         std::to_string(user.getPermissions());
-
+    return StringLib::join({
+        user.getUsername(),
+        user.getPasswordHash(),
+        std::to_string(user.getPermissions())
+        }, "|");
 }
 
 std::vector<User> FileUserRepository::findAll() const { return _loadAll(); }
