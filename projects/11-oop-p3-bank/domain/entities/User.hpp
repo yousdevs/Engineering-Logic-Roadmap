@@ -20,18 +20,19 @@ class User {
         private:
 
             std::string _username;
-            std::string _password;
+            std::string _passwordHash;
                 int _permissions;
 
         public:
 
-            User(const std::string& username, const std::string& password,
+            User(const std::string& username, const std::string& passwordHash,
               int permissions);
 
             const std::string& getUsername() const;
+            const std::string& getPasswordHash() const;
 
             int getPermissions() const;
-            bool verifyPassword(const std::string& password) const;
+            
 
             bool hasPermission(Permission permission) const;
             void addPermission(Permission permission);
@@ -46,9 +47,9 @@ class User {
 
             /**
              * @brief Changes the password of the User.
-             * @param password The new password.
-             * @exception std::invalid_argument Thrown if password less than 4 chars long.
+             * @param password The new passwordHash.
+             * 
              */
-            void changePassword(const std::string& password);
+            void changePasswordHash(const std::string& passwordHash);
 
 };

@@ -4,16 +4,16 @@
 
 User::User(
 	const std::string& username,
-	const std::string& password,
+	const std::string& passwordHash,
 	int permissions)
-    : _username(username), _password(password), _permissions(permissions) {}
+    : _username(username), _passwordHash(passwordHash), _permissions(permissions) {}
 
 const std::string& User::getUsername() const { return _username; }
 
+const std::string& User::getPasswordHash() const { return _passwordHash; }
+
 int User::getPermissions() const { return _permissions; }
-bool User::verifyPassword(const std::string& password) const {
-  return _password == password;
-}
+
 
 bool User::hasPermission(Permission permission) const {
   return (_permissions & permission) == permission;
@@ -33,8 +33,7 @@ void User::changeUsername(const std::string& username) {
   _username = username;
 }
 
-void User::changePassword(const std::string& password) {
-  if (password.length() < 4) throw std::invalid_argument("Password too short");
+void User::changePasswordHash(const std::string& passwordHash) {
 
-  _password = password;
+  _passwordHash = passwordHash;
 }
