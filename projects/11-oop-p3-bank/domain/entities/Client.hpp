@@ -29,7 +29,7 @@ public:
     const std::string& getPin() const;
     long long getBalance() const;
 
-    const std::string& getFullName() const;
+    const std::string getFullName() const;
 
     void changeFirstName(const std::string& firstName);
     void changeLastName(const std::string& lastName);

@@ -24,7 +24,7 @@ const std::string& Client::getPhone() const { return _phone; }
 const std::string& Client::getPin() const { return _pin; }
 long long Client::getBalance() const { return _balance; }
 
-const std::string& Client::getFullName() const {
+const std::string Client::getFullName() const {
     return _firstName + " " + _lastName;
 }
 
