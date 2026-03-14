@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(
     bank-system
     app/main.cpp
- "domain/entities/Client.cpp" "domain/entities/User.cpp" "domain/entities/Transaction.cpp" "infrastructure/persistence/FileClientRepository.cpp" "infrastructure/persistence/FileUserRepository.cpp")
+ "domain/entities/Client.cpp" "domain/entities/User.cpp" "domain/entities/Transaction.cpp" "infrastructure/persistence/FileClientRepository.cpp" "infrastructure/persistence/FileUserRepository.cpp" "libs/StringLib.h")
 
 add_custom_command(
     TARGET bank-system POST_BUILD

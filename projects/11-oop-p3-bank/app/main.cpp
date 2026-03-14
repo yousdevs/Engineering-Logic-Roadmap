@@ -4,6 +4,7 @@
 #include "../domain/entities/Transaction.hpp"
 #include "../infrastructure/persistence/FileClientRepository.hpp"
 #include "../infrastructure/persistence/FileUserRepository.hpp"
+#include "../libs/StringLib.h"
 
 int main()
 {
@@ -162,5 +163,7 @@ int main()
                 << std::to_string(u.getPermissions()) << "\n";
     }
 
+
+    std::cout << StringLib::join({"hello", "world"}, ", ");
     return 0;
 }
