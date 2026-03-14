@@ -3,6 +3,7 @@
 #include "../domain/entities/User.hpp"
 #include "../domain/entities/Transaction.hpp"
 #include "../infrastructure/persistence/FileClientRepository.hpp"
+#include "../infrastructure/persistence/FileUserRepository.hpp"
 
 int main()
 {
@@ -23,17 +24,11 @@ int main()
         std::cout << e.what();
     }
 
-    User u("username", "password", 2);
+    User u("username", "passwordHash", 2);
     std::cout << "\n" << u.getUsername();
 
-    try {
-      u.changePassword("22");
-    } catch (std::invalid_argument& e) {
-      std::cout << "\n" << e.what();
-    }
-    if (u.verifyPassword("password")) {
-      std::cout << "\n" << "Password correct";
-    }
+    
+    u.changePasswordHash("22");
 
     Transaction tx = Transaction::createDeposit("1", "acc1", 40);
     std::cout << "\n" << tx.getAmount();
@@ -109,6 +104,63 @@ int main()
                 << c.getPhone() << " | " << c.getBalance() << "\n";
     }
     
+    FileUserRepository usersRepo(DATA_PATH "users.txt");
+
+    std::cout << "\n=== All Users ===\n";
+
+    auto users = usersRepo.findAll();
+
+    for (const auto& u : users) {
+      std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | "
+                << std::to_string(u.getPermissions()) << "\n";
+    }
+
+    std::cout << "\n=== Find User U001 ===\n";
+
+    auto user = usersRepo.findByUsername("U001");
+
+    if (user) {
+      std::cout << user->getUsername() << " found\n";
+    } else {
+      std::cout << "User not found\n";
+    }
+    std::cout << "\n=== Add New User ===\n";
+
+    User newUser("U003", "Bobhashhash",  4);
+
+    try {
+      usersRepo.save(newUser);
+    } catch (std::invalid_argument& e) {
+      std::cout << "\n" << e.what();
+    }
+
+    std::cout << "User added.\n";
+
+    std::cout << "\n=== After Insert ===\n";
+
+    users = usersRepo.findAll();
+
+    for (const auto& u : users) {
+      std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | "
+                << std::to_string(u.getPermissions()) << "\n";
+    }
+
+    std::cout << "\n=== Remove U002 ===\n";
+
+    try {
+      usersRepo.remove("U002");
+    } catch (std::invalid_argument& e) {
+      std::cout << "\n" << e.what();
+    }
+
+    users = usersRepo.findAll();
+
+    std::cout << "\n=== After Remove ===\n";
+
+    for (const auto& u : users) {
+      std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | "
+                << std::to_string(u.getPermissions()) << "\n";
+    }
 
     return 0;
 }
