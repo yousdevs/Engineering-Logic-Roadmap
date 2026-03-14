@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../domain/entities/Client.hpp"
 #include "../domain/entities/User.hpp"
+#include "../domain/entities/Transaction.hpp"
 
 int main()
 {
@@ -28,6 +29,22 @@ int main()
     }
     if (u.verifyPassword("password")) {
       std::cout << "\n" << "Password correct";
+    }
+
+    Transaction tx = Transaction::createDeposit("1", "acc1", 40);
+    std::cout << "\n" << tx.getAmount();
+    std::string src = tx.getDestinationAccount().value();
+    std::cout << "\n" << src;
+    std::string dst = "No Account";
+    if (tx.getSourceAccount().has_value()) {
+      dst = tx.getSourceAccount().value();
+    }
+    std::cout << "\n" << dst;
+    
+    try {
+      Transaction tx2 = Transaction::createDeposit("2", "Acc2", 0);
+    } catch (std::invalid_argument& e) {
+      std::cout << "\n" << e.what();
     }
     return 0;
 }

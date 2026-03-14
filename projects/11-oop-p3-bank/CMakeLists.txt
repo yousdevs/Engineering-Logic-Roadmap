@@ -8,4 +8,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(
     bank-system
     app/main.cpp
- "domain/entities/Client.cpp" "domain/entities/User.cpp")
+ "domain/entities/Client.cpp" "domain/entities/User.cpp" "domain/entities/Transaction.cpp")
