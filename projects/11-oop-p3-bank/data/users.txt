@@ -1,2 +1,2 @@
-U001|DoeHash|4
-U003|Bobhashhash|4
+U001|DoeHash|TELLER
+U003|Bobhashhash|Admin

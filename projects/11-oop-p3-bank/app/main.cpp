@@ -25,7 +25,7 @@ int main()
         std::cout << e.what();
     }
 
-    User u("username", "passwordHash", 2);
+    User u("username", "passwordHash", "Teller");
     std::cout << "\n" << u.getUsername();
 
     
@@ -113,7 +113,7 @@ int main()
 
     for (const auto& u : users) {
       std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | "
-                << std::to_string(u.getPermissions()) << "\n";
+                << u.getRole() << "\n";
     }
 
     std::cout << "\n=== Find User U001 ===\n";
@@ -127,7 +127,7 @@ int main()
     }
     std::cout << "\n=== Add New User ===\n";
 
-    User newUser("U003", "Bobhashhash",  4);
+    User newUser("U003", "Bobhashhash", "Admin");
 
     try {
       usersRepo.save(newUser);
@@ -143,7 +143,7 @@ int main()
 
     for (const auto& u : users) {
       std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | "
-                << std::to_string(u.getPermissions()) << "\n";
+                << u.getRole() << "\n";
     }
 
     std::cout << "\n=== Remove U002 ===\n";
@@ -160,7 +160,7 @@ int main()
 
     for (const auto& u : users) {
       std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | "
-                << std::to_string(u.getPermissions()) << "\n";
+                << u.getRole() << "\n";
     }
 
 

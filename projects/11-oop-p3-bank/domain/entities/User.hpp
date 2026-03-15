@@ -6,37 +6,21 @@ class User {
 
 	public:
 
-		enum Permission {
-           NONE = 0,
-           VIEW_CLIENTS = 1 << 0,
-           ADD_CLIENT = 1 << 1,
-           DELETE_CLIENT = 1 << 2,
-           UPDATE_CLIENT = 1 << 3,
-           TRANSACTIONS = 1 << 4,
-           MANAGE_USERS = 1 << 5,
-           All = 0xFFFFFFFF
-         };
-
         private:
 
             std::string _username;
             std::string _passwordHash;
-                int _permissions;
+            std::string _role;
 
         public:
 
             User(const std::string& username, const std::string& passwordHash,
-              int permissions);
+              const std::string& _role);
 
             const std::string& getUsername() const;
             const std::string& getPasswordHash() const;
-
-            int getPermissions() const;
+            const std::string& getRole() const;
             
-
-            bool hasPermission(Permission permission) const;
-            void addPermission(Permission permission);
-            void removePermission(Permission permission);
 
             /**
              * @brief Changes the username of the User.
@@ -52,4 +36,5 @@ class User {
              */
             void changePasswordHash(const std::string& passwordHash);
 
+            void changeRole(const std::string& role);
 };

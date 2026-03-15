@@ -47,9 +47,9 @@ User FileUserRepository::_deserialize(const std::string& line) const{
 
     std::string passwordHash = parts[1];
 
-    int permissions = std::stoi(parts[2]);
+    std::string role = parts[2];
 
-    return User(username, passwordHash, permissions);
+    return User(username, passwordHash, role);
 }
 
 std::string FileUserRepository::_serialize(const User& user) const {
@@ -57,7 +57,7 @@ std::string FileUserRepository::_serialize(const User& user) const {
     return StringLib::join({
         user.getUsername(),
         user.getPasswordHash(),
-        std::to_string(user.getPermissions())
+        user.getRole()
         }, "|");
 }
 
