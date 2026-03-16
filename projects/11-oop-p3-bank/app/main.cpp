@@ -5,6 +5,7 @@
 #include "domain/entities/User.hpp"
 
 #include "application/common/UseCaseResult.hpp"
+#include "application/dto/LoginRequest.hpp"
 #include "application/dto/LoginResponse.hpp"
 #include "application/ports/IPasswordHasher.hpp"
 #include "application/usecases/LoginUseCase.hpp"
@@ -187,7 +188,7 @@ int main() {
     LoginUseCase         loginUS(usersRepo, hasher);
 
     UseCaseResult<LoginResponse> res =
-        loginUS.execute("U001", "12345678");  // U003|12345678hash|Admin
+        loginUS.execute(LoginRequest{"U001", "12345678"});  // U003|12345678hash|Admin
 
     if (!res.isSuccess()) {
         std::cout << "\n" << res.message();
