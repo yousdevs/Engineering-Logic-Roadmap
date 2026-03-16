@@ -1,106 +1,104 @@
 #pragma once
 
+#include <cctype>
 #include <string>
 #include <vector>
-#include <cctype>
 
-class StringLib{
+class StringLib {
 
-private:
-    std::string _value;
+    private:
 
-public:
-    
-    StringLib();
-    StringLib(const std::string& value);
+        std::string _value;
 
-  
-    void setValue(const std::string& value);
-    std::string getValue() const;
+    public:
 
+        StringLib();
+        StringLib(const std::string& value);
 
+        void        setValue(const std::string& value);
+        std::string getValue() const;
 
-    static size_t length(const std::string& text);
-    size_t length() const;
+        static size_t length(const std::string& text);
+        size_t        length() const;
 
+        static size_t countWords(const std::string& text);
+        size_t        countWords() const;
 
-    static size_t countWords(const std::string& text);
-    size_t countWords() const;
+        static std::string capitalizeWords(const std::string& text);
+        void               capitalizeWords();
 
+        static std::string decapitalizeWords(const std::string& text);
+        void               decapitalizeWords();
 
-    static std::string capitalizeWords(const std::string& text);
-    void capitalizeWords();
+        static std::string toUpper(const std::string& text);
+        void               toUpper();
 
-    static std::string decapitalizeWords(const std::string& text);
-    void decapitalizeWords();
+        static std::string toLower(const std::string& text);
+        void               toLower();
 
+        static char        invertCase(char character);
+        static std::string invertCase(const std::string& text);
+        void               invertCase();
 
-    static std::string toUpper(const std::string& text);
-    void toUpper();
+        enum class CharacterType { Lowercase, Uppercase, All };
 
-    static std::string toLower(const std::string& text);
-    void toLower();
+        static size_t countCharacters(const std::string& text,
+                                      CharacterType      type = CharacterType::All);
 
+        static size_t countUppercase(const std::string& text);
+        size_t        countUppercase() const;
 
-    static char invertCase(char character);
-    static std::string invertCase(const std::string& text);
-    void invertCase();
+        static size_t countLowercase(const std::string& text);
+        size_t        countLowercase() const;
 
+        static size_t countSpecificCharacter(const std::string& text,
+                                             char               letter,
+                                             bool               matchCase = true);
+        size_t        countSpecificCharacter(char letter, bool matchCase = true) const;
 
-    enum class CharacterType { Lowercase, Uppercase, All };
+        static bool   isVowel(char character);
+        static size_t countVowels(const std::string& text);
+        size_t        countVowels() const;
 
+        static std::vector<std::string> split(const std::string& text,
+                                              const std::string& delimiter);
+        std::vector<std::string>        split(const std::string& delimiter) const;
 
-    static size_t countCharacters(const std::string& text, CharacterType type = CharacterType::All);
+        static std::string join(const std::vector<std::string>& words,
+                                const std::string&              delimiter);
+        static std::string join(const std::string  words[],
+                                size_t             length,
+                                const std::string& delimiter);
 
-    static size_t countUppercase(const std::string& text);
-    size_t countUppercase() const;
+        static std::string trimLeft(const std::string& text);
+        void               trimLeft();
 
-    static size_t countLowercase(const std::string& text);
-    size_t countLowercase() const;
+        static std::string trimRight(const std::string& text);
+        void               trimRight();
 
-    static size_t countSpecificCharacter(const std::string& text, char letter, bool matchCase = true);
-    size_t countSpecificCharacter(char letter, bool matchCase = true) const;
+        static std::string trim(const std::string& text);
+        void               trim();
 
+        static std::string reverseWords(const std::string& text);
+        void               reverseWords();
 
-    static bool isVowel(char character);
-    static size_t countVowels(const std::string& text);
-    size_t countVowels() const;
+        static std::string replace(const std::string& text,
+                                   const std::string& target,
+                                   const std::string& replacement,
+                                   bool               matchCase = true);
+        void               replace(const std::string& target,
+                                   const std::string& replacement,
+                                   bool               matchCase = true);
 
-
-    static std::vector<std::string> split(const std::string& text, const std::string& delimiter);
-    std::vector<std::string> split(const std::string& delimiter) const;
-
-    static std::string join(const std::vector<std::string>& words, const std::string& delimiter);
-    static std::string join(const std::string words[], size_t length, const std::string& delimiter);
-
-
-    static std::string trimLeft(const std::string& text);
-    void trimLeft();
-
-    static std::string trimRight(const std::string& text);
-    void trimRight();
-
-    static std::string trim(const std::string& text);
-    void trim();
-
-
-    static std::string reverseWords(const std::string& text);
-    void reverseWords();
-
- 
-    static std::string replace(const std::string& text, const std::string& target, const std::string& replacement, bool matchCase = true);
-    void replace(const std::string& target, const std::string& replacement, bool matchCase = true);
-
-
-    static std::string removePunctuation(const std::string& text);
-    void removePunctuation();
+        static std::string removePunctuation(const std::string& text);
+        void               removePunctuation();
 };
 
 // =================================================================
 // IMPLEMENTATION SECTION
 // =================================================================
 
-inline StringLib::StringLib(){
+inline StringLib::StringLib() {
     _value = "";
 }
 
@@ -151,7 +149,8 @@ inline void StringLib::toLower() {
 }
 
 inline char StringLib::invertCase(char character) {
-    return std::islower(character) ? static_cast<char>(std::toupper(character)) : static_cast<char>(std::tolower(character));
+    return std::islower(character) ? static_cast<char>(std::toupper(character))
+                                   : static_cast<char>(std::tolower(character));
 }
 
 inline std::string StringLib::invertCase(const std::string& text) {
@@ -178,8 +177,7 @@ inline std::string StringLib::capitalizeWords(const std::string& text) {
         if (isFirstChar && c != ' ') {
             capitalized.push_back(static_cast<char>(std::toupper(c)));
             isFirstChar = false;
-        }
-        else {
+        } else {
             capitalized.push_back(c);
             isFirstChar = (c == ' ');
         }
@@ -203,8 +201,7 @@ inline std::string StringLib::decapitalizeWords(const std::string& text) {
         if (isFirstChar && c != ' ') {
             deCapitalized.push_back(static_cast<char>(std::tolower(c)));
             isFirstChar = false;
-        }
-        else {
+        } else {
             deCapitalized.push_back(c);
             isFirstChar = (c == ' ');
         }
@@ -218,8 +215,8 @@ inline void StringLib::decapitalizeWords() {
 }
 
 inline size_t StringLib::countWords(const std::string& text) {
-    size_t counter = 0;
-    bool isFirstChar = true;
+    size_t counter     = 0;
+    bool   isFirstChar = true;
 
     for (size_t i = 0; i < text.length(); i++) {
         char c = text[i];
@@ -227,8 +224,7 @@ inline size_t StringLib::countWords(const std::string& text) {
         if (c != ' ' && isFirstChar) {
             counter++;
             isFirstChar = false;
-        }
-        else if (c == ' ') {
+        } else if (c == ' ') {
             isFirstChar = true;
         }
     }
@@ -243,17 +239,15 @@ inline size_t StringLib::countWords() const {
 inline bool StringLib::isVowel(char character) {
     character = static_cast<char>(std::tolower(character));
 
-    return character == 'a' ||
-        character == 'e' ||
-        character == 'i' ||
-        character == 'o' ||
-        character == 'u';
+    return character == 'a' || character == 'e' || character == 'i' || character == 'o'
+           || character == 'u';
 }
 
 inline size_t StringLib::countVowels(const std::string& text) {
     size_t counter = 0;
     for (size_t i = 0; i < text.length(); i++) {
-        if (StringLib::isVowel(text[i])) counter++;
+        if (StringLib::isVowel(text[i]))
+            counter++;
     }
     return counter;
 }
@@ -296,15 +290,17 @@ inline size_t StringLib::countLowercase() const {
     return StringLib::countLowercase(_value);
 }
 
-inline size_t StringLib::countSpecificCharacter(const std::string& text, char letter, bool matchCase) {
+inline size_t StringLib::countSpecificCharacter(const std::string& text,
+                                                char               letter,
+                                                bool               matchCase) {
     size_t counter = 0;
     for (size_t i = 0; i < text.length(); i++) {
         if (matchCase) {
-            if (text[i] == letter) counter++;
-        }
-        else {
-            if (static_cast<char>(std::tolower(letter)) ==
-                static_cast<char>(std::tolower(text[i]))) counter++;
+            if (text[i] == letter)
+                counter++;
+        } else {
+            if (static_cast<char>(std::tolower(letter)) == static_cast<char>(std::tolower(text[i])))
+                counter++;
         }
     }
     return counter;
@@ -315,7 +311,7 @@ inline size_t StringLib::countSpecificCharacter(char letter, bool matchCase) con
 }
 
 inline std::string StringLib::trimLeft(const std::string& text) {
-    
+
     size_t i = 0;
 
     while (i < text.length() && text[i] == ' ') {
@@ -330,8 +326,9 @@ inline void StringLib::trimLeft() {
 }
 
 inline std::string StringLib::trimRight(const std::string& text) {
-    
-    if (text.empty()) return "";
+
+    if (text.empty())
+        return "";
 
     size_t i = text.length();
 
@@ -354,10 +351,11 @@ inline void StringLib::trim() {
     _value = StringLib::trim(_value);
 }
 
-inline std::vector<std::string> StringLib::split(const std::string& text, const std::string& delimiter) {
+inline std::vector<std::string> StringLib::split(const std::string& text,
+                                                 const std::string& delimiter) {
     std::vector<std::string> tokens;
-    size_t start = 0;
-    size_t end = text.find(delimiter);
+    size_t                   start = 0;
+    size_t                   end   = text.find(delimiter);
 
     // Iteratively find delimiters and extract substrings
     while (end != std::string::npos) {
@@ -370,7 +368,7 @@ inline std::vector<std::string> StringLib::split(const std::string& text, const 
 
         // Move indices forward past the current delimiter
         start = end + delimiter.length();
-        end = text.find(delimiter, start);
+        end   = text.find(delimiter, start);
     }
 
     // Capture the final segment after the last delimiter
@@ -386,8 +384,9 @@ inline std::vector<std::string> StringLib::split(const std::string& delimiter) c
     return StringLib::split(_value, delimiter);
 }
 
-inline std::string StringLib::join(const std::vector<std::string>& words, const std::string& delimiter) {
-    
+inline std::string StringLib::join(const std::vector<std::string>& words,
+                                   const std::string&              delimiter) {
+
     if (words.empty()) {
         return "";
     }
@@ -406,7 +405,9 @@ inline std::string StringLib::join(const std::vector<std::string>& words, const 
     return joined;
 }
 
-inline std::string StringLib::join(const std::string words[], size_t length, const std::string& delimiter) {
+inline std::string StringLib::join(const std::string  words[],
+                                   size_t             length,
+                                   const std::string& delimiter) {
     if (length == 0) {
         return "";
     }
@@ -425,17 +426,21 @@ inline std::string StringLib::join(const std::string words[], size_t length, con
     return joined;
 }
 
-inline std::string StringLib::replace(const std::string& text, const std::string& target, const std::string& replacement, bool matchCase){
-    
-    if (text.empty()) return "";
+inline std::string StringLib::replace(const std::string& text,
+                                      const std::string& target,
+                                      const std::string& replacement,
+                                      bool               matchCase) {
+
+    if (text.empty())
+        return "";
 
     std::vector<std::string> tokens = StringLib::split(text, " ");
 
     for (std::string& token : tokens) {
         if (matchCase) {
-            if (token == target) token = replacement;
-        }
-        else {
+            if (token == target)
+                token = replacement;
+        } else {
             if (StringLib::toLower(token) == StringLib::toLower(target)) {
                 token = replacement;
             }
@@ -445,13 +450,16 @@ inline std::string StringLib::replace(const std::string& text, const std::string
     return StringLib::join(tokens, " ");
 }
 
-inline void StringLib::replace(const std::string& target, const std::string& replacement, bool matchCase) {
+inline void StringLib::replace(const std::string& target,
+                               const std::string& replacement,
+                               bool               matchCase) {
     _value = StringLib::replace(_value, target, replacement, matchCase);
 }
 
 inline std::string StringLib::reverseWords(const std::string& text) {
-    
-    if (text.empty()) return "";
+
+    if (text.empty())
+        return "";
 
     std::vector<std::string> tokens = StringLib::split(text, " ");
 
@@ -473,9 +481,9 @@ inline std::string StringLib::removePunctuation(const std::string& text) {
     std::string newText;
     newText.reserve(text.length());
 
-    for (size_t i = 0; i < text.length(); i++)
-    {
-        if (!std::ispunct(text[i])) newText += text[i];
+    for (size_t i = 0; i < text.length(); i++) {
+        if (!std::ispunct(text[i]))
+            newText += text[i];
     }
 
     return newText;
@@ -484,4 +492,3 @@ inline std::string StringLib::removePunctuation(const std::string& text) {
 inline void StringLib::removePunctuation() {
     _value = StringLib::removePunctuation(_value);
 }
-

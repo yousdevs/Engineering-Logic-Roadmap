@@ -1,15 +1,14 @@
 #pragma once
 
+#include <domain/security/Roles.hpp>
 #include <string>
-
-#include <../../domain/security/Roles.hpp>
 
 class AuthorizationService {
 
-	public:
+    public:
 
-	static bool hasPermission(const std::string& role, int permission) {
+        static bool hasPermission(const std::string& role, int permission) {
 
-		return (permissionFromRole(role) & permission) == permission; 
-	}
+            return (permissionFromRole(role) & permission) == permission;
+        }
 };

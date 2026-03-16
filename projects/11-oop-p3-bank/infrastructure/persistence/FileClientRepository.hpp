@@ -1,37 +1,34 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
 
-#include "../../domain/repositories/IClientRepository.hpp"
-
-
+#include "domain/repositories/IClientRepository.hpp"
 
 class FileClientRepository : public IClientRepository {
 
-	private:
-         std::string _filePath;
-		 
-		 std::vector<Client> _loadAll() const;
+    private:
 
-		 void _saveAll(const std::vector<Client>& clients);
+        std::string _filePath;
 
-		 Client _deserialize(const std::string& line) const;
+        std::vector<Client> _loadAll() const;
 
-		 std::string _serialize(const Client& client) const;
+        void _saveAll(const std::vector<Client>& clients);
 
-	public:
+        Client _deserialize(const std::string& line) const;
 
-		explicit FileClientRepository(const std::string& filePath);
+        std::string _serialize(const Client& client) const;
 
-		std::vector<Client> findAll() const override;
+    public:
 
-		std::optional<Client> findById(
-                    const std::string& accountId) const override;
+        explicit FileClientRepository(const std::string& filePath);
 
-		void save(const Client& client) override;
+        std::vector<Client> findAll() const override;
 
-		void remove(const std::string& accountId) override;
-	
+        std::optional<Client> findById(const std::string& accountId) const override;
+
+        void save(const Client& client) override;
+
+        void remove(const std::string& accountId) override;
 };

@@ -3,8 +3,7 @@
 #include <string>
 
 struct AuthenticatedUser {
-	
-	std::string username;
-    std::string role;
 
+        std::string username;
+        std::string role;
 };

@@ -1,74 +1,71 @@
 #pragma once
 
-#include <string>
-#include <optional>
 #include <ctime>
+#include <optional>
+#include <string>
 
 class Transaction {
 
-	public:
-		enum class Type {
-			Deposit,
-			Withdraw,
-			Transfer
-  };
+    public:
 
-        private:
-                std::string _transactionId;
-                std::optional<std::string> _sourceAccount;
-                std::optional<std::string> _destinationAccount;
+        enum class Type { Deposit, Withdraw, Transfer };
 
-				long long _amount;
-                Type _type;
-                std::time_t _timestamp;
+    private:
 
-               private:
-                Transaction(
-                    const std::string& transactionId,
+        std::string                _transactionId;
+        std::optional<std::string> _sourceAccount;
+        std::optional<std::string> _destinationAccount;
+
+        long long   _amount;
+        Type        _type;
+        std::time_t _timestamp;
+
+    private:
+
+        Transaction(const std::string&         transactionId,
                     std::optional<std::string> sourceAccount,
                     std::optional<std::string> destinationAccount,
-                    long long amount, 
-                    Type type,
-                    std::time_t timestamp
-                    );
+                    long long                  amount,
+                    Type                       type,
+                    std::time_t                timestamp);
 
-                public:
+    public:
 
-                static Transaction createDeposit(
+        static Transaction createDeposit(
 
-                    const std::string& transactionId,
-                    const std::string& destinationAccount, long long amount);
+            const std::string& transactionId,
+            const std::string& destinationAccount,
+            long long          amount);
 
-                static Transaction createWithdraw(
+        static Transaction createWithdraw(
 
-                    const std::string& transactionId,
-                    const std::string& sourceAccount, long long amount);
+            const std::string& transactionId, const std::string& sourceAccount, long long amount);
 
-                static Transaction createTransfer(
+        static Transaction createTransfer(
 
-                    const std::string& transactionId,
-                    const std::string& sourceAccount,
-                    const std::string& destinationAccount, long long amount);
+            const std::string& transactionId,
+            const std::string& sourceAccount,
+            const std::string& destinationAccount,
+            long long          amount);
 
-                static Transaction rehydrate(
+        static Transaction rehydrate(
 
-                    const std::string& transactionId,
-                    std::optional<std::string> sourceAccount,
-                    std::optional<std::string> destinationAccount,
-                    long long amount,
-                    Type type,
-                    std::time_t timestamp
-                );
+            const std::string&         transactionId,
+            std::optional<std::string> sourceAccount,
+            std::optional<std::string> destinationAccount,
+            long long                  amount,
+            Type                       type,
+            std::time_t                timestamp);
 
-                const std::optional<std::string>& getSourceAccount() const;
+        const std::optional<std::string>& getSourceAccount() const;
 
-                const std::optional<std::string>& getDestinationAccount() const;
+        const std::optional<std::string>& getDestinationAccount() const;
 
-                long long getAmount() const;
+        long long getAmount() const;
 
-                Type getType() const;
+        Type getType() const;
 
-                std::time_t getTimestamp() const;
+        std::time_t getTimestamp() const;
 
-                const std::string& getTransactionId() const;
+        const std::string& getTransactionId() const;
 };

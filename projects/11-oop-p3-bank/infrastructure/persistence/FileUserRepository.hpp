@@ -1,35 +1,34 @@
 #pragma once
 
-#include <string>
 #include <optional>
+#include <string>
 
-#include "../../domain/repositories/IUserRepository.hpp"
-#include "../../domain/entities/User.hpp"
+#include "domain/entities/User.hpp"
+#include "domain/repositories/IUserRepository.hpp"
 
 class FileUserRepository : public IUserRepository {
-	
-	private:
+
+    private:
+
         std::string _filePath;
 
-		std::vector<User> _loadAll() const;
-		
-		void _saveAll(const std::vector<User>& users);
+        std::vector<User> _loadAll() const;
 
-		User _deserialize(const std::string& line) const;
+        void _saveAll(const std::vector<User>& users);
 
-		std::string _serialize(const User& user) const;
+        User _deserialize(const std::string& line) const;
 
+        std::string _serialize(const User& user) const;
 
-	public:
+    public:
 
-		explicit FileUserRepository(const std::string& filePath);
+        explicit FileUserRepository(const std::string& filePath);
 
-		std::vector<User> findAll() const override;
+        std::vector<User> findAll() const override;
 
-		std::optional<User> findByUsername(
-                    const std::string& username) const override;
+        std::optional<User> findByUsername(const std::string& username) const override;
 
-		void save(const User& user) override;
+        void save(const User& user) override;
 
-		void remove(const std::string& username) override;
+        void remove(const std::string& username) override;
 };
