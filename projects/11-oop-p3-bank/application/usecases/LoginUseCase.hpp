@@ -5,7 +5,8 @@
 
 #include "domain/repositories/IUserRepository.hpp"
 
-#include "application/dto/LoginResult.hpp"
+#include "application/common/UseCaseResult.hpp"
+#include "application/dto/LoginResponse.hpp"
 #include "application/ports/IPasswordHasher.hpp"
 
 class LoginUseCase {
@@ -20,19 +21,21 @@ class LoginUseCase {
         LoginUseCase(IUserRepository& userRepo, IPasswordHasher& passwordHasher)
             : _userRepo(userRepo), _passwordHasher(passwordHasher) {}
 
-        LoginResult execute(const std::string& username, const std::string& password) {
+        UseCaseResult<LoginResponse> execute(const std::string& username,
+                                             const std::string& password) {
 
             auto user = _userRepo.findByUsername(username);
 
             if (!user.has_value()) {
-                return LoginResult{false, "Invalid username or password", std::nullopt};
+                return UseCaseResult<LoginResponse>::failure("Invalid username or password");
             }
 
             if (!_passwordHasher.verify(password, user->getPasswordHash())) {
-                return LoginResult{false, "Invalid username or password", std::nullopt};
+                return UseCaseResult<LoginResponse>::failure("Invalid username or password");
             }
 
-            return LoginResult{
-                true, "Login successful", AuthenticatedUser{user->getUsername(), user->getRole()}};
+            LoginResponse response(user->getUsername(), user->getRole());
+
+            return UseCaseResult<LoginResponse>::success(std::move(response));
         }
 };

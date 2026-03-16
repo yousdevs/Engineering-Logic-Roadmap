@@ -4,7 +4,8 @@
 #include "domain/entities/Transaction.hpp"
 #include "domain/entities/User.hpp"
 
-#include "application/dto/LoginResult.hpp"
+#include "application/common/UseCaseResult.hpp"
+#include "application/dto/LoginResponse.hpp"
 #include "application/ports/IPasswordHasher.hpp"
 #include "application/usecases/LoginUseCase.hpp"
 
@@ -185,13 +186,14 @@ int main() {
     SimplePasswordHasher hasher;
     LoginUseCase         loginUS(usersRepo, hasher);
 
-    LoginResult res = loginUS.execute("U001", "12345678");  // U003|Bobhashhash|Admin
+    UseCaseResult<LoginResponse> res =
+        loginUS.execute("U001", "12345678");  // U003|12345678hash|Admin
 
-    if (!res.success) {
-        std::cout << "\n" << res.message;
+    if (!res.isSuccess()) {
+        std::cout << "\n" << res.message();
     } else {
 
-        std::cout << "\n" << res.message << "\n" << res.user->username << "\n" << res.user->role;
+        std::cout << "\n" << "\n" << res.data()->getUsername() << "\n" << res.data()->getRole();
     }
 
     std::cout << "\n" << hasher.hash("12345678");
