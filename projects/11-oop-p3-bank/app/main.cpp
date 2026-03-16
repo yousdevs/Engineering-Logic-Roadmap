@@ -5,6 +5,18 @@
 #include "../infrastructure/persistence/FileClientRepository.hpp"
 #include "../infrastructure/persistence/FileUserRepository.hpp"
 #include "../libs/StringLib.h"
+#include "application/usecases/LoginUseCase.hpp"
+#include "application/ports/IPasswordHasher.hpp"
+#include "application/dto/LoginResult.hpp"
+
+class DumpPasswordHasher : public IPasswordHasher {
+ public:
+  DumpPasswordHasher() {}
+     bool verify(const std::string& pass, const std::string& hash) {
+    return pass == hash;
+  }
+     std::string hash(const std::string& pass) { return pass;}
+};
 
 int main()
 {
@@ -165,5 +177,23 @@ int main()
 
 
     std::cout << StringLib::join({"hello", "world"}, ", ");
+
+
+    DumpPasswordHasher hasher;
+    LoginUseCase loginUS(usersRepo, hasher);
+    
+    LoginResult res = loginUS.execute("U003", "Bobhashhash");//U003|Bobhashhash|Admin
+
+    if (!res.success){
+      std::cout << "\n" << res.message;
+    } else {
+    
+        std::cout << "\n"
+                << res.message << "\n"
+                << res.user->username << "\n"
+                << res.user->role;
+    }
+
+
     return 0;
 }
