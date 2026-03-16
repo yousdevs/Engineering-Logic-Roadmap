@@ -10,6 +10,7 @@
 
 #include "infrastructure/persistence/FileClientRepository.hpp"
 #include "infrastructure/persistence/FileUserRepository.hpp"
+#include "infrastructure/security/SimplePasswordHasher.hpp"
 
 #include "libs/StringLib.h"
 
@@ -181,10 +182,10 @@ int main() {
 
     std::cout << StringLib::join({"hello", "world"}, ", ");
 
-    DumpPasswordHasher hasher;
-    LoginUseCase       loginUS(usersRepo, hasher);
+    SimplePasswordHasher hasher;
+    LoginUseCase         loginUS(usersRepo, hasher);
 
-    LoginResult res = loginUS.execute("U003", "Bobhashhash");  // U003|Bobhashhash|Admin
+    LoginResult res = loginUS.execute("U001", "12345678");  // U003|Bobhashhash|Admin
 
     if (!res.success) {
         std::cout << "\n" << res.message;
@@ -192,6 +193,8 @@ int main() {
 
         std::cout << "\n" << res.message << "\n" << res.user->username << "\n" << res.user->role;
     }
+
+    std::cout << "\n" << hasher.hash("12345678");
 
     return 0;
 }
