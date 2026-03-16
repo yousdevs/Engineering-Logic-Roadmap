@@ -5,10 +5,43 @@ project(BankSystem)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+#[[
+set(SOURCES
+    app/main.cpp
+    domain/entities/Client.cpp
+    domain/entities/User.cpp
+    domain/entities/Transaction.cpp
+    infrastructure/persistence/FileClientRepository.cpp
+    infrastructure/persistence/FileUserRepository.cpp
+)
+set(HEADERS
+    application/usecases/LoginUseCase.hpp
+    libs/StringLib.h
+    
+)
+
 add_executable(
     bank-system
-    app/main.cpp
- "domain/entities/Client.cpp" "domain/entities/User.cpp" "domain/entities/Transaction.cpp" "infrastructure/persistence/FileClientRepository.cpp" "infrastructure/persistence/FileUserRepository.cpp" "libs/StringLib.h")
+   ${SOURCES} ${HEADERS}
+ )
+]]
+
+file(GLOB_RECURSE ALL_SOURCES 
+    "app/*.cpp"
+    "application/*.cpp" "application/*.hpp"
+    "domain/*.cpp" "domain/*.hpp"
+    "infrastructure/*.cpp" "infrastructure/*.hpp"
+    "libs/*.h" "libs/*.hpp" "libs/*.cpp"
+)
+
+add_executable(bank-system ${ALL_SOURCES})
+
+ target_include_directories(bank-system PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/application
+    ${CMAKE_CURRENT_SOURCE_DIR}/domain
+    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure
+)
 
 add_custom_command(
     TARGET bank-system POST_BUILD
