@@ -8,10 +8,12 @@
 #include "application/dto/LoginRequest.hpp"
 #include "application/dto/LoginResponse.hpp"
 #include "application/ports/IPasswordHasher.hpp"
+#include "application/usecases/ListClientsUseCase.hpp"
 #include "application/usecases/LoginUseCase.hpp"
 
 #include "infrastructure/persistence/FileClientRepository.hpp"
 #include "infrastructure/persistence/FileUserRepository.hpp"
+#include "infrastructure/security/AuthorizationService.hpp"
 #include "infrastructure/security/SimplePasswordHasher.hpp"
 
 #include "libs/StringLib.h"
@@ -198,6 +200,22 @@ int main() {
     }
 
     std::cout << "\n" << hasher.hash("12345678");
+
+    ListClientsUseCase listUseCase(repo, AuthorizationService());
+
+    ExecutionContext ctx(res.data()->getUsername(), res.data()->getRole());
+
+    ListClientsRequest listClientReq{};
+
+    auto listClientRes = listUseCase.execute(ctx, listClientReq);
+    if (listClientRes.isSuccess()) {
+        auto clientsf = listClientRes.data()->clients;
+        std::cout << "\n";
+        for (auto& clientf : clientsf) {
+            std::cout << clientf.id << " - " << clientf.name << " - "
+                      << std::to_string(clientf.balance) << "\n";
+        }
+    }
 
     return 0;
 }
