@@ -15,6 +15,7 @@
 #include "infrastructure/persistence/FileUserRepository.hpp"
 #include "infrastructure/security/AuthorizationService.hpp"
 #include "infrastructure/security/SimplePasswordHasher.hpp"
+#include "infrastructure/services/SequentialIdGenerator.hpp"
 
 #include "libs/StringLib.h"
 
@@ -51,22 +52,6 @@ int main() {
     std::cout << "\n" << u.getUsername();
 
     u.changePasswordHash("22");
-
-    Transaction tx = Transaction::createDeposit("1", "acc1", 40);
-    std::cout << "\n" << tx.getAmount();
-    std::string src = tx.getDestinationAccount().value();
-    std::cout << "\n" << src;
-    std::string dst = "No Account";
-    if (tx.getSourceAccount().has_value()) {
-        dst = tx.getSourceAccount().value();
-    }
-    std::cout << "\n" << dst;
-
-    try {
-        Transaction tx2 = Transaction::createDeposit("2", "Acc2", 0);
-    } catch (std::invalid_argument& e) {
-        std::cout << "\n" << e.what();
-    }
 
     FileClientRepository repo(DATA_PATH "clients.txt");
 
@@ -217,5 +202,14 @@ int main() {
         }
     }
 
+    SequentialIdGenerator idGenerator{};
+    auto                  txId  = TransactionId::generate(idGenerator);
+    auto                  accId = AccountId::generate(idGenerator);
+
+    auto tx = Transaction::credit(txId, accId, Money::Money(100), "test");
+
+    std::cout << "\n"
+              << tx.id().value() << "|" << tx.accountId().value() << "|" << tx.amount().value()
+              << "|" << (tx.isCredit() ? "Credit" : "Debit") << "|" << tx.description();
     return 0;
 }

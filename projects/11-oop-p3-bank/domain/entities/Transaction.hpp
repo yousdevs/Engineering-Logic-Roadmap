@@ -1,71 +1,62 @@
 #pragma once
 
 #include <ctime>
-#include <optional>
+#include <stdexcept>
 #include <string>
+
+#include "domain/value_objects/AccountId.hpp"
+#include "domain/value_objects/Money.hpp"
+#include "domain/value_objects/TransactionId.hpp"
+
+enum class TransactionType { CREDIT, DEBIT };
 
 class Transaction {
 
     public:
 
-        enum class Type { Deposit, Withdraw, Transfer };
+        // throws invalid_argument if description is empty
+        static Transaction credit(TransactionId      id,
+                                  const AccountId&   accountId,
+                                  const Money&       amount,
+                                  const std::string& description);
+
+        // throws invalid_argument if description is empty
+        static Transaction debit(TransactionId      id,
+                                 const AccountId&   accountId,
+                                 const Money&       amount,
+                                 const std::string& description);
+
+        // restores a Transaction from a stored state.
+        static Transaction reconstitute(TransactionId   id,
+                                        AccountId       accountId,
+                                        Money           amount,
+                                        TransactionType type,
+                                        std::string     description,
+                                        std::time_t     createdAt);
+
+        const TransactionId& id() const;
+        const AccountId&     accountId() const;
+        const Money&         amount() const;
+        TransactionType      type() const;
+        const std::string&   description() const;
+        std::time_t          createdAt() const;
+
+        bool isCredit() const;
+        bool isDebit() const;
 
     private:
 
-        std::string                _transactionId;
-        std::optional<std::string> _sourceAccount;
-        std::optional<std::string> _destinationAccount;
+        Transaction(TransactionId   id,
+                    AccountId       accountId,
+                    Money           amount,
+                    TransactionType type,
+                    std::string     description,
+                    std::time_t     createdAt);
 
-        long long   _amount;
-        Type        _type;
-        std::time_t _timestamp;
-
-    private:
-
-        Transaction(const std::string&         transactionId,
-                    std::optional<std::string> sourceAccount,
-                    std::optional<std::string> destinationAccount,
-                    long long                  amount,
-                    Type                       type,
-                    std::time_t                timestamp);
-
-    public:
-
-        static Transaction createDeposit(
-
-            const std::string& transactionId,
-            const std::string& destinationAccount,
-            long long          amount);
-
-        static Transaction createWithdraw(
-
-            const std::string& transactionId, const std::string& sourceAccount, long long amount);
-
-        static Transaction createTransfer(
-
-            const std::string& transactionId,
-            const std::string& sourceAccount,
-            const std::string& destinationAccount,
-            long long          amount);
-
-        static Transaction rehydrate(
-
-            const std::string&         transactionId,
-            std::optional<std::string> sourceAccount,
-            std::optional<std::string> destinationAccount,
-            long long                  amount,
-            Type                       type,
-            std::time_t                timestamp);
-
-        const std::optional<std::string>& getSourceAccount() const;
-
-        const std::optional<std::string>& getDestinationAccount() const;
-
-        long long getAmount() const;
-
-        Type getType() const;
-
-        std::time_t getTimestamp() const;
-
-        const std::string& getTransactionId() const;
+        const TransactionId   _id;
+        const AccountId       _accountId;
+        const Money           _amount;
+        const TransactionType _type;
+        const std::string     _description;
+        const std::time_t     _createdAt;
 };

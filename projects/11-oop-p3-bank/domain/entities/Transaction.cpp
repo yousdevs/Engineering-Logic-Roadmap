@@ -1,94 +1,93 @@
 #include "domain/entities/Transaction.hpp"
 
-#include <ctime>
-#include <optional>
-#include <stdexcept>
-#include <string>
-
-Transaction::Transaction(const std::string&         transactionId,
-                         std::optional<std::string> sourceAccount,
-                         std::optional<std::string> destinationAccount,
-                         long long                  amount,
-                         Type                       type,
-                         std::time_t                timestamp)
-    : _transactionId(transactionId)
-    , _sourceAccount(sourceAccount)
-    , _destinationAccount(destinationAccount)
-    , _amount(amount)
+Transaction::Transaction(TransactionId   id,
+                         AccountId       accountId,
+                         Money           amount,
+                         TransactionType type,
+                         std::string     description,
+                         std::time_t     createdAt)
+    : _id(std::move(id))
+    , _accountId(std::move(accountId))
+    , _amount(std::move(amount))
     , _type(type)
-    , _timestamp(timestamp) {
+    , _description(std::move(description))
+    , _createdAt(createdAt) {}
 
-    if (amount <= 0)
-        throw std::invalid_argument("Transaction amount must be positive");
+// file scope guard shared between credit() and debit()
+static void validateDescription(const std::string& description, const std::string& context) {
+
+    if (description.empty())
+        throw std::invalid_argument(context + ": description cannot be empty. "
+            "Every transaction must carry an audit-friendly description.");
 }
 
-Transaction Transaction::createDeposit(const std::string& transactionId,
-                                       const std::string& destinationAccount,
-                                       long long          amount) {
+Transaction Transaction::credit(TransactionId      id,
+                                const AccountId&   accountId,
+                                const Money&       amount,
+                                const std::string& description) {
+
+    validateDescription(description, "Transaction::credit");
+
     return Transaction(
-        transactionId, std::nullopt, destinationAccount, amount, Type::Deposit, std::time(nullptr));
+        std::move(id), accountId, amount, TransactionType::CREDIT, description, std::time(nullptr));
 }
 
-Transaction Transaction::createWithdraw(const std::string& transactionId,
-                                        const std::string& sourceAccount,
-                                        long long          amount) {
+Transaction Transaction::debit(TransactionId      id,
+                               const AccountId&   accountId,
+                               const Money&       amount,
+                               const std::string& description) {
+
+    // Money already guards amount > 0
+    validateDescription(description, "Transaction::debit");
 
     return Transaction(
-        transactionId, sourceAccount, std::nullopt, amount, Type::Withdraw, std::time(nullptr));
+        std::move(id), accountId, amount, TransactionType::DEBIT, description, std::time(nullptr));
 }
 
-Transaction Transaction::createTransfer(const std::string& transactionId,
-                                        const std::string& sourceAccount,
-                                        const std::string& destinationAccount,
-                                        long long          amount) {
+Transaction Transaction::reconstitute(TransactionId   id,
+                                      AccountId       accountId,
+                                      Money           amount,
+                                      TransactionType type,
+                                      std::string     description,
+                                      std::time_t     createdAt) {
 
-    if (sourceAccount == destinationAccount)
-        throw std::invalid_argument("Source and destination accounts cannot be the same");
-
-    return Transaction(transactionId,
-                       sourceAccount,
-                       destinationAccount,
-                       amount,
-                       Type::Transfer,
-                       std::time(nullptr));
+    // No validation, data coming from persistence was valid when saved.
+    return Transaction(std::move(id),
+                       std::move(accountId),
+                       std::move(amount),
+                       type,
+                       std::move(description),
+                       createdAt);
 }
 
-Transaction Transaction::rehydrate(const std::string&         transactionId,
-                                   std::optional<std::string> sourceAccount,
-                                   std::optional<std::string> destinationAccount,
-                                   long long                  amount,
-                                   Type                       type,
-                                   std::time_t                timestamp) {
-
-    return Transaction(transactionId, sourceAccount, destinationAccount, amount, type, timestamp);
+const TransactionId& Transaction::id() const {
+    return _id;
 }
 
-const std::optional<std::string>& Transaction::getSourceAccount() const {
-
-    return _sourceAccount;
+const AccountId& Transaction::accountId() const {
+    return _accountId;
 }
 
-const std::optional<std::string>& Transaction::getDestinationAccount() const {
-
-    return _destinationAccount;
+const Money& Transaction::amount() const {
+    return _amount;
 }
 
-const std::string& Transaction::getTransactionId() const {
-
-    return _transactionId;
-}
-
-std::time_t Transaction::getTimestamp() const {
-
-    return _timestamp;
-}
-
-Transaction::Type Transaction::getType() const {
-
+TransactionType Transaction::type() const {
     return _type;
 }
 
-long long Transaction::getAmount() const {
+const std::string& Transaction::description() const {
+    return _description;
+}
 
-    return _amount;
+std::time_t Transaction::createdAt() const {
+    return _createdAt;
+}
+
+bool Transaction::isCredit() const {
+    return _type == TransactionType::CREDIT;
+}
+
+bool Transaction::isDebit() const {
+    return _type == TransactionType::DEBIT;
 }
