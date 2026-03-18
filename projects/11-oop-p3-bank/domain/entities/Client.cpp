@@ -1,72 +1,84 @@
-#include "Client.hpp"
+#include "domain/entities/Client.hpp"
 
-#include <stdexcept>
+Client::Client(ClientId    id,
+               std::string firstName,
+               std::string lastName,
+               std::string phone,
+               PinCode     pinCode,
+               std::time_t createdAt)
+    : _id(std::move(id))
+    , _firstName(std::move(firstName))
+    , _lastName(std::move(lastName))
+    , _phone(std::move(phone))
+    , _pinCode(std::move(pinCode))
+    , _createdAt(createdAt) {}
 
-Client::Client(const std::string& accountId,
-               const std::string& firstName,
-               const std::string& lastName,
-               const std::string& phone,
-               const std::string& pin,
-               long long          balance)
-    : _accountId(accountId)
-    , _firstName(firstName)
-    , _lastName(lastName)
-    , _phone(phone)
-    , _pin(pin)
-    , _balance(balance) {}
+// File-socpe shared validation helper
+static void requireNonEmpty(const std::string& value,
+                            const std::string& fieldName,
+                            const std::string& context) {
 
-const std::string& Client::getAccountId() const {
-    return _accountId;
-}
-const std::string& Client::getFirstName() const {
-    return _firstName;
-}
-const std::string& Client::getLastName() const {
-    return _lastName;
-}
-const std::string& Client::getPhone() const {
-    return _phone;
-}
-const std::string& Client::getPin() const {
-    return _pin;
-}
-long long Client::getBalance() const {
-    return _balance;
+    if (value.empty())
+        throw std::invalid_argument(context + ": " + fieldName + " cannot be empty.");
 }
 
-const std::string Client::getFullName() const {
-    return _firstName + " " + _lastName;
+Client Client::create(ClientId           id,
+                      const std::string& firstName,
+                      const std::string& lastName,
+                      const std::string& phone,
+                      PinCode            pinCode) {
+
+    requireNonEmpty(firstName, "firstName", "Client::create");
+    requireNonEmpty(lastName, "lastName", "Client::create");
+    requireNonEmpty(phone, "phone", "Client::create");
+
+    return Client(
+        std::move(id), firstName, lastName, phone, std::move(pinCode), std::time(nullptr));
 }
 
-void Client::changeFirstName(const std::string& firstName) {
-    _firstName = firstName;
+Client Client::reconstitute(ClientId    id,
+                            std::string firstName,
+                            std::string lastName,
+                            std::string phone,
+                            PinCode     pinCode,
+                            std::time_t createdAt) {
+
+    // data was valid when originally saved.
+    return Client(std::move(id),
+                  std::move(firstName),
+                  std::move(lastName),
+                  std::move(phone),
+                  std::move(pinCode),
+                  createdAt);
 }
 
-void Client::changeLastName(const std::string& lastName) {
-    _lastName = lastName;
+PinCode Client::changePin(IPinCodeGenerator& pinCodeGenerator) {
+
+    _pinCode = pinCodeGenerator.generate();
+    return _pinCode;
 }
 
-void Client::changePhone(const std::string& phone) {
+void Client::updatePhone(const std::string& phone) {
+
+    requireNonEmpty(phone, "phone", "Client::updatePhone");
     _phone = phone;
 }
 
-void Client::changePin(const std::string& pin) {
-    _pin = pin;
+const ClientId& Client::id() const {
+    return _id;
 }
-
-void Client::deposit(long long amount) {
-    if (amount <= 0)
-        throw std::invalid_argument("Deposit amount must be positive");
-
-    _balance += amount;
+const std::string& Client::firstName() const {
+    return _firstName;
 }
-
-void Client::withdraw(long long amount) {
-    if (amount <= 0)
-        throw std::invalid_argument("Withdraw amount must be positive");
-
-    if (amount > _balance)
-        throw std::runtime_error("Insufficient balance");
-
-    _balance -= amount;
+const std::string& Client::lastName() const {
+    return _lastName;
+}
+const std::string& Client::phone() const {
+    return _phone;
+}
+const PinCode& Client::pinCode() const {
+    return _pinCode;
+}
+std::time_t Client::createdAt() const {
+    return _createdAt;
 }
