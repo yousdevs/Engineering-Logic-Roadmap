@@ -4,6 +4,7 @@
 #include "domain/entities/Client.hpp"
 #include "domain/entities/Transaction.hpp"
 #include "domain/entities/User.hpp"
+#include "domain/value_objects/PinCode.hpp"
 
 #include "application/common/UseCaseResult.hpp"
 #include "application/dto/LoginRequest.hpp"
@@ -221,6 +222,20 @@ int main() {
               << account.createdAt() << "|" << (account.isActive() ? "ACTIVE" : "Not ACTIVE");
     account.close();
     std::cout << "\n" << (account.isClosed() ? "CLOSED" : "Not CLOSED");
+
+    auto pin = PinCode::from("4432");
+    std::cout << "\n" << pin.value();
+
+    try {
+        auto seqPin = PinCode::from("1234");
+    } catch (std::invalid_argument e) {
+        std::cout << "\n" << e.what();
+    }
+    try {
+        auto charPin = PinCode::from("add4");
+    } catch (std::invalid_argument e) {
+        std::cout << "\n" << e.what();
+    }
 
     return 0;
 }
