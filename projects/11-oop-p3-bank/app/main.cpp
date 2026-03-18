@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "domain/entities/Account.hpp"
 #include "domain/entities/Client.hpp"
 #include "domain/entities/Transaction.hpp"
 #include "domain/entities/User.hpp"
@@ -211,5 +212,15 @@ int main() {
     std::cout << "\n"
               << tx.id().value() << "|" << tx.accountId().value() << "|" << tx.amount().value()
               << "|" << (tx.isCredit() ? "Credit" : "Debit") << "|" << tx.description();
+
+    auto clientId = ClientId::generate(idGenerator);
+    auto account  = Account::openFor(accId, clientId);
+
+    std::cout << "\n"
+              << account.id().value() << "|" << account.clientId().value() << "|"
+              << account.createdAt() << "|" << (account.isActive() ? "ACTIVE" : "Not ACTIVE");
+    account.close();
+    std::cout << "\n" << (account.isClosed() ? "CLOSED" : "Not CLOSED");
+
     return 0;
 }

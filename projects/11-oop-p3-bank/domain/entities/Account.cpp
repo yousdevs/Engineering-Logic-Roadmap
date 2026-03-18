@@ -4,10 +4,9 @@
 Account::Account(AccountId id, ClientId clientId, AccountStatus status, std::time_t createdAt)
     : _id(std::move(id)), _clientId(std::move(clientId)), _status(status), _createdAt(createdAt) {}
 
-Account Account::openFor(const ClientId& clientId, IIdGenerator& idGenerator) {
+Account Account::openFor(AccountId id, const ClientId& clientId) {
 
-    return Account(
-        AccountId::generate(idGenerator), clientId, AccountStatus::ACTIVE, std::time(nullptr));
+    return Account(std::move(id), clientId, AccountStatus::ACTIVE, std::time(nullptr));
 }
 
 Account Account::reconstitute(AccountId     id,
