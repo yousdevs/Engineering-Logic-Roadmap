@@ -14,6 +14,8 @@
 #include "application/usecases/LoginUseCase.hpp"
 
 // #include "infrastructure/persistence/FileClientRepository.hpp"
+#include "domain/services/BalanceCalculator.hpp"
+
 #include "infrastructure/persistence/FileUserRepository.hpp"
 #include "infrastructure/security/AuthorizationService.hpp"
 #include "infrastructure/security/SequentialPinCodeGenerator.hpp"
@@ -137,7 +139,13 @@ int main() {
     auto                  txId  = TransactionId::generate(idGenerator);
     auto                  accId = AccountId::generate(idGenerator);
 
-    auto tx = Transaction::credit(txId, accId, Money::Money(100), "test");
+    auto tx  = Transaction::credit(txId, accId, Money::Money(100), "test");
+    auto tx1 = Transaction::credit(txId, accId, Money::Money(100), "test");
+    auto tx2 = Transaction::credit(txId, accId, Money::Money(100), "test");
+
+    std::vector<Transaction> txs     = {tx, tx1, tx2};
+    Money                    balance = BalanceCalculator().calculate(accId, txs);
+    std::cout << "\nBalance total for: " << accId.value() << " is " << balance.value();
 
     std::cout << "\n"
               << tx.id().value() << "|" << tx.accountId().value() << "|" << tx.amount().value()
