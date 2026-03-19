@@ -4,14 +4,14 @@
 #include "domain/entities/Client.hpp"
 #include "domain/entities/Transaction.hpp"
 #include "domain/entities/User.hpp"
+#include "domain/ports/IPasswordHasher.hpp"
 #include "domain/value_objects/PinCode.hpp"
 
 #include "application/common/UseCaseResult.hpp"
 #include "application/dto/LoginRequest.hpp"
 #include "application/dto/LoginResponse.hpp"
-#include "application/ports/IPasswordHasher.hpp"
 // #include "application/usecases/ListClientsUseCase.hpp"
-#include "application/usecases/LoginUseCase.hpp"
+// #include "application/usecases/LoginUseCase.hpp"
 
 // #include "infrastructure/persistence/FileClientRepository.hpp"
 #include "domain/services/BalanceCalculator.hpp"
@@ -39,105 +39,23 @@ class DumpPasswordHasher : public IPasswordHasher {
 int main() {
     std::cout << "Bank System Starting..." << std::endl;
 
-    User u("username", "passwordHash", "Teller");
-    std::cout << "\n" << u.getUsername();
-
-    u.changePasswordHash("22");
-
-    FileUserRepository usersRepo(DATA_PATH "users.txt");
-
-    std::cout << "\n=== All Users ===\n";
-
-    auto users = usersRepo.findAll();
-
-    for (const auto& u : users) {
-        std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | " << u.getRole()
-                  << "\n";
-    }
-
-    std::cout << "\n=== Find User U001 ===\n";
-
-    auto user = usersRepo.findByUsername("U001");
-
-    if (user) {
-        std::cout << user->getUsername() << " found\n";
-    } else {
-        std::cout << "User not found\n";
-    }
-    std::cout << "\n=== Add New User ===\n";
-
-    User newUser("U003", "Bobhashhash", "Admin");
-
-    try {
-        usersRepo.save(newUser);
-    } catch (std::invalid_argument& e) {
-        std::cout << "\n" << e.what();
-    }
-
-    std::cout << "User added.\n";
-
-    std::cout << "\n=== After Insert ===\n";
-
-    users = usersRepo.findAll();
-
-    for (const auto& u : users) {
-        std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | " << u.getRole()
-                  << "\n";
-    }
-
-    std::cout << "\n=== Remove U002 ===\n";
-
-    try {
-        usersRepo.remove("U002");
-    } catch (std::invalid_argument& e) {
-        std::cout << "\n" << e.what();
-    }
-
-    users = usersRepo.findAll();
-
-    std::cout << "\n=== After Remove ===\n";
-
-    for (const auto& u : users) {
-        std::cout << u.getUsername() << " | " << u.getPasswordHash() << " | " << u.getRole()
-                  << "\n";
-    }
-
     std::cout << StringLib::join({"hello", "world"}, ", ");
 
     SimplePasswordHasher hasher;
-    LoginUseCase         loginUS(usersRepo, hasher);
-
-    UseCaseResult<LoginResponse> res =
-        loginUS.execute(LoginRequest{"U001", "12345678"});  // U003|12345678hash|Admin
-
-    if (!res.isSuccess()) {
-        std::cout << "\n" << res.message();
-    } else {
-
-        std::cout << "\n" << "\n" << res.data()->getUsername() << "\n" << res.data()->getRole();
-    }
-
-    std::cout << "\n" << hasher.hash("12345678");
-
-    // ListClientsUseCase listUseCase(repo, AuthorizationService());
-
-    // ExecutionContext ctx(res.data()->getUsername(), res.data()->getRole());
-
-    // ListClientsRequest listClientReq{};
-
-    // auto listClientRes = listUseCase.execute(ctx, listClientReq);
-    // if (listClientRes.isSuccess()) {
-    //     auto clientsf = listClientRes.data()->clients;
-    //     std::cout << "\n";
-    //     for (auto& clientf : clientsf) {
-    //         std::cout << clientf.id << " - " << clientf.name << " - "
-    //                   << std::to_string(clientf.balance) << "\n";
-    //     }
-    // }
 
     SequentialIdGenerator idGenerator{};
-    auto                  txId  = TransactionId::generate(idGenerator);
-    auto                  accId = AccountId::generate(idGenerator);
+
+    UserId user1Id   = UserId::generate(idGenerator);
+    Role   user1Role = Role::admin();
+
+    User user1 = User::create(user1Id, "user1", hasher.hash("hashedPassword"), user1Role);
+
+    std::cout << "\n"
+              << user1.id().value() << "|" << user1.username() << "|" << user1.passwordHash() << "|"
+              << user1.role().name() << "|" << user1.createdAt();
+
+    auto txId  = TransactionId::generate(idGenerator);
+    auto accId = AccountId::generate(idGenerator);
 
     auto tx  = Transaction::credit(txId, accId, Money::Money(100), "test");
     auto tx1 = Transaction::credit(txId, accId, Money::Money(100), "test");

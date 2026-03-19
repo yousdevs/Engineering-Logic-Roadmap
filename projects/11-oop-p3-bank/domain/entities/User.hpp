@@ -1,38 +1,58 @@
 #pragma once
 
+#include <ctime>
+#include <stdexcept>
 #include <string>
+
+#include "domain/ports/IPasswordHasher.hpp"
+#include "domain/value_objects/Role.hpp"
+#include "domain/value_objects/UserId.hpp"
+
+//  User — a system operator (bank employee)
 
 class User {
 
-    private:
-
-        std::string _username;
-        std::string _passwordHash;
-        std::string _role;
-
     public:
 
-        User(const std::string& username,
-             const std::string& passwordHash,
-             const std::string& _role);
+        // Throws std::invalid_argument if username is empty.
+        static User create(UserId             id,
+                           const std::string& username,
+                           const std::string& passwordHash,
+                           Role               role);
 
-        const std::string& getUsername() const;
-        const std::string& getPasswordHash() const;
-        const std::string& getRole() const;
+        static User reconstitute(UserId      id,
+                                 std::string username,
+                                 std::string passwordHash,
+                                 Role        role,
+                                 std::time_t createdAt);
 
-        /**
-         * @brief Changes the username of the User.
-         * @param username The new username.
-         * @exception std::invalid_argument Thrown if username is empty
-         */
+        // Throws std::invalid_argument if username is empty.
         void changeUsername(const std::string& username);
 
-        /**
-         * @brief Changes the password of the User.
-         * @param password The new passwordHash.
-         *
-         */
-        void changePasswordHash(const std::string& passwordHash);
+        // Throws std::invalid_argument if newPassword is empty.
+        void changePassword(const std::string& newPassword, IPasswordHasher& hasher);
 
-        void changeRole(const std::string& role);
+        void changeRole(const Role& role);
+
+        bool can(int permission) const;
+
+        const UserId&      id() const;
+        const std::string& username() const;
+        const std::string& passwordHash() const;
+        const Role&        role() const;
+        std::time_t        createdAt() const;
+
+    private:
+
+        User(UserId      id,
+             std::string username,
+             std::string passwordHash,
+             Role        role,
+             std::time_t createdAt);
+
+        UserId      _id;
+        std::string _username;
+        std::string _passwordHash;
+        Role        _role;
+        std::time_t _createdAt;
 };

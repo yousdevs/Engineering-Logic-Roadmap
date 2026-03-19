@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "application/ports/IPasswordHasher.hpp"
+#include "domain/ports/IPasswordHasher.hpp"
 
 class SimplePasswordHasher : public IPasswordHasher {
 
