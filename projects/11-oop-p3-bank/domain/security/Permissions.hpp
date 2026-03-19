@@ -1,5 +1,12 @@
 #pragma once
 
+//  Adding a new permission:
+//    1. Add a new constexpr here (next available bit).
+//    2. Assign it to the relevant Role(s) in Role.hpp.
+//    3. Update permissionFromRole / roleFromPermissions
+//       if the role's bitmask changes.
+// ───────────────────────────────────────────────────────────
+
 namespace Permission {
 
 constexpr int ListClients = 1 << 0;
