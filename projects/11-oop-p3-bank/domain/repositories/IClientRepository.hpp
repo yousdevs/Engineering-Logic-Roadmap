@@ -1,28 +1,32 @@
 #pragma once
 
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "domain/entities/Client.hpp"
+#include "domain/repositories/IRepository.hpp"
+#include "domain/repositories/Page.hpp"
+#include "domain/value_objects/ClientId.hpp"
 
-class IClientRepository {
+//  All queries below exclude soft-deleted records unless
+//  explicitly noted (findDeleted).
+
+class IClientRepository : public IRepository<Client, ClientId> {
 
     public:
 
-        virtual ~IClientRepository() = default;
+        // Paginated list of all active clients, newest first.
+        virtual PagedResult<Client> findAll(const Page& page) = 0;
 
-        virtual std::vector<Client> findAll() const = 0;
+        // Full-text search by first name, last name, or both.
+        virtual PagedResult<Client> findByName(const std::string& query, const Page& page) = 0;
 
-        /**
-         * @brief Finds a specific client by their unique account ID.
-         * @param accountId The ID to search for.
-         * @return An optional containing the Client if found, std::nullopt
-         * otherwise.
-         */
-        virtual std::optional<Client> findById(const std::string& accountId) const = 0;
+        // Finds an active Client by phone.
+        virtual std::optional<Client> findByPhone(const std::string& phone) = 0;
 
-        virtual void save(const Client& client) = 0;
+        // Returns true if an active client exists with this phone
+        virtual bool existsByPhone(const std::string& phone) = 0;
 
-        virtual void remove(const std::string& accountId) = 0;
+        // Returns soft-deleted clients, newest deletion first.
+        virtual std::vector<Client> findDeleted() = 0;
 };
