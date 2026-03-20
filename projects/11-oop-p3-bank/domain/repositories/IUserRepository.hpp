@@ -32,4 +32,7 @@ class IUserRepository : public IRepository<User, UserId> {
 
         // Returns soft-deleted users, newest deactivation first.
         virtual std::vector<User> findDeleted() = 0;
+
+        // Soft delete.
+        virtual void remove(const UserId& id) = 0;
 };

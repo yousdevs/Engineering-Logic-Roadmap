@@ -15,12 +15,6 @@
 //    - No update()   — save() handles both insert and upsert.
 //                      Having both creates ambiguity.
 //
-//  Soft delete:
-//    - remove() performs a SOFT delete on entities that
-//      require audit trail (Client, User).
-//    - For Transaction, remove() is = delete (compile-time).
-//    - For Account, status transitions replace deletion.
-//
 
 template<typename T, typename TId>
 class IRepository {
@@ -36,9 +30,6 @@ class IRepository {
 
         // Returns true if a non-deleted record exists.
         virtual bool exists(const TId id) = 0;
-
-        // Soft delete for entities that support it.
-        virtual void remove(const TId& id) = 0;
 
         virtual ~IRepository() = default;
 };

@@ -29,4 +29,7 @@ class IClientRepository : public IRepository<Client, ClientId> {
 
         // Returns soft-deleted clients, newest deletion first.
         virtual std::vector<Client> findDeleted() = 0;
+
+        // Soft delete.
+        virtual void remove(const ClientId& id) = 0;
 };
