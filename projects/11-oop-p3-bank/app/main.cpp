@@ -5,19 +5,10 @@
 #include "domain/entities/Transaction.hpp"
 #include "domain/entities/User.hpp"
 #include "domain/ports/IPasswordHasher.hpp"
+#include "domain/services/BalanceCalculator.hpp"
 #include "domain/value_objects/PinCode.hpp"
 
-#include "application/common/UseCaseResult.hpp"
-#include "application/dto/LoginRequest.hpp"
-#include "application/dto/LoginResponse.hpp"
-// #include "application/usecases/ListClientsUseCase.hpp"
-// #include "application/usecases/LoginUseCase.hpp"
-
-// #include "infrastructure/persistence/FileClientRepository.hpp"
-#include "domain/services/BalanceCalculator.hpp"
-
 #include "infrastructure/persistence/FileUserRepository.hpp"
-// #include "infrastructure/security/AuthorizationService.hpp"
 #include "infrastructure/security/SequentialPinCodeGenerator.hpp"
 #include "infrastructure/security/SimplePasswordHasher.hpp"
 #include "infrastructure/services/SequentialIdGenerator.hpp"
