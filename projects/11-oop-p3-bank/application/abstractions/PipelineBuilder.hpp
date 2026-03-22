@@ -22,9 +22,11 @@ struct PipelineServices {
 // This is the NestJS metadata-driven decorator pattern in C++.
 //
 // Fixed interceptor order (always respected):
-//  1. CallerPolicyInterceptor  -reject wrong caller type
+//  1. CallerPolicyInterceptor  - reject wrong caller type
+//  2. ValidationInterceptor    - always on, validate request fields
 
 #include "application/interceptors/CallerPolicyInterceptor.hpp"
+#include "application/interceptors/ValidationInterceptor.hpp"
 
 class PipelineBuilder {
 
@@ -40,6 +42,8 @@ class PipelineBuilder {
 
             pipeline.addInterceptor(
                 std::make_shared<CallerPolicyInterceptor<TRequest, TResponse>>(meta.callerPolicy));
+
+            pipeline.addInterceptor(std::make_shared<ValidationInterceptor<TRequest, TResponse>>());
 
             return pipeline;
         }
