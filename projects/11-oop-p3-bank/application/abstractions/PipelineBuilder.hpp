@@ -20,6 +20,11 @@ struct PipelineServices {
 
 // Reads UseCaseMetadata and assembles only the interceptors needed.
 // This is the NestJS metadata-driven decorator pattern in C++.
+//
+// Fixed interceptor order (always respected):
+//  1. CallerPolicyInterceptor  -reject wrong caller type
+
+#include "application/interceptors/CallerPolicyInterceptor.hpp"
 
 class PipelineBuilder {
 
@@ -32,6 +37,9 @@ class PipelineBuilder {
 
             const auto                           meta = useCase->metadata();
             UseCasePipeline<TRequest, TResponse> pipeline(useCase);
+
+            pipeline.addInterceptor(
+                std::make_shared<CallerPolicyInterceptor<TRequest, TResponse>>(meta.callerPolicy));
 
             return pipeline;
         }
