@@ -27,11 +27,13 @@ struct PipelineServices {
 //  3. RateLimitInterceptor     - if rateLimited = true
 //  4. AuthorizationInterceptor - if requiresAuth = true
 //  5. AuditInterceptor         - if audited = true
+//  6. TransactionInterceptor   - if transactional = true
 
 #include "application/interceptors/AuditInterceptor.hpp"
 #include "application/interceptors/AuthorizationInterceptor.hpp"
 #include "application/interceptors/CallerPolicyInterceptor.hpp"
 #include "application/interceptors/RateLimitInterceptor.hpp"
+#include "application/interceptors/TransactionInterceptor.hpp"
 #include "application/interceptors/ValidationInterceptor.hpp"
 
 class PipelineBuilder {
@@ -63,6 +65,11 @@ class PipelineBuilder {
             if (meta.audited)
                 pipeline.addInterceptor(std::make_shared<AuditInterceptor<TRequest, TResponse>>(
                     meta.name, services.auditLog));
+
+            if (meta.transactional)
+                pipeline.addInterceptor(
+                    std::make_shared<TransactionInterceptor<TRequest, TResponse>>(
+                        services.unitOfWork));
 
             return pipeline;
         }
