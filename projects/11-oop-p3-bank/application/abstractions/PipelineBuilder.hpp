@@ -26,7 +26,9 @@ struct PipelineServices {
 //  2. ValidationInterceptor    - always on, validate request fields
 //  3. RateLimitInterceptor     - if rateLimited = true
 //  4. AuthorizationInterceptor - if requiresAuth = true
+//  5. AuditInterceptor         - if audited = true
 
+#include "application/interceptors/AuditInterceptor.hpp"
 #include "application/interceptors/AuthorizationInterceptor.hpp"
 #include "application/interceptors/CallerPolicyInterceptor.hpp"
 #include "application/interceptors/RateLimitInterceptor.hpp"
@@ -57,6 +59,10 @@ class PipelineBuilder {
                 pipeline.addInterceptor(
                     std::make_shared<AuthorizationInterceptor<TRequest, TResponse>>(
                         meta.permission));
+
+            if (meta.audited)
+                pipeline.addInterceptor(std::make_shared<AuditInterceptor<TRequest, TResponse>>(
+                    meta.name, services.auditLog));
 
             return pipeline;
         }
