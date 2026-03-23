@@ -24,8 +24,10 @@ struct PipelineServices {
 // Fixed interceptor order (always respected):
 //  1. CallerPolicyInterceptor  - reject wrong caller type
 //  2. ValidationInterceptor    - always on, validate request fields
+//  3. RateLimitInterceptor     - if rateLimited = true
 
 #include "application/interceptors/CallerPolicyInterceptor.hpp"
+#include "application/interceptors/RateLimitInterceptor.hpp"
 #include "application/interceptors/ValidationInterceptor.hpp"
 
 class PipelineBuilder {
@@ -44,6 +46,10 @@ class PipelineBuilder {
                 std::make_shared<CallerPolicyInterceptor<TRequest, TResponse>>(meta.callerPolicy));
 
             pipeline.addInterceptor(std::make_shared<ValidationInterceptor<TRequest, TResponse>>());
+
+            if (meta.rateLimited)
+                pipeline.addInterceptor(std::make_shared<RateLimitInterceptor<TRequest, TResponse>>(
+                    meta.name, services.rateLimiter));
 
             return pipeline;
         }
