@@ -25,7 +25,9 @@ struct PipelineServices {
 //  1. CallerPolicyInterceptor  - reject wrong caller type
 //  2. ValidationInterceptor    - always on, validate request fields
 //  3. RateLimitInterceptor     - if rateLimited = true
+//  4. AuthorizationInterceptor - if requiresAuth = true
 
+#include "application/interceptors/AuthorizationInterceptor.hpp"
 #include "application/interceptors/CallerPolicyInterceptor.hpp"
 #include "application/interceptors/RateLimitInterceptor.hpp"
 #include "application/interceptors/ValidationInterceptor.hpp"
@@ -50,6 +52,11 @@ class PipelineBuilder {
             if (meta.rateLimited)
                 pipeline.addInterceptor(std::make_shared<RateLimitInterceptor<TRequest, TResponse>>(
                     meta.name, services.rateLimiter));
+
+            if (meta.requiresAuth)
+                pipeline.addInterceptor(
+                    std::make_shared<AuthorizationInterceptor<TRequest, TResponse>>(
+                        meta.permission));
 
             return pipeline;
         }
