@@ -19,7 +19,7 @@ class UseCasePipeline {
 
         using UseCasePtr = std::shared_ptr<IUseCase<TRequest, TResponse>>;
 
-        explicit UseCasePipeline(UseCasePtr useCase) : _useCase(std::move(usecase)) {}
+        explicit UseCasePipeline(UseCasePtr useCase) : _useCase(std::move(useCase)) {}
 
         UseCasePipeline& addInterceptor(InterceptorPtr interceptor) {
 
