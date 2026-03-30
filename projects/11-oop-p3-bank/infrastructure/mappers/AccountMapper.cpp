@@ -5,7 +5,7 @@ Account AccountMapper::toDomain(const Row& row) {
     return Account::reconstitute(AccountId::from(row.get<std::string>("id")),
                                  ClientId::from(row.get<std::string>("client_id")),
                                  statusFromString(row.get<std::string>("status")),
-                                 row.get<std::time_t>("created_at"));
+                                 row.get<int64_t>("created_at"));
 }
 
 Row AccountMapper::toPersistence(const Account& a) {

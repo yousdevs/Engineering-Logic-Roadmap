@@ -8,10 +8,10 @@ Transaction TransactionMapper::toDomain(const Row& row) {
 
         TransactionId::from(row.get<std::string>("id")),
         AccountId::from(row.get<std::string>("account_id")),
-        Money(static_cast<unsigned long long>(row.get<long long>("amount"))),
+        Money(static_cast<unsigned long long>(row.get<int64_t>("amount"))),
         typeFromString(row.get<std::string>("type")),
         row.get<std::string>("description"),
-        row.get<std::time_t>("created_at"));
+        row.get<int64_t>("created_at"));
 }
 
 Row TransactionMapper::toPersistence(const Transaction& tx) {

@@ -7,8 +7,8 @@ Client ClientMapper::toDomain(const Row& row) {
                                 row.get<std::string>("last_name"),
                                 row.get<std::string>("phone"),
                                 PinCode::from(row.get<std::string>("pin_code")),
-                                row.get<std::time_t>("created_at"),
-                                row.get<std::optional<std::time_t>>("deleted_at"));
+                                row.get<int64_t>("created_at"),
+                                row.get<std::optional<int64_t>>("deleted_at"));
 }
 
 Row ClientMapper::toPersistence(const Client& c) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "domain/entities/Transaction.hpp"
 
 #include "infrastructure/persistence/Row.hpp"

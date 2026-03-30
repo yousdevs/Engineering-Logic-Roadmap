@@ -5,7 +5,7 @@ void Row::set(const std::string& key, const std::string& value) {
     _fields[key] = value;
 }
 
-void Row::set(const std::string& key, long long value) {
+void Row::set(const std::string& key, int64_t value) {
 
     _fields[key] = std::to_string(value);
 }
@@ -18,11 +18,6 @@ void Row::set(const std::string& key, int value) {
 void Row::set(const std::string& key, bool value) {
 
     _fields[key] = value ? "1" : "0";
-}
-
-void Row::set(const std::string& key, std::time_t value) {
-
-    _fields[key] = std::to_string(static_cast<long long>(value));
 }
 
 void Row::setNull(const std::string& key) {

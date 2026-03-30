@@ -6,8 +6,8 @@ User UserMapper::toDomain(const Row& row) {
                               row.get<std::string>("username"),
                               row.get<std::string>("password_hash"),
                               Role::from(row.get<std::string>("role")),
-                              row.get<std::time_t>("created_at"),
-                              row.get<std::optional<std::time_t>>("deleted_at"));
+                              row.get<int64_t>("created_at"),
+                              row.get<std::optional<int64_t>>("deleted_at"));
 }
 
 Row UserMapper::toPersistence(const User& u) {

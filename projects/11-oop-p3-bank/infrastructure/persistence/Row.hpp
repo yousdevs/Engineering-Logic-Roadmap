@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ctime>
+#include <cstdint>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -20,13 +20,11 @@ class Row {
 
         void set(const std::string& key, const std::string& value);
 
-        void set(const std::string& key, long long value);
+        void set(const std::string& key, int64_t value);
 
         void set(const std::string& key, int value);
 
         void set(const std::string& key, bool value);
-
-        void set(const std::string& key, std::time_t value);
 
         void setNull(const std::string& key);
 
@@ -67,8 +65,19 @@ inline std::string Row::get<std::string>(const std::string& k) const {
 }
 
 template<>
-inline long long Row::get<long long>(const std::string& k) const {
+inline int64_t Row::get<int64_t>(const std::string& k) const {
     return std::stoll(require(k));
+}
+
+template<>
+inline std::optional<int64_t> Row::get<std::optional<int64_t>>(const std::string& k) const {
+    auto it = _fields.find(k);
+
+    if (it == _fields.end() || !it->second.has_value()) {
+        return std::nullopt;
+    }
+
+    return static_cast<int64_t>(std::stoll(it->second.value()));
 }
 
 template<>
@@ -79,22 +88,6 @@ inline int Row::get<int>(const std::string& k) const {
 template<>
 inline bool Row::get<bool>(const std::string& k) const {
     return require(k) == "1";
-}
-
-template<>
-inline std::time_t Row::get<std::time_t>(const std::string& k) const {
-    return static_cast<std::time_t>(std::stoll(require(k)));
-}
-
-template<>
-inline std::optional<std::time_t> Row::get<std::optional<std::time_t>>(const std::string& k) const {
-
-    auto it = _fields.find(k);
-
-    if (it == _fields.end() || !it->second.has_value())
-        return std::nullopt;
-
-    return static_cast<std::time_t>(std::stoll(it->second.value()));
 }
 
 template<typename T>
