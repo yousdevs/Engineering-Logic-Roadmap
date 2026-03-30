@@ -1,55 +1,43 @@
-cmake_minimum_required(VERSION 3.20)
+﻿cmake_minimum_required(VERSION 3.16)
+project(BankingSystem CXX)
 
-project(BankSystem)
-
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#[[
-set(SOURCES
-    app/main.cpp
-    domain/entities/Client.cpp
-    domain/entities/User.cpp
-    domain/entities/Transaction.cpp
-    infrastructure/persistence/FileClientRepository.cpp
-    infrastructure/persistence/FileUserRepository.cpp
-)
-set(HEADERS
-    application/usecases/LoginUseCase.hpp
-    libs/StringLib.h
-    
-)
+# ── SQLite ─────────────────────────────────────────────────────
+find_package(SQLite3 REQUIRED)
 
-add_executable(
-    bank-system
-   ${SOURCES} ${HEADERS}
- )
-]]
+# ── Source files ───────────────────────────────────────────────
+file(GLOB_RECURSE DOMAIN_SRC       "domain/*.cpp" "domain/*.hpp")
+file(GLOB_RECURSE APPLICATION_SRC  "application/*.cpp" "application/*.hpp")
+file(GLOB_RECURSE INFRA_SRC        "infrastructure/*.cpp" "infrastructure/*.hpp")
 
-file(GLOB_RECURSE ALL_SOURCES 
-    "app/*.cpp"
-    "application/*.cpp" "application/*.hpp"
-    "domain/*.cpp" "domain/*.hpp"
-    "infrastructure/*.cpp" "infrastructure/*.hpp"
-    "libs/*.h" "libs/*.hpp" "libs/*.cpp"
+add_executable(banking_system
+    main.cpp
+    ${DOMAIN_SRC}
+    ${APPLICATION_SRC}
+    ${INFRA_SRC}
 )
 
-add_executable(bank-system ${ALL_SOURCES})
-
- target_include_directories(bank-system PRIVATE 
+target_include_directories(banking_system PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/application
-    ${CMAKE_CURRENT_SOURCE_DIR}/domain
-    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure
+    ${SQLite3_INCLUDE_DIRS}
 )
 
-add_custom_command(
-    TARGET bank-system POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CMAKE_CURRENT_SOURCE_DIR}/data"
-            "$<TARGET_FILE_DIR:bank-system>/data"
+target_link_libraries(banking_system PRIVATE
+    ${SQLite3_LIBRARIES}
+    #[[pthread]]
 )
-# This creates a C++ macro called DATA_PATH
-target_compile_definitions(bank-system PRIVATE 
-    DATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/"
+#[[
+# ── Compiler warnings ──────────────────────────────────────────
+target_compile_options(banking_system PRIVATE
+    -Wall -Wextra -Wpedantic -Wno-unused-parameter
 )
+]]
+# ── Build types ────────────────────────────────────────────────
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "SQLite3:    ${SQLite3_VERSION}")
