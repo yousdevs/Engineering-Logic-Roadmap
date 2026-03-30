@@ -13,8 +13,6 @@ class AccountMapper {
 
         static Row toPersistence(const Account& account);
 
-    private:
-
         static AccountStatus statusFromString(const std::string& s);
 
         static std::string statusToString(AccountStatus s);
