@@ -69,12 +69,12 @@ class CompositionRoot {
             std::shared_ptr<IOutboxPoller>        outboxPoller,
             std::shared_ptr<INotificationService> notificationService) {
 
-            // Task handlers
-            taskQueue->registerHandler("SendSmsTask",
+            // Task handlers (registered on main for demo, uncomment later).
+            /* taskQueue->registerHandler("SendSmsTask",
                                        [notificationService](const std::string& payload) {
                                            // parse payload -> notificationService->sendSms(..)
                                            // TODO: Replace with nlohmann/json deserialization.
-                                       });
+                                       });*/
 
             // Event dispatcher + handlers
             auto dispatcher     = std::make_shared<EventDispatcher>();
