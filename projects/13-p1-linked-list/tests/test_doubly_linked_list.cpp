@@ -13,3 +13,9 @@ TEST(DoublyLinkedListTest, MoveConstructorLeavesSourceEmpty) {
 
     // TODO: after push_back
 }
+
+TEST(IteratorTest, BeginEqualsEndOnEmptyList) {
+
+    DoublyLinkedList<int> list;
+    EXPECT_EQ(list.begin(), list.end());
+}

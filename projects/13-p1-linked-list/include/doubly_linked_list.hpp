@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 #include <utility>
 
 template<typename T>
@@ -71,6 +72,84 @@ class DoublyLinkedList {
             swap(_head, other._head);
             swap(_tail, other._tail);
             swap(_size, other._size);
+        }
+
+        struct Node;
+
+        class iterator {
+
+            public:
+
+                using iterator_category = std::bidirectional_iterator_tag;
+                using value_type        = T;
+                using difference_type   = std::ptrdiff_t;
+                using pointer           = T*;
+                using reference         = T&;
+
+                iterator() noexcept : _current(nullptr) {}
+
+                explicit iterator(Node* node) noexcept : _current(node) {}
+
+                reference operator*() const {
+
+                    return _current->data;
+                }
+
+                pointer operator->() const {
+
+                    return &(_current->data);
+                }
+
+                iterator& operator++() noexcept {
+
+                    _current = _current->next;
+                    return *this;
+                }
+
+                iterator operator++(int) noexcept {
+
+                    iterator temp = *this;
+                    _current      = _current->next;
+                    return temp;
+                }
+
+                iterator& operator--() noexcept {
+
+                    _current = _current->prev;
+                    return *this;
+                }
+
+                iterator operator--(int) noexcept {
+
+                    iterator temp = *this;
+                    _current      = _current->prev;
+                    return temp;
+                }
+
+                bool operator==(const iterator& other) const noexcept {
+
+                    return _current == other._current;
+                }
+
+                bool operator!=(const iterator& other) const noexcept {
+
+                    return _current != other._current;
+                }
+
+            private:
+
+                Node* _current;
+                friend class DoublyLinkedList<T>;
+        };
+
+        iterator begin() noexcept {
+
+            return iterator(_head);
+        }
+
+        iterator end() noexcept {
+
+            return iterator(nullptr);
         }
 
     private:
