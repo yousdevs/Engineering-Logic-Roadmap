@@ -9,6 +9,9 @@ class DoublyLinkedList {
 
     public:
 
+        using reference       = T&;
+        using const_reference = const T&;
+
         DoublyLinkedList() noexcept : _head(nullptr), _tail(nullptr), _size(0) {}
 
         DoublyLinkedList(const DoublyLinkedList& other) {
@@ -62,7 +65,7 @@ class DoublyLinkedList {
         }
 
         bool empty() const noexcept {
-            return _head == nullptr;
+            return _size == 0;
         }
 
         void swap(DoublyLinkedList& other) noexcept {
@@ -152,6 +155,68 @@ class DoublyLinkedList {
             return iterator(nullptr);
         }
 
+        void push_front(const T& value) {
+
+            Node* node = new Node(value);
+            _insertBefore(_head, node);
+        }
+
+        void push_front(T&& value) {
+
+            Node* node = new Node(std::move(value));
+            _insertBefore(_head, node);
+        }
+
+        void pop_front() {
+
+            if (empty())
+                return;
+
+            Node* node = _unlink(_head);
+            delete node;
+        }
+
+        void push_back(const T& value) {
+
+            Node* node = new Node(value);
+            _insertBefore(nullptr, node);
+        }
+
+        void push_back(T&& value) {
+
+            Node* node = new Node(std::move(value));
+            _insertBefore(nullptr, node);
+        }
+
+        void pop_back() {
+
+            if (empty())
+                return;
+
+            Node* node = _unlink(_tail);
+            delete node;
+        }
+
+        reference front() {
+
+            return _head->data;
+        }
+
+        const_reference front() const {
+
+            return _head->data;
+        }
+
+        reference back() {
+
+            return _tail->data;
+        }
+
+        const_reference back() const {
+
+            return _tail->data;
+        }
+
     private:
 
         struct Node {
@@ -207,5 +272,91 @@ class DoublyLinkedList {
 
                 cur = cur->next;
             }
+        }
+
+        // inserts newNode before next
+        Node* _insertBefore(Node* next, Node* newNode) noexcept {
+
+            // empty list
+            if (_head == nullptr) {
+
+                _head = _tail = newNode;
+                ++_size;
+                return newNode;
+            }
+
+            // insert at front
+            if (_head == next) {
+
+                newNode->prev = nullptr;
+                newNode->next = _head;
+                _head->prev   = newNode;
+                _head         = newNode;
+
+                ++_size;
+                return newNode;
+            }
+
+            // insert at end
+            if (next == nullptr) {
+
+                newNode->next = nullptr;
+                newNode->prev = _tail;
+                _tail->next   = newNode;
+                _tail         = newNode;
+                ++_size;
+                return newNode;
+            }
+
+            // insert at middle
+            newNode->prev = next->prev;
+            newNode->next = next;
+
+            next->prev->next = newNode;
+            next->prev       = newNode;
+            ++_size;
+
+            return newNode;
+        }
+
+        // detach the node from the list without deleting it
+        // returns the unlinked node
+        Node* _unlink(Node* node) noexcept {
+
+            // single element
+            if (_head == node && _tail == node) {
+
+                _head = _tail = nullptr;
+                --_size;
+                return node;
+            }
+
+            // removing head
+            if (_head == node) {
+
+                _head       = _head->next;
+                _head->prev = nullptr;
+                node->next  = nullptr;
+                --_size;
+                return node;
+            }
+
+            // removing tail
+            if (_tail == node) {
+
+                _tail       = _tail->prev;
+                _tail->next = nullptr;
+                node->prev  = nullptr;
+                --_size;
+                return node;
+            }
+
+            // removing middle
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+
+            node->prev = node->next = nullptr;
+            --_size;
+            return node;
         }
 };
