@@ -97,3 +97,36 @@ TEST(ConstIteratorTest, InitializerListConstructsCorrectly) {
     EXPECT_EQ(list.back(), 30);
     EXPECT_EQ(list.size(), 3);
 }
+
+TEST(InsertEraseTest, InsertAtBeginShiftsElements) {
+
+    DoublyLinkedList<int> list = {2, 3};
+    list.insert(list.cbegin(), 1);
+
+    EXPECT_EQ(list.front(), 1);
+    EXPECT_EQ(list.size(), 3);
+}
+
+TEST(InsertEraseTest, EraseMiddleElement) {
+
+    DoublyLinkedList<int> list = {1, 2, 3};
+
+    auto it = list.cbegin();
+    ++it;
+
+    list.erase(it);
+
+    EXPECT_EQ(list.size(), 2);
+    EXPECT_EQ(list.front(), 1);
+    EXPECT_EQ(list.back(), 3);
+}
+
+TEST(InsertEraseTest, ClearLeavesListEmpty) {
+
+    DoublyLinkedList<int> list = {1, 2, 3};
+    list.clear();
+
+    EXPECT_EQ(list.size(), 0);
+    EXPECT_TRUE(list.empty());
+    EXPECT_EQ(list.begin(), list.end());
+}

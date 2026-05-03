@@ -317,6 +317,57 @@ class DoublyLinkedList {
             return _tail->data;
         }
 
+        iterator insert(const_iterator pos, const T& value) {
+
+            Node* node = new Node(value);
+
+            Node* inserted = _insertBefore(const_cast<Node*>(pos._current), node);
+
+            return iterator(inserted);
+        }
+
+        iterator insert(const_iterator pos, T&& value) {
+
+            Node* node = new Node(std::move(value));
+
+            Node* inserted = _insertBefore(const_cast<Node*>(pos._current), node);
+
+            return iterator(inserted);
+        }
+
+        iterator erase(const_iterator pos) {
+
+            Node* current = const_cast<Node*>(pos._current);
+            Node* next    = current->next;
+
+            Node* node = _unlink(current);
+
+            delete node;
+            return iterator(next);
+        }
+
+        iterator erase(const_iterator first, const_iterator last) {
+
+            Node* current = const_cast<Node*>(first._current);
+
+            while (current != last._current) {
+
+                Node* next = current->next;
+
+                Node* node = _unlink(current);
+                delete node;
+
+                current = next;
+            }
+
+            return iterator(const_cast<Node*>(last._current));
+        }
+
+        void clear() noexcept {
+
+            _destroyAll();
+        }
+
     private:
 
         struct Node {
