@@ -77,3 +77,23 @@ TEST(ModifiersTest, IterationMatchesInsertionOrder) {
 
     EXPECT_EQ(result, (std::vector<int>{1, 2, 3}));
 }
+
+TEST(ConstIteratorTest, CanIterateOverConstList) {
+
+    const DoublyLinkedList<int> list = {1, 2, 3};
+
+    int sum = 0;
+    for (const auto& v : list)
+        sum += v;
+
+    EXPECT_EQ(sum, 6);
+}
+
+TEST(ConstIteratorTest, InitializerListConstructsCorrectly) {
+
+    DoublyLinkedList<int> list = {10, 20, 30};
+
+    EXPECT_EQ(list.front(), 10);
+    EXPECT_EQ(list.back(), 30);
+    EXPECT_EQ(list.size(), 3);
+}

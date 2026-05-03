@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <initializer_list>
 #include <iterator>
 #include <utility>
 
@@ -36,27 +37,26 @@ class DoublyLinkedList {
             _destroyAll();
         }
 
-        DoublyLinkedList& operator=(DoublyLinkedList other) {
+        DoublyLinkedList(std::initializer_list<T> init) : _head(nullptr), _tail(nullptr), _size(0) {
 
-            swap(other);
+            for (const T& v : init)
+                push_back(v);
+        }
+
+        DoublyLinkedList& operator=(std::initializer_list<T> init) {
+
+            DoublyLinkedList temp;
+
+            for (const T& v : init)
+                temp.push_back(v);
+
+            swap(temp);
             return *this;
         }
 
-        DoublyLinkedList& operator=(DoublyLinkedList&& other) noexcept {
+        DoublyLinkedList& operator=(DoublyLinkedList other) {
 
-            if (this == &other)
-                return *this;
-
-            _destroyAll();
-
-            _head = other._head;
-            _tail = other._tail;
-            _size = other._size;
-
-            other._head = nullptr;
-            other._tail = nullptr;
-            other._size = 0;
-
+            swap(other);
             return *this;
         }
 
@@ -143,6 +143,86 @@ class DoublyLinkedList {
 
                 Node* _current;
                 friend class DoublyLinkedList<T>;
+                friend class const_iterator;
+        };
+
+        class const_iterator {
+
+            public:
+
+                using iterator_category = std::bidirectional_iterator_tag;
+                using value_type        = T;
+                using difference_type   = std::ptrdiff_t;
+                using pointer           = const T*;
+                using reference         = const T&;
+
+                const_iterator(const iterator& it) noexcept : _current(it._current) {}
+
+                const_iterator() noexcept : _current(nullptr) {}
+
+                explicit const_iterator(const Node* node) noexcept : _current(node) {}
+
+                reference operator*() const {
+
+                    return _current->data;
+                }
+
+                pointer operator->() const {
+
+                    return &(_current->data);
+                }
+
+                const_iterator& operator++() noexcept {
+
+                    _current = _current->next;
+                    return *this;
+                }
+
+                const_iterator operator++(int) noexcept {
+
+                    const_iterator temp = *this;
+                    _current            = _current->next;
+                    return temp;
+                }
+
+                const_iterator& operator--() noexcept {
+
+                    _current = _current->prev;
+                    return *this;
+                }
+
+                const_iterator operator--(int) noexcept {
+
+                    const_iterator temp = *this;
+                    _current            = _current->prev;
+                    return temp;
+                }
+
+                bool operator==(const const_iterator& other) const noexcept {
+
+                    return _current == other._current;
+                }
+
+                bool operator==(const iterator& other) const noexcept {
+
+                    return _current == other._current;
+                }
+
+                bool operator!=(const const_iterator& other) const noexcept {
+
+                    return _current != other._current;
+                }
+
+                bool operator!=(const iterator& other) const noexcept {
+
+                    return _current != other._current;
+                }
+
+            private:
+
+                const Node* _current;
+                friend class DoublyLinkedList<T>;
+                friend class iterator;
         };
 
         iterator begin() noexcept {
@@ -153,6 +233,26 @@ class DoublyLinkedList {
         iterator end() noexcept {
 
             return iterator(nullptr);
+        }
+
+        const_iterator begin() const noexcept {
+
+            return const_iterator(_head);
+        }
+
+        const_iterator end() const noexcept {
+
+            return const_iterator(nullptr);
+        }
+
+        const_iterator cbegin() const noexcept {
+
+            return const_iterator(_head);
+        }
+
+        const_iterator cend() const noexcept {
+
+            return const_iterator(nullptr);
         }
 
         void push_front(const T& value) {
