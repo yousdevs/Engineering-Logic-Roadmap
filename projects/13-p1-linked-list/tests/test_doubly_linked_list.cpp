@@ -130,3 +130,42 @@ TEST(InsertEraseTest, ClearLeavesListEmpty) {
     EXPECT_TRUE(list.empty());
     EXPECT_EQ(list.begin(), list.end());
 }
+
+TEST(AlgorithmsTest, ReverseCorrectlyReversesOrder) {
+
+    DoublyLinkedList<int> list = {1, 2, 3, 4};
+    list.reverse();
+
+    EXPECT_EQ(list.front(), 4);
+    EXPECT_EQ(list.back(), 1);
+}
+
+TEST(AlgorithmsTest, RemoveDeletesAllMatchingElements) {
+
+    DoublyLinkedList<int> list = {1, 2, 2, 3};
+
+    size_t count = list.remove(2);
+
+    EXPECT_EQ(count, 2);
+    EXPECT_EQ(list.size(), 2);
+}
+
+TEST(AlgorithmsTest, SortAscending) {
+
+    DoublyLinkedList<int> list = {4, 2, 1, 3};
+
+    list.sort();
+
+    std::vector<int> result(list.begin(), list.end());
+
+    EXPECT_EQ(result, (std::vector<int>{1, 2, 3, 4}));
+}
+
+TEST(AlgorithmsTest, SortWithCustomComparatorDescending) {
+
+    DoublyLinkedList<int> list = {4, 2, 1, 3};
+
+    list.sort([&](const int& a, const int& b) { return a > b; });
+
+    EXPECT_EQ(list.front(), 4);
+}

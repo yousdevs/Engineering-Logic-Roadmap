@@ -368,6 +368,72 @@ class DoublyLinkedList {
             _destroyAll();
         }
 
+        // swaps prev/next on every node plus swaps _head/_tail
+        void reverse() noexcept {
+
+            Node* current = _head;
+
+            while (current != nullptr) {
+
+                Node* next = current->next;
+
+                std::swap(current->next, current->prev);
+
+                current = next;
+            }
+
+            std::swap(_head, _tail);
+        }
+
+        // remove all matching elements
+        template<typename UnaryPredicate>
+        size_t remove_if(UnaryPredicate pred) {
+
+            std::size_t count = 0;
+
+            Node* current = _head;
+
+            while (current != nullptr) {
+
+                Node* next = current->next;
+
+                if (pred(current->data)) {
+
+                    Node* node = _unlink(current);
+                    delete node;
+                    ++count;
+                }
+                current = next;
+            }
+
+            return count;
+        }
+
+        std::size_t remove(const T& value) {
+
+            return remove_if([&](const T& v) { return v == value; });
+        }
+
+        template<typename Compare>
+        void sort(Compare comp) {
+
+            if (!_head || !_head->next)
+                return;
+
+            _head = _mergeSort(_head, comp);
+
+            // restore tail
+            _tail = _head;
+            while (_tail && _tail->next)
+                _tail = _tail->next;
+        }
+
+        // merge sort - ascending
+        void sort() {
+
+            sort([&](T& a, T& b) { return a <= b; });
+        }
+
     private:
 
         struct Node {
@@ -509,5 +575,84 @@ class DoublyLinkedList {
             node->prev = node->next = nullptr;
             --_size;
             return node;
+        }
+
+        template<typename Compare>
+        static Node* _mergeSort(Node* head, Compare comp) {
+
+            if (!head || !head->next)
+                return head;
+
+            Node* second = _split(head);
+
+            Node* left  = _mergeSort(head, comp);
+            Node* right = _mergeSort(second, comp);
+
+            return _merge(left, right, comp);
+        }
+
+        static Node* _split(Node* head) {
+
+            if (!head || !head->next)
+                return nullptr;
+
+            Node* slow = head;
+            Node* fast = head;
+
+            while (fast->next && fast->next->next) {
+                slow = slow->next;
+                fast = fast->next->next;
+            }
+
+            Node* second = slow->next;
+
+            slow->next = nullptr;
+            if (second)
+                second->prev = nullptr;
+
+            return second;
+        }
+
+        template<typename Compare>
+        static Node* _merge(Node* a, Node* b, Compare comp) {
+
+            if (!a)
+                return b;
+            if (!b)
+                return a;
+
+            Node* head = nullptr;
+            Node* tail = nullptr;
+
+            auto attach = [&](Node* node) {
+                Node* next = node->next;
+
+                node->prev = tail;
+                node->next = nullptr;
+
+                if (!head) {
+                    head = tail = node;
+                } else {
+                    tail->next = node;
+                    tail       = node;
+                }
+
+                return next;
+            };
+
+            while (a && b) {
+                if (comp(a->data, b->data))
+                    a = attach(a);
+                else
+                    b = attach(b);
+            }
+
+            while (a)
+                a = attach(a);
+
+            while (b)
+                b = attach(b);
+
+            return head;
         }
 };
