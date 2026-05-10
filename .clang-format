@@ -1,0 +1,88 @@
+BasedOnStyle: Google
+Language: Cpp
+LineEnding: LF
+
+# Indentation
+IndentWidth: 4
+ColumnLimit: 100
+TabWidth: 4
+UseTab: Never
+
+# Access Modifiers
+AccessModifierOffset: 0
+IndentAccessModifiers: true
+EmptyLineBeforeAccessModifier: Always
+EmptyLineAfterAccessModifier: Always
+
+# Functions & Statements
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakAfterReturnType: Automatic
+
+# Constructor Initializers
+ConstructorInitializerIndentWidth: 4
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: NextLine
+
+# Templates & Concepts (C++20)
+BreakBeforeConceptDeclarations: Always
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+
+# Pointers & References
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Lambdas & Blocks
+LambdaBodyIndentation: Signature
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: true
+KeepEmptyLinesAtEOF: false
+
+# Alignment
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignFunctionDeclarations: true
+AlignOperands: Align
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+
+# Brackets & Params
+AlignAfterOpenBracket: true
+Cpp11BracedListStyle: true
+BinPackParameters: OnePerLine
+BinPackArguments: false
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Operators & Spaces
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceAfterTemplateKeyword: false
+SpacesInAngles: Never
+BreakBeforeBinaryOperators: NonAssignment
+
+# Comments
+ReflowComments: true
+
+# Includes
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"[^/]*"'                   # own/self header
+    Priority: 0
+  - Regex: '^<.*>'                      # system / STL / third-party
+    Priority: 1
+# Braces & Namespaces
+BreakBeforeBraces: Attach
+NamespaceIndentation: None
+CompactNamespaces: false
+FixNamespaceComments: true
