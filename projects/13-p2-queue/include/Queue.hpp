@@ -61,6 +61,11 @@ class Queue {
             _container.pop_front();
         }
 
+        void swap(Queue& other) noexcept {
+
+            std::swap(_container, other._container);
+        }
+
     protected:
 
         Container _container;
