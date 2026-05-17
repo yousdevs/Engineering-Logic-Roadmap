@@ -131,3 +131,31 @@ TEST(StackTest, SelfAssignmentDoesNotCorruptState) {
     EXPECT_EQ(s.top(), 8);
     EXPECT_EQ(s.size(), 2);
 }
+
+TEST(StackTest, SwapExchangesFullState) {
+
+    Stack<int> a;
+    Stack<int> b;
+
+    a.push(1);
+    a.push(2);
+    a.push(3);
+
+    b.push(10);
+    b.push(20);
+
+    a.swap(b);
+
+    EXPECT_EQ(a.size(), 2);
+    EXPECT_EQ(b.size(), 3);
+
+    EXPECT_EQ(a.top(), 20);
+    a.pop();
+    EXPECT_EQ(a.top(), 10);
+
+    EXPECT_EQ(b.top(), 3);
+    b.pop();
+    EXPECT_EQ(b.top(), 2);
+    b.pop();
+    EXPECT_EQ(b.top(), 1);
+}

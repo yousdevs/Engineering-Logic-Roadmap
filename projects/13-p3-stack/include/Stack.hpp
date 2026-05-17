@@ -68,6 +68,11 @@ class Stack {
             _container.pop_back();
         }
 
+        void swap(Stack& other) noexcept {
+
+            std::swap(_container, other._container);
+        }
+
     protected:
 
         Container _container;
