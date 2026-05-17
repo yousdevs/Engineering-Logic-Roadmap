@@ -22,7 +22,33 @@ class Stack {
 
         Stack() = default;
 
+        Stack(const Stack&) = default;
+
+        Stack(Stack&&) noexcept = default;
+
+        Stack& operator=(const Stack&)     = default;
+        Stack& operator=(Stack&&) noexcept = default;
+
         ~Stack() = default;
+
+        bool empty() const noexcept {
+
+            return _container.empty();
+        }
+
+        size_type size() const noexcept {
+
+            return _container.size();
+        }
+
+        // throws if empty
+        const_reference top() const {
+
+            if (empty())
+                throw std::runtime_error("Stack is empty");
+
+            return _container.back();
+        }
 
     protected:
 
