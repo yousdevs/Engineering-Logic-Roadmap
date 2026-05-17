@@ -9,3 +9,10 @@ TEST(QueueTest, DefaultConstructorIsEmpty) {
     EXPECT_EQ(q.size(), 0);
     EXPECT_TRUE(q.empty());
 }
+
+TEST(QueueTest, FrontAccessOnEmptyQueueThrows) {
+
+    Queue<int> q;
+
+    EXPECT_THROW(q.front(), std::runtime_error);
+}

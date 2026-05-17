@@ -35,6 +35,14 @@ class Queue {
             return _container.size();
         }
 
+        const_reference front() const {
+
+            if (empty())
+                throw std::runtime_error("Queue is empty");
+
+            return _container.front();
+        }
+
     protected:
 
         Container _container;
