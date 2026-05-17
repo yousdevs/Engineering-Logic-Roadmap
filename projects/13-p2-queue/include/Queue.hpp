@@ -53,6 +53,14 @@ class Queue {
             _container.push_back(std::move(value));
         }
 
+        void dequeue() {
+
+            if (empty())
+                throw std::runtime_error("Queue is empty");
+
+            _container.pop_front();
+        }
+
     protected:
 
         Container _container;
