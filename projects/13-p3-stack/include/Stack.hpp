@@ -50,6 +50,24 @@ class Stack {
             return _container.back();
         }
 
+        void push(const T& value) {
+
+            _container.push_back(value);
+        }
+
+        void push(T&& value) {
+
+            _container.push_back(std::move(value));
+        }
+
+        void pop() {
+
+            if (empty())
+                throw std::runtime_error("Stack is empty");
+
+            _container.pop_back();
+        }
+
     protected:
 
         Container _container;
