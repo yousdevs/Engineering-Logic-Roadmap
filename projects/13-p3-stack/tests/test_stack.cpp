@@ -159,3 +159,43 @@ TEST(StackTest, SwapExchangesFullState) {
     b.pop();
     EXPECT_EQ(b.top(), 1);
 }
+
+TEST(StackTest, ConstructFromContainerCopiesElements) {
+
+    DoublyLinkedList<int> list;
+
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+
+    Stack<int> s(list);
+
+    EXPECT_EQ(s.size(), 3);
+    EXPECT_EQ(s.top(), 3);
+
+    s.pop();
+    EXPECT_EQ(s.top(), 2);
+
+    s.pop();
+    EXPECT_EQ(s.top(), 1);
+
+    // original container must remain unchanged
+    EXPECT_EQ(list.size(), 3);
+    EXPECT_EQ(list.back(), 3);
+}
+
+TEST(StackTest, ConstructFromContainerMovesElements) {
+
+    DoublyLinkedList<int> list;
+
+    list.push_back(10);
+    list.push_back(20);
+
+    Stack<int> s(std::move(list));
+
+    EXPECT_EQ(s.size(), 2);
+    EXPECT_EQ(s.top(), 20);
+
+    s.pop();
+    EXPECT_EQ(s.top(), 10);
+}

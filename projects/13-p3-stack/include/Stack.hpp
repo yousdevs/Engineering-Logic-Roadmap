@@ -22,6 +22,9 @@ class Stack {
 
         Stack() = default;
 
+        explicit Stack(const Container& container) : _container(container) {}
+        explicit Stack(Container&& container) : _container(std::move(container)) {}
+
         Stack(const Stack&) = default;
 
         Stack(Stack&&) noexcept = default;
