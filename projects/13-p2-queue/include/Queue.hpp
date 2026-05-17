@@ -11,13 +11,22 @@ class Queue {
 
     public:
 
-        using value_type      = T;
-        using size_type       = std::size_t;
-        using reference       = T&;
-        using const_reference = const T&;
+        using value_type      = typename Container::value_type;
+        using size_type       = typename Container::size_type;
+        using reference       = typename Container::reference;
+        using const_reference = typename Container::const_reference;
         using container_type  = Container;
 
+        static_assert(std::is_same_v<typename Container::value_type, T>,
+                      "Container value_type must match Queue value_type");
+
         Queue() = default;
+
+        Queue(const Queue&)     = default;
+        Queue(Queue&&) noexcept = default;
+
+        Queue& operator=(const Queue&)     = default;
+        Queue& operator=(Queue&&) noexcept = default;
 
         ~Queue() = default;
 

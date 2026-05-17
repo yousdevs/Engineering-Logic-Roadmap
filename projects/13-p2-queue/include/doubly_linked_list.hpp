@@ -10,6 +10,8 @@ class DoublyLinkedList {
 
     public:
 
+        using value_type      = T;
+        using size_type       = std::size_t;
         using reference       = T&;
         using const_reference = const T&;
 
