@@ -43,6 +43,16 @@ class Queue {
             return _container.front();
         }
 
+        void enqueue(const T& value) {
+
+            _container.push_back(value);
+        }
+
+        void enqueue(T&& value) {
+
+            _container.push_back(std::move(value));
+        }
+
     protected:
 
         Container _container;
