@@ -58,10 +58,76 @@ class DynamicArray {
             _size = init.size();
         }
 
-        ~DynamicArray() {
+        ~DynamicArray() noexcept {
 
             _destroyAll();
             ::operator delete(_data);
+        }
+
+        DynamicArray(const DynamicArray& other) {
+
+            _reallocate(other._size);
+
+            for (size_type i = 0; i < other.size(); ++i) {
+
+                new (_data + i) T(other._data[i]);
+            }
+
+            _size = other._size;
+        }
+
+        DynamicArray(DynamicArray&& other) noexcept {
+
+            _data     = other._data;
+            _size     = other._size;
+            _capacity = other._capacity;
+
+            other._data     = nullptr;
+            other._size     = 0;
+            other._capacity = 0;
+        }
+
+        DynamicArray& operator=(const DynamicArray& other) {
+
+            DynamicArray temp(other);
+
+            swap(temp);
+
+            return *this;
+        }
+
+        DynamicArray& operator=(DynamicArray&& other) noexcept {
+
+            if (this == &other)
+                return *this;
+
+            _destroyAll();
+
+            ::operator delete(_data);
+
+            _data     = other._data;
+            _size     = other._size;
+            _capacity = other._capacity;
+
+            other._data     = nullptr;
+            other._size     = 0;
+            other._capacity = 0;
+
+            return *this;
+        }
+
+        DynamicArray& operator=(std::initializer_list<T> init) {
+
+            DynamicArray t(init);
+            swap(t);
+            return *this;
+        }
+
+        void swap(DynamicArray& other) noexcept {
+
+            std::swap(_data, other._data);
+            std::swap(_size, other._size);
+            std::swap(_capacity, other._capacity);
         }
 
         size_type size() const noexcept {
