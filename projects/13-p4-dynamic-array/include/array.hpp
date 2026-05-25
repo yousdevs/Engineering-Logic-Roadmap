@@ -123,6 +123,74 @@ class DynamicArray {
             return *this;
         }
 
+        reference operator[](size_type index) noexcept {
+
+            return _data[index];
+        }
+
+        const_reference operator[](size_type index) const noexcept {
+
+            return _data[index];
+        }
+
+        reference at(size_type index) {
+
+            if (index >= _size)
+                throw std::out_of_range("index out of range");
+
+            return _data[index];
+        }
+
+        const_reference at(size_type index) const {
+
+            if (index >= _size)
+                throw std::out_of_range("index out of range");
+
+            return _data[index];
+        }
+
+        reference front() {
+
+            if (empty())
+                throw std::out_of_range("array is empty");
+
+            return _data[0];
+        }
+
+        const_reference front() const {
+
+            if (empty())
+                throw std::runtime_error("array is empty");
+
+            return _data[0];
+        }
+
+        reference back() {
+
+            if (empty())
+                throw std::runtime_error("array is empty");
+
+            return _data[_size - 1];
+        }
+
+        const_reference back() const {
+
+            if (empty())
+                throw std::runtime_error("array is empty");
+
+            return _data[_size - 1];
+        }
+
+        pointer data() noexcept {
+
+            return _data;
+        }
+
+        const_pointer data() const noexcept {
+
+            return _data;
+        }
+
         void swap(DynamicArray& other) noexcept {
 
             std::swap(_data, other._data);
