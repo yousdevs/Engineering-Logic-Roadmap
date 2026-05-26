@@ -238,3 +238,79 @@ TEST(ConstIteratorTest, ImplicitConversionFromIterator) {
 
     EXPECT_EQ(*it, 1);
 }
+
+TEST(PushPopTest, PushBackIncreasesSize) {
+
+    DynamicArray<int> arr;
+    arr.push_back(1);
+    arr.push_back(2);
+
+    EXPECT_EQ(arr.size(), 2);
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 2);
+}
+
+TEST(PushPopTest, PushBackTriggersReallocationTransparently) {
+
+    DynamicArray<int> arr;
+    for (int i = 0; i < 100; ++i)
+        arr.push_back(i);
+
+    EXPECT_EQ(arr.size(), 100);
+
+    for (int i = 0; i < 100; ++i)
+        EXPECT_EQ(arr[i], i);
+}
+
+TEST(PushPopTest, PopBackDecreasesSize) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+    arr.pop_back();
+
+    EXPECT_EQ(arr.size(), 2);
+    EXPECT_EQ(arr.back(), 2);
+}
+
+TEST(PushPopTest, MoveSemanticsPushBack) {
+
+    DynamicArray<std::string> arr;
+    std::string               s = "hello";
+    arr.push_back(std::move(s));
+
+    EXPECT_EQ(arr[0], "hello");
+    EXPECT_TRUE(s.empty());
+}
+
+TEST(PushPopTest, EmplaceBackConstructsInPlace) {
+
+    struct Point {
+            int x, y;
+            Point(int x_, int y_) : x(x_), y(y_) {}
+    };
+
+    DynamicArray<Point> arr;
+    arr.emplace_back(1, 2);
+
+    EXPECT_EQ(arr.back().x, 1);
+    EXPECT_EQ(arr.back().y, 2);
+}
+
+TEST(PushPopTest, CapacityGrowsOnDemand) {
+
+    DynamicArray<int> arr;
+
+    EXPECT_EQ(arr.capacity(), 0);
+
+    arr.push_back(1);
+
+    EXPECT_GE(arr.capacity(), 1);
+
+    std::size_t cap = arr.capacity();
+    // push until reallocation
+    while (arr.size() < cap)
+        arr.push_back(0);
+
+    arr.push_back(0);  // triggers growth
+
+    EXPECT_GT(arr.capacity(), cap);
+}

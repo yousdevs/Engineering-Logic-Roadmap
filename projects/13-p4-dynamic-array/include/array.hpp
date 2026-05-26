@@ -456,6 +456,54 @@ class DynamicArray {
             return const_iterator(_data + _size);
         }
 
+        void push_back(const T& value) {
+
+            if (_size == _capacity) {
+                size_t new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+
+                _reallocate(new_capacity);
+            }
+
+            new (_data + _size) T(value);
+            ++_size;
+        }
+
+        void push_back(T&& value) {
+
+            if (_size == _capacity) {
+                size_t new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+
+                _reallocate(new_capacity);
+            }
+
+            new (_data + _size) T(std::move(value));
+            ++_size;
+        }
+
+        template<typename... Args>
+        reference emplace_back(Args&&... args) {
+
+            if (_size == _capacity) {
+                size_t new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+
+                _reallocate(new_capacity);
+            }
+
+            T* place = _data + _size;
+
+            ::new (place) T(std::forward<Args>(args)...);
+
+            ++_size;
+
+            return *place;
+        }
+
+        void pop_back() {
+
+            _data[_size - 1].~T();
+            --_size;
+        }
+
         void swap(DynamicArray& other) noexcept {
 
             std::swap(_data, other._data);
@@ -523,7 +571,8 @@ class DynamicArray {
             _size = 0;
         }
 
-        pointer   _data     = nullptr;
-        size_type _size     = 0;
-        size_type _capacity = 0;
+        pointer   _data          = nullptr;
+        size_type _size          = 0;
+        size_type _capacity      = 0;
+        size_type _GROWTH_FACTOR = 2;
 };
