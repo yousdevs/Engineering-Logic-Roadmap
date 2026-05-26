@@ -373,3 +373,57 @@ TEST(CapacityTest, ResizeWithValueFillsNewElements) {
     EXPECT_EQ(arr[2], 42);
     EXPECT_EQ(arr[4], 42);
 }
+
+TEST(InsertEraseTest, InsertAtBeginShiftsElements) {
+
+    DynamicArray<int> arr = {2, 3, 4};
+    arr.insert(arr.cbegin(), 1);
+
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr.size(), 4);
+}
+
+TEST(InsertEraseTest, InsertInMiddle) {
+
+    DynamicArray<int> arr = {1, 3};
+    arr.insert(arr.cbegin() + 1, 2);
+
+    EXPECT_EQ(arr[1], 2);
+    EXPECT_EQ(arr.size(), 3);
+}
+
+TEST(InsertEraseTest, InsertReturnsIteratorToInsertedElement) {
+
+    DynamicArray<int> arr = {1, 3};
+    auto              it  = arr.insert(arr.cbegin() + 1, 2);
+
+    EXPECT_EQ(*it, 2);
+}
+
+TEST(InsertEraseTest, EraseMiddleElement) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+    arr.erase(arr.cbegin() + 1);
+
+    EXPECT_EQ(arr.size(), 2);
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 3);
+}
+
+TEST(InsertEraseTest, EraseRange) {
+
+    DynamicArray<int> arr = {1, 2, 3, 4, 5};
+    arr.erase(arr.cbegin() + 1, arr.cbegin() + 4);
+
+    EXPECT_EQ(arr.size(), 2);
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 5);
+}
+
+TEST(InsertEraseTest, EraseReturnsIteratorToNextElement) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+    auto              it  = arr.erase(arr.cbegin() + 1);
+
+    EXPECT_EQ(*it, 3);
+}

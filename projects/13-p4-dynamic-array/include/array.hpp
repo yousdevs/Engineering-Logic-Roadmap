@@ -579,6 +579,111 @@ class DynamicArray {
             }
         }
 
+        iterator insert(const_iterator pos, const T& value) {
+
+            size_type index = pos - cbegin();
+
+            if (_size == _capacity) {
+                size_type new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+
+                _reallocate(new_capacity);
+            }
+
+            iterator it_pos = begin() + index;
+
+            for (iterator it = end(); it != it_pos; --it) {
+                *it = std::move(*(it - 1));
+            }
+
+            new (_data + index) T(value);
+
+            ++_size;
+
+            return iterator(_data + index);
+        }
+
+        iterator insert(const_iterator pos, T&& value) {
+
+            size_type index = pos - cbegin();
+
+            if (_size == _capacity) {
+                size_type new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+
+                _reallocate(new_capacity);
+            }
+
+            iterator it_pos = begin() + index;
+
+            for (iterator it = end(); it != it_pos; --it) {
+                *it = std::move(*(it - 1));
+            }
+
+            new (_data + index) T(std::move(value));
+
+            ++_size;
+
+            return iterator(_data + index);
+        }
+
+        iterator insert(const_iterator pos, size_type count, const T& value) {
+
+            for (size_type i = 0; i < count; ++i)
+                insert(pos, value);
+        }
+
+        template<typename... Args>
+        iterator emplace(const_iterator pos, Args&&... args) {
+
+            if (_size == _capacity) {
+                size_t new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+
+                _reallocate(new_capacity);
+            }
+
+            size_type index = pos - cbegin();
+
+            for (iterator it = end(); it != it_pos; --it) {
+                *it = std::move(*(it - 1));
+            }
+
+            ::new (_data + index) T(std::forward<Args>(args)...);
+
+            ++_size;
+
+            return iterator(_data + index);
+        }
+
+        iterator erase(const_iterator first, const_iterator last) {
+
+            if (first == last)
+                return iterator(const_cast<T*>(_data) + (first - cbegin()));
+
+            size_type start = first - cbegin();
+            size_type end   = last - cbegin();
+            size_type count = end - start;
+
+            size_type new_size = _size - count;
+
+            for (size_type i = start; i < new_size; ++i) {
+
+                _data[i] = std::move(_data[i + count]);
+            }
+
+            for (size_type i = new_size; i < _size; ++i) {
+
+                _data[i].~T();
+            }
+
+            _size = new_size;
+
+            return iterator(_data + start);
+        }
+
+        iterator erase(const_iterator pos) {
+
+            return erase(pos, pos + 1);
+        }
+
         void swap(DynamicArray& other) noexcept {
 
             std::swap(_data, other._data);
