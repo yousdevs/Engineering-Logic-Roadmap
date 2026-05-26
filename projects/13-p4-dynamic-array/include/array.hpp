@@ -591,9 +591,10 @@ class DynamicArray {
 
             iterator it_pos = begin() + index;
 
-            for (iterator it = end(); it != it_pos; --it) {
-                *it = std::move(*(it - 1));
-            }
+            new (_data + _size) T(std::move(_data[_size - 1]));
+
+            for (size_type i = _size - 1; i > index; --i)
+                _data[i] = std::move(_data[i - 1]);
 
             new (_data + index) T(value);
 
@@ -614,9 +615,11 @@ class DynamicArray {
 
             iterator it_pos = begin() + index;
 
-            for (iterator it = end(); it != it_pos; --it) {
-                *it = std::move(*(it - 1));
-            }
+            // construct the last element into uninitialized memory
+            new (_data + _size) T(std::move(_data[_size - 1]));
+
+            for (size_type i = _size - 1; i > index; --i)
+                _data[i] = std::move(_data[i - 1]);
 
             new (_data + index) T(std::move(value));
 
@@ -627,27 +630,39 @@ class DynamicArray {
 
         iterator insert(const_iterator pos, size_type count, const T& value) {
 
+            size_type index = pos - cbegin();
+            if (count == 0)
+                return begin() + index;
+
+            if (_size + count > _capacity)
+                _reallocate(std::max(_capacity * _GROWTH_FACTOR, _size + count));
+
+            // shift right by count
+            for (size_type i = _size; i > index; --i)
+                new (_data + i + count - 1) T(std::move(_data[i - 1]));
+
             for (size_type i = 0; i < count; ++i)
-                insert(pos, value);
+                new (_data + index + i) T(value);
+
+            _size += count;
+            return iterator(_data + index);
         }
 
         template<typename... Args>
         iterator emplace(const_iterator pos, Args&&... args) {
 
-            if (_size == _capacity) {
-                size_t new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
+            size_type index = pos - cbegin();
 
+            if (_size == _capacity) {
+                size_type new_capacity = (_capacity == 0) ? 1 : _capacity * _GROWTH_FACTOR;
                 _reallocate(new_capacity);
             }
 
-            size_type index = pos - cbegin();
-
-            for (iterator it = end(); it != it_pos; --it) {
+            iterator it_pos = begin() + index;
+            for (iterator it = end(); it != it_pos; --it)
                 *it = std::move(*(it - 1));
-            }
 
             ::new (_data + index) T(std::forward<Args>(args)...);
-
             ++_size;
 
             return iterator(_data + index);
@@ -754,11 +769,10 @@ class DynamicArray {
         void _destroyAll() noexcept {
 
             _destroyRange(_data, _size);
-            _size = 0;
         }
 
-        pointer   _data          = nullptr;
-        size_type _size          = 0;
-        size_type _capacity      = 0;
-        size_type _GROWTH_FACTOR = 2;
+        pointer                    _data          = nullptr;
+        size_type                  _size          = 0;
+        size_type                  _capacity      = 0;
+        static constexpr size_type _GROWTH_FACTOR = 2;
 };
