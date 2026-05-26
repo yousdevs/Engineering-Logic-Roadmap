@@ -504,6 +504,81 @@ class DynamicArray {
             --_size;
         }
 
+        void reserve(size_type new_capacity) {
+
+            if (new_capacity <= _capacity)
+                return;
+
+            _reallocate(new_capacity);
+        }
+
+        void shrink_to_fit() {
+
+            if (_size == 0) {
+
+                ::operator delete(_data);
+                _data     = nullptr;
+                _capacity = 0;
+                return;
+            }
+
+            _reallocate(_size);
+        }
+
+        void resize(size_type new_size) {
+
+            if (new_size < _size) {
+
+                for (size_type i = new_size; i < _size; ++i) {
+
+                    _data[i].~T();
+                }
+
+                _size = new_size;
+                return;
+            }
+
+            if (new_size > _size) {
+
+                if (_capacity < new_size)
+                    reserve(new_size);
+
+                for (size_type i = _size; i < new_size; ++i) {
+
+                    new (_data + i) T();
+                }
+
+                _size = new_size;
+            }
+        }
+
+        void resize(size_type new_size, const T& value) {
+
+            if (new_size < _size) {
+
+                for (size_type i = new_size; i < _size; ++i) {
+
+                    _data[i].~T();
+                }
+
+                _size = new_size;
+                return;
+            }
+
+            if (new_size > _size) {
+
+                if (_capacity < new_size)
+                    reserve(new_size);
+
+                for (size_type i = _size; i < new_size; ++i) {
+
+                    new (_data + i) T(value);
+                }
+
+                _size = new_size;
+            }
+        }
+
         void swap(DynamicArray& other) noexcept {
 
             std::swap(_data, other._data);

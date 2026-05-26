@@ -314,3 +314,62 @@ TEST(PushPopTest, CapacityGrowsOnDemand) {
 
     EXPECT_GT(arr.capacity(), cap);
 }
+
+TEST(CapacityTest, ReserveIncreasesCapacityWithoutChangingSize) {
+
+    DynamicArray<int> arr;
+    arr.reserve(100);
+
+    EXPECT_GE(arr.capacity(), 100);
+    EXPECT_EQ(arr.size(), 0);
+}
+
+TEST(CapacityTest, ReserveDoesNothingIfAlreadySufficient) {
+
+    DynamicArray<int> arr;
+    arr.reserve(10);
+    std::size_t cap = arr.capacity();
+    arr.reserve(5);
+
+    EXPECT_EQ(arr.capacity(), cap);
+}
+
+TEST(CapacityTest, ShrinkToFitReleasesExcessCapacity) {
+
+    DynamicArray<int> arr;
+    arr.reserve(100);
+    arr.push_back(1);
+    arr.push_back(2);
+    arr.shrink_to_fit();
+
+    EXPECT_EQ(arr.capacity(), arr.size());
+    EXPECT_EQ(arr.size(), 2);
+}
+
+TEST(CapacityTest, ResizeGrowsWithDefaultValues) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+    arr.resize(6);
+
+    EXPECT_EQ(arr.size(), 6);
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[4], 0);
+}
+
+TEST(CapacityTest, ResizeShrinks) {
+
+    DynamicArray<int> arr = {1, 2, 3, 4, 5};
+    arr.resize(2);
+
+    EXPECT_EQ(arr.size(), 2);
+    EXPECT_EQ(arr.back(), 2);
+}
+
+TEST(CapacityTest, ResizeWithValueFillsNewElements) {
+
+    DynamicArray<int> arr = {1, 2};
+    arr.resize(5, 42);
+
+    EXPECT_EQ(arr[2], 42);
+    EXPECT_EQ(arr[4], 42);
+}
