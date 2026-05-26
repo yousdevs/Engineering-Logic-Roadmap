@@ -427,3 +427,26 @@ TEST(InsertEraseTest, EraseReturnsIteratorToNextElement) {
 
     EXPECT_EQ(*it, 3);
 }
+
+TEST(ClearSwapTest, ClearDestroysElementsKeepsCapacity) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+    std::size_t       cap = arr.capacity();
+    arr.clear();
+
+    EXPECT_EQ(arr.size(), 0);
+    EXPECT_TRUE(arr.empty());
+    EXPECT_EQ(arr.capacity(), cap);
+}
+
+TEST(ClearSwapTest, SwapExchangesContents) {
+
+    DynamicArray<int> a = {1, 2};
+    DynamicArray<int> b = {9, 8, 7};
+    a.swap(b);
+
+    EXPECT_EQ(a.size(), 3);
+    EXPECT_EQ(a[0], 9);
+    EXPECT_EQ(b.size(), 2);
+    EXPECT_EQ(b[0], 1);
+}

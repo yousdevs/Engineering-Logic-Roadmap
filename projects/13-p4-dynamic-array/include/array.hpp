@@ -684,6 +684,12 @@ class DynamicArray {
             return erase(pos, pos + 1);
         }
 
+        void clear() noexcept {
+
+            _destroyAll();
+            _size = 0;
+        }
+
         void swap(DynamicArray& other) noexcept {
 
             std::swap(_data, other._data);
