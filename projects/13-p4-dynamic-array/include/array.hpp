@@ -191,6 +191,271 @@ class DynamicArray {
             return _data;
         }
 
+        class iterator {
+
+            public:
+
+                using iterator_category = std::random_access_iterator_tag;
+                using value_type        = T;
+                using difference_type   = std::ptrdiff_t;
+                using pointer           = T*;
+                using reference         = T&;
+
+                iterator() noexcept : _ptr(nullptr) {}
+
+                explicit iterator(pointer ptr) noexcept : _ptr(ptr) {}
+
+                reference operator*() const noexcept {
+
+                    return *_ptr;
+                }
+
+                pointer operator->() const noexcept {
+
+                    return _ptr;
+                }
+
+                reference operator[](difference_type n) const noexcept {
+
+                    return _ptr[n];
+                }
+
+                iterator& operator++() noexcept {
+
+                    ++_ptr;
+                    return *this;
+                }
+
+                iterator operator++(int) noexcept {
+
+                    iterator temp(*this);
+                    ++(*this);
+                    return temp;
+                }
+
+                iterator& operator--() noexcept {
+
+                    --_ptr;
+                    return *this;
+                }
+
+                iterator operator--(int) noexcept {
+
+                    iterator temp(*this);
+                    --(*this);
+                    return temp;
+                }
+
+                iterator& operator+=(difference_type n) noexcept {
+
+                    _ptr += n;
+                    return *this;
+                }
+
+                iterator& operator-=(difference_type n) noexcept {
+
+                    _ptr -= n;
+                    return *this;
+                }
+
+                iterator operator+(difference_type n) const noexcept {
+
+                    return iterator(_ptr + n);
+                }
+
+                iterator operator-(difference_type n) const noexcept {
+
+                    return iterator(_ptr - n);
+                }
+
+                difference_type operator-(const iterator& other) const noexcept {
+
+                    return _ptr - other._ptr;
+                }
+
+                bool operator==(const iterator& other) const noexcept {
+
+                    return _ptr == other._ptr;
+                }
+
+                bool operator!=(const iterator& other) const noexcept {
+
+                    return _ptr != other._ptr;
+                }
+
+                bool operator<(const iterator& other) const noexcept {
+
+                    return _ptr < other._ptr;
+                }
+
+                bool operator>(const iterator& other) const noexcept {
+
+                    return _ptr > other._ptr;
+                }
+
+                bool operator<=(const iterator& other) const noexcept {
+
+                    return _ptr <= other._ptr;
+                }
+
+                bool operator>=(const iterator& other) const noexcept {
+
+                    return _ptr >= other._ptr;
+                }
+
+            private:
+
+                pointer _ptr;
+                friend class DynamicArray<T>;
+                friend class const_iterator;
+        };
+
+        class const_iterator {
+
+            public:
+
+                using iterator_category = std::random_access_iterator_tag;
+                using value_type        = T;
+                using difference_type   = std::ptrdiff_t;
+                using pointer           = const T*;
+                using reference         = const T&;
+
+                const_iterator() noexcept : _ptr(nullptr) {}
+
+                explicit const_iterator(const_pointer ptr) noexcept : _ptr(ptr) {}
+
+                const_iterator(const iterator& it) noexcept : _ptr(it._ptr) {}
+
+                reference operator*() const noexcept {
+
+                    return *_ptr;
+                }
+
+                pointer operator->() const noexcept {
+
+                    return _ptr;
+                }
+
+                reference operator[](difference_type n) const noexcept {
+
+                    return _ptr[n];
+                }
+
+                const_iterator& operator++() noexcept {
+
+                    ++_ptr;
+                    return *this;
+                }
+
+                const_iterator operator++(int) noexcept {
+
+                    const_iterator temp(*this);
+                    ++(*this);
+                    return temp;
+                }
+
+                const_iterator& operator--() noexcept {
+
+                    --_ptr;
+                    return *this;
+                }
+
+                const_iterator operator--(int) noexcept {
+
+                    const_iterator temp(*this);
+                    --(*this);
+                    return temp;
+                }
+
+                const_iterator& operator+=(difference_type n) noexcept {
+
+                    _ptr += n;
+                    return *this;
+                }
+
+                const_iterator& operator-=(difference_type n) noexcept {
+
+                    _ptr -= n;
+                    return *this;
+                }
+
+                const_iterator operator+(difference_type n) const noexcept {
+
+                    return const_iterator(_ptr + n);
+                }
+
+                const_iterator operator-(difference_type n) const noexcept {
+
+                    return const_iterator(_ptr - n);
+                }
+
+                difference_type operator-(const const_iterator& other) const noexcept {
+
+                    return _ptr - other._ptr;
+                }
+
+                bool operator==(const const_iterator& other) const noexcept {
+
+                    return _ptr == other._ptr;
+                }
+                bool operator!=(const const_iterator& other) const noexcept {
+
+                    return _ptr != other._ptr;
+                }
+
+                bool operator<(const const_iterator& other) const noexcept {
+
+                    return _ptr < other._ptr;
+                }
+
+                bool operator>(const const_iterator& other) const noexcept {
+
+                    return _ptr > other._ptr;
+                }
+                bool operator<=(const const_iterator& other) const noexcept {
+
+                    return _ptr <= other._ptr;
+                }
+                bool operator>=(const const_iterator& other) const noexcept {
+
+                    return _ptr >= other._ptr;
+                }
+
+            private:
+
+                const_pointer _ptr;
+        };
+
+        iterator begin() noexcept {
+
+            return iterator(_data);
+        }
+
+        const_iterator begin() const noexcept {
+
+            return const_iterator(_data);
+        }
+
+        const_iterator cbegin() const noexcept {
+
+            return const_iterator(_data);
+        }
+
+        iterator end() noexcept {
+
+            return iterator(_data + _size);
+        }
+
+        const_iterator end() const noexcept {
+
+            return const_iterator(_data + _size);
+        }
+
+        const_iterator cend() const noexcept {
+
+            return const_iterator(_data + _size);
+        }
+
         void swap(DynamicArray& other) noexcept {
 
             std::swap(_data, other._data);

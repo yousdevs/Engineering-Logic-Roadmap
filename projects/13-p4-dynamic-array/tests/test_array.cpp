@@ -157,3 +157,84 @@ TEST(AccessTest, ConstOverloadsWork) {
     EXPECT_EQ(arr.back(), 6);
     EXPECT_EQ(arr.data()[2], 6);
 }
+
+TEST(IteratorTest, BeginEqualsEndOnEmptyArray) {
+
+    DynamicArray<int> arr;
+
+    EXPECT_EQ(arr.begin(), arr.end());
+}
+
+TEST(IteratorTest, ForwardIterationMatchesOrder) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+    std::vector<int>  result;
+
+    for (auto it = arr.begin(); it != arr.end(); ++it)
+        result.push_back(*it);
+
+    EXPECT_EQ(result, (std::vector<int>{1, 2, 3}));
+}
+
+TEST(IteratorTest, RangeBasedForLoop) {
+
+    DynamicArray<int> arr = {4, 5, 6};
+    int               sum = 0;
+
+    for (auto& v : arr)
+        sum += v;
+
+    EXPECT_EQ(sum, 15);
+}
+
+TEST(IteratorTest, RandomAccessArithmetic) {
+
+    DynamicArray<int> arr = {10, 20, 30};
+    auto              it  = arr.begin();
+
+    EXPECT_EQ(*(it + 2), 30);
+    EXPECT_EQ(it[1], 20);
+}
+
+TEST(IteratorTest, IteratorSubtractionGivesDistance) {
+
+    DynamicArray<int> arr = {1, 2, 3, 4};
+
+    EXPECT_EQ(arr.end() - arr.begin(), 4);
+}
+
+TEST(IteratorTest, IteratorComparisonOperators) {
+
+    DynamicArray<int> arr = {1, 2, 3};
+
+    EXPECT_LT(arr.begin(), arr.end());
+    EXPECT_GT(arr.end(), arr.begin());
+    EXPECT_LE(arr.begin(), arr.begin());
+}
+
+TEST(ConstIteratorTest, CanIterateConstArray) {
+
+    const DynamicArray<int> arr = {1, 2, 3};
+    int                     sum = 0;
+    for (const auto& v : arr)
+        sum += v;
+
+    EXPECT_EQ(sum, 6);
+}
+
+TEST(ConstIteratorTest, CbeginCendWork) {
+
+    DynamicArray<int> arr = {7, 8, 9};
+    auto              it  = arr.cbegin();
+
+    EXPECT_EQ(*it, 7);
+    EXPECT_EQ(arr.cend() - arr.cbegin(), 3);
+}
+
+TEST(ConstIteratorTest, ImplicitConversionFromIterator) {
+
+    DynamicArray<int>                 arr = {1, 2, 3};
+    DynamicArray<int>::const_iterator it  = arr.begin();
+
+    EXPECT_EQ(*it, 1);
+}
