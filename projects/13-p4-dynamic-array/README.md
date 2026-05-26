@@ -97,13 +97,13 @@ int main() {
 ## Project Structure
 
 ```
-dynamic-array/
+13-p4-dynamic-array/
 ├── CMakeLists.txt
 ├── include/
-│   └── dynamic_array.hpp
+│   └── array.hpp
 └── tests/
     ├── CMakeLists.txt
-    └── test_dynamic_array.cpp
+    └── test_array.cpp
 ```
 
 ## How to Build and Test
