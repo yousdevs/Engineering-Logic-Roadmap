@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import {
   FilePlusCorner,
@@ -8,27 +8,82 @@ import {
   CircleUserRound,
 } from "lucide-react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
-export const NavigationMenuItem = (props: {
-  label: React.ReactNode;
+type NavigationLinkProps = {
   icon: React.ReactNode;
-}) => {
+  children: React.ReactNode;
+  to: string;
+};
+export function NavigationLink({ icon, children, to }: NavigationLinkProps) {
   return (
-    <div className="inline-flex shrink-0 items-center justify-center text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50     [&_svg:not([class*='size-'])]:size-5 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 gap-1.5 rounded-md has-[>svg]:px-2.5 px-2.5  ">
-      {props.icon} {props.label}
-    </div>
+    <Link
+      to={to}
+      className="inline-flex shrink-0 items-center justify-center text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50     [&_svg:not([class*='size-'])]:size-5 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-8 gap-1.5 rounded-md has-[>svg]:px-2.5 px-2.5"
+    >
+      {icon}
+      {children}
+    </Link>
+  );
+}
+
+type NavigationDropdownProps = {
+  icon: React.ReactNode;
+  label: React.ReactNode;
+  children: React.ReactNode;
+};
+
+export const NavigationDropdown = (props: NavigationDropdownProps) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost">
+          {props.icon}
+          {props.label}
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent>{props.children}</DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
 export const NavigationMenu = () => {
-  
   return (
     <nav className="flex justify-start gap-6">
-      <NavigationMenuItem label="Applications" icon={<FilePlusCorner />} />
-      <NavigationMenuItem label="People" icon={<Users />} />
-      <NavigationMenuItem label="Drivers" icon={<CarFront />} />
-      <NavigationMenuItem label="Users" icon={<UserRoundCog />} />
-      <NavigationMenuItem label="Account" icon={<CircleUserRound />} />
+      <NavigationLink to="/people" icon={<FilePlusCorner />}>
+        Application
+      </NavigationLink>
+
+      <NavigationLink to="/people" icon={<Users />}>
+        People
+      </NavigationLink>
+
+      <NavigationLink to="/people" icon={<CarFront />}>
+        Drivers
+      </NavigationLink>
+
+      <NavigationLink to="/people" icon={<UserRoundCog />}>
+        Users
+      </NavigationLink>
+
+      <NavigationLink to="/people" icon={<CircleUserRound />}>
+        Account
+      </NavigationLink>
+
+      {/* <NavigationDropdown label="Apppd" icon={<CircleUserRound />}>
+        <NavigationLink to="/people" icon={<CircleUserRound />}>
+          Account
+        </NavigationLink>
+        <NavigationLink to="/people" icon={<CircleUserRound />}>
+          Account
+        </NavigationLink>
+      </NavigationDropdown> */}
     </nav>
   );
 };
