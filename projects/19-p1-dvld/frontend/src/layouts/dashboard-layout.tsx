@@ -55,7 +55,7 @@ export const NavigationDropdown = (props: NavigationDropdownProps) => {
 
 export const NavigationMenu = () => {
   return (
-    <nav className="flex justify-start gap-6">
+    <nav className="flex justify-start gap-6 sticky top-0 py-4 bg-background z-9999">
       <NavigationLink to="/people" icon={<FilePlusCorner />}>
         Application
       </NavigationLink>
@@ -90,10 +90,10 @@ export const NavigationMenu = () => {
 
 export default function DashboardLayout() {
   return (
-    <main className="flex flex-col h-screen px-6 py-5">
+    <main className="flex flex-col h-screen px-6 relative">
       <NavigationMenu />
 
-      <section className="flex-1 overflow-auto">
+      <section className="flex-1">
         <Outlet />
       </section>
     </main>
