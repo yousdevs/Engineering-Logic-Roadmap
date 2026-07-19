@@ -111,7 +111,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PersonDto>> GetPeople(int offset, int limit)
+        public ActionResult<PagedResult<PersonDto>> GetPeople(int offset, int limit)
         {
 
 
@@ -120,6 +120,58 @@ namespace Api.Controllers
 
 
             return Ok(people);
+        }
+
+
+
+        public static bool getPersonExistsByNationalNo(string nationalNo)
+        {
+
+            string query = "SELECT CASE WHEN EXISTS (SELECT 1 FROM People WHERE NationalNo=@NationalNo) THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS EXIST;";
+
+            const string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
+            SqlConnection con = new SqlConnection(conString);
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@NationalNo", nationalNo);
+
+            bool Exists;
+            try
+            {
+                con.Open();
+                var Reader = cmd.ExecuteReader();
+
+                Reader.Read();
+                Exists = Reader.GetBoolean(0);
+
+
+                Reader.Close();
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
+            finally { con.Close(); }
+
+            return Exists;
+        }
+
+        public sealed record AvailabilityResponse(bool Exists);
+        [HttpGet("availability")]
+        public ActionResult<AvailabilityResponse> CheckNationalNumberAvailability([FromQuery] string nationalNo)
+        {
+
+            try
+            {
+                return new AvailabilityResponse(getPersonExistsByNationalNo(nationalNo));
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.ToString());
+            }
         }
     }
 }
