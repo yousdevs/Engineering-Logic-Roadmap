@@ -46,6 +46,8 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { usePersonExistsByNationalNoQuery } from "../hooks/usePersonExistsByNationalNoQuery";
 import { checkPersonExistsByNationalNo } from "../api/checkPersonExistsByNationalNo";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useCountriesQuery } from "@/hooks/useCountriesQuery";
+import { type country } from "@/schemas/countrySchema";
 
 const eighteenYearsAgo = new Date();
 eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
@@ -137,14 +139,14 @@ const PersonImageField = ({
   };
 
   return (
-    <div className="w-full">
-      <div className="m-auto w-fit">
+    <div className="">
+      <div className="flex justify-center">
         <div className="flex flex-row gap-2">
           <div>
             {previewUrl && (
-              <img src={previewUrl} className="size-24 object-cover " />
+              <img src={previewUrl} className=" size-24 object-cover" />
             )}
-            <Input
+            <input
               ref={inputRef}
               type="file"
               accept="image/*"
@@ -171,7 +173,11 @@ const PersonImageField = ({
   );
 };
 
-export const PersonForm = () => {
+export const PersonForm = ({
+  countries,
+}: {
+  countries: country[] | undefined;
+}) => {
   const {
     // register,
     handleSubmit,
@@ -235,7 +241,7 @@ export const PersonForm = () => {
   //   };
   // }, [nationalNo]);
   return (
-    <Card className="w-full sm:max-w-md lg:max-w-3xl">
+    <Card className="w-full max-w-5xl">
       <CardHeader>
         <CardTitle>Add new person</CardTitle>
         <CardDescription>new person to add</CardDescription>
@@ -509,16 +515,23 @@ export const PersonForm = () => {
                     <SelectTrigger
                       id="form-person-nationality"
                       aria-invalid={fieldState.invalid}
-                      className="min-w-full"
                     >
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
 
                     <SelectContent position="item-aligned">
-                      <SelectItem value="SudiArabi"> KSA</SelectItem>
-                      <SelectItem value="UnitedStates"> USA</SelectItem>
-                      <SelectItem value="Jordan">Jordan</SelectItem>
-                      <SelectItem value="Syria"> Syria</SelectItem>
+                      {countries &&
+                        countries.map((country) => (
+                          <SelectItem
+                            key={country.id}
+                            value={country.id.toString()}
+                          >
+                            {country.name}
+                          </SelectItem>
+                        ))}
+                      {!countries && (
+                        <SelectItem value="-1">loading..</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </Field>
@@ -526,7 +539,7 @@ export const PersonForm = () => {
             />
           </FieldGroup>
 
-          <FieldGroup className="mt-4 flex flex-row justify-between">
+          <FieldGroup className="mt-4 flex-row items-start gap-6">
             <Controller
               name="address"
               control={control}
@@ -585,9 +598,16 @@ export const PersonForm = () => {
 };
 
 export const AddPersonPage = () => {
+  const countriesQuery = useCountriesQuery();
+
+  // const countriesMock: country[] = [
+  //   { id: 1, name: "France" },
+  //   { id: 2, name: "Italy" },
+  //   { id: 3, name: "Germany" },
+  // ];
   return (
     <main className="flex justify-center items-center h-full">
-      <PersonForm />
+      <PersonForm countries={countriesQuery.data} />
     </main>
   );
 };
