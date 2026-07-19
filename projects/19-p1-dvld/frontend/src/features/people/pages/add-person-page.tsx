@@ -45,6 +45,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { usePersonExistsByNationalNoQuery } from "../hooks/usePersonExistsByNationalNoQuery";
 import { checkPersonExistsByNationalNo } from "../api/checkPersonExistsByNationalNo";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const eighteenYearsAgo = new Date();
 eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
@@ -179,7 +180,7 @@ export const PersonForm = () => {
     control,
     reset,
     setError,
-    clearErrors
+    clearErrors,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -202,23 +203,37 @@ export const PersonForm = () => {
 
   const nationalNo = watch("nationalNo");
 
-  
+  const debouncedNationalNo = useDebounce(nationalNo, 600);
+  const existQuery = usePersonExistsByNationalNoQuery(debouncedNationalNo);
 
   useEffect(() => {
-    if (!nationalNo) return;
-    
-    clearErrors("nationalNo");
-    const timeoutId = setTimeout( async ()=>{
-        const data = await checkPersonExistsByNationalNo(nationalNo);
-        if(data.exists) {
-            setError("nationalNo", {message: "nationalNo is linked to another person."})
-        }
-    }, 600);
+    if (existQuery.data?.exists) {
+      setError("nationalNo", {
+        type: "server",
+        message: "nationalNo is linked to another person.",
+      });
+    } else {
+      clearErrors("nationalNo");
+    }
+  }, [existQuery.data, setError, clearErrors]);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [nationalNo]);
+  // useEffect(() => {
+  //   if (!nationalNo) return;
+
+  //   clearErrors("nationalNo");
+  //   const timeoutId = setTimeout(async () => {
+  //     const data = await checkPersonExistsByNationalNo(nationalNo);
+  //     if (data.exists) {
+  //       setError("nationalNo", {
+  //         message: "nationalNo is linked to another person.",
+  //       });
+  //     }
+  //   }, 600);
+
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [nationalNo]);
   return (
     <Card className="w-full sm:max-w-md lg:max-w-3xl">
       <CardHeader>
