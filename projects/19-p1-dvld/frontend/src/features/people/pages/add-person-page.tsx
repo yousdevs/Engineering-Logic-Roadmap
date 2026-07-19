@@ -42,7 +42,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useMemo, useRef, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { usePersonExistsByNationalNoQuery } from "../hooks/usePersonExistsByNationalNoQuery";
+import { checkPersonExistsByNationalNo } from "../api/checkPersonExistsByNationalNo";
 
 const eighteenYearsAgo = new Date();
 eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
@@ -173,9 +175,11 @@ export const PersonForm = () => {
     // register,
     handleSubmit,
     watch,
-    // formState: { errors },
+    formState: { errors },
     control,
     reset,
+    setError,
+    clearErrors
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -196,6 +200,25 @@ export const PersonForm = () => {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => console.log(data);
 
+  const nationalNo = watch("nationalNo");
+
+  
+
+  useEffect(() => {
+    if (!nationalNo) return;
+    
+    clearErrors("nationalNo");
+    const timeoutId = setTimeout( async ()=>{
+        const data = await checkPersonExistsByNationalNo(nationalNo);
+        if(data.exists) {
+            setError("nationalNo", {message: "nationalNo is linked to another person."})
+        }
+    }, 600);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [nationalNo]);
   return (
     <Card className="w-full sm:max-w-md lg:max-w-3xl">
       <CardHeader>
