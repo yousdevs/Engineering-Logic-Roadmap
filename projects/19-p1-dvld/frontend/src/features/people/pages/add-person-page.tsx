@@ -42,9 +42,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, type ChangeEvent } from "react";
 import { usePersonExistsByNationalNoQuery } from "../hooks/usePersonExistsByNationalNoQuery";
-import { checkPersonExistsByNationalNo } from "../api/checkPersonExistsByNationalNo";
+
 import { useDebounce } from "@/hooks/useDebounce";
 import { useCountriesQuery } from "@/hooks/useCountriesQuery";
 import { type country } from "@/schemas/countrySchema";
@@ -73,13 +73,22 @@ const formSchema = z.object({
     .min(2, "last name must be at least 2 characters.")
     .max(20, "last name must be at most 20 characters."),
   gender: z.string(),
-  dateOfBirth: z.string(),
-  nationality: z.string(),
+  dateOfBirth: z
+    .preprocess((arg)=>{if (typeof arg === "string" && arg.trim() !== "") {
+      return new Date(arg);
+    }
+    return arg;
+  }, z.date())
+    .refine(
+      (date) => date <= eighteenYearsAgo,
+      "age must be at least 18 years old.",
+    ),
+  nationality: z.string().nonempty("please select a country."),
   phoneNumber: z
     .string()
-    .max(20, "Phone number must be at most 20 characters."),
+    .max(20, "Phone number must be at most 20 characters.").nonempty("required."),
   email: z.email().max(50, "email address must be at most 50 characters."),
-  address: z.string().max(500, "address most be at most 500 characters."),
+  address: z.string().max(500, "address most be at most 500 characters.").nonempty("this field is required."),
   image: z
     .instanceof(File)
     .nullable()
@@ -194,7 +203,7 @@ export const PersonForm = ({
       secondName: "",
       thirdName: "",
       lastName: "",
-      dateOfBirth: "",
+      dateOfBirth: eighteenYearsAgo,
       gender: "male",
       email: "",
       phoneNumber: "",
@@ -381,6 +390,11 @@ export const PersonForm = ({
 
                   <Input
                     {...field}
+                    value={
+                      field.value instanceof Date
+                        ? field.value.toISOString().split("T")[0]
+                        : field.value || ""
+                    }
                     id="form-person-dateOfBirth"
                     aria-invalid={fieldState.invalid}
                     type="date"
