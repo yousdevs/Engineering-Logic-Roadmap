@@ -48,6 +48,10 @@ import { usePersonExistsByNationalNoQuery } from "../hooks/usePersonExistsByNati
 import { useDebounce } from "@/hooks/useDebounce";
 import { useCountriesQuery } from "@/hooks/useCountriesQuery";
 import { type country } from "@/schemas/countrySchema";
+import type { CreatePersonRequest } from "../types/createPersonRequest";
+import { useMutation } from "@tanstack/react-query";
+import { useCreatePerson } from "../hooks/useCreatePerson";
+import { useNavigate } from "react-router-dom";
 
 const eighteenYearsAgo = new Date();
 eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
@@ -183,9 +187,10 @@ const PersonImageField = ({
 };
 
 export const PersonForm = ({
-  countries,
+  countries
 }: {
-  countries: country[] | undefined;
+  countries: country[] | undefined,
+ 
 }) => {
   const {
     // register,
@@ -214,7 +219,29 @@ export const PersonForm = ({
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => console.log(data);
+  const createPersonMutation = useCreatePerson();
+    const navigate = useNavigate();
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+
+    const req : CreatePersonRequest = {
+      firstName: data.firstName,
+      secondName: data.secondName,
+      thirdName: data.thirdName,
+      lastName: data.lastName,
+      gender: data.gender == 'male'? 1 : 0,
+      dateOfBirth: data.dateOfBirth,
+      image: data.image,
+      nationalNo: data.nationalNo,
+      nationalityCountryId: Number(data.nationality),
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      address: data.address
+    };
+    createPersonMutation.mutate(req, {
+      onSuccess: ()=> {navigate("/people")},
+      onError: ()=> console.log(createPersonMutation.error),
+    });
+  }
 
   const nationalNo = watch("nationalNo");
 
