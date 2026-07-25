@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Data;
 public class PersonDto
 {
     public int Id { get; set; }
@@ -38,6 +39,13 @@ namespace Api.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
+
+        private readonly IWebHostEnvironment _environment;
+
+        public PeopleController(IWebHostEnvironment environment)
+        {
+            _environment = environment;
+        }
 
         public static PagedResult<PersonDto> getPeople(int offset, int limit)
         {
@@ -172,6 +180,118 @@ namespace Api.Controllers
 
                 return BadRequest(ex.ToString());
             }
+        }
+
+
+        public sealed record CreatePersonResponse(int id);
+        public sealed class CreatePersonRequest
+        {
+            public required string NationalNo { get; init; }
+
+            public required string FirstName { get; init; }
+
+            public required string SecondName { get; init; }
+
+            public string? ThirdName { get; init; }
+
+            public required string LastName { get; init; }
+
+            public byte Gender { get; init; }
+
+            public required DateOnly DateOfBirth { get; init; }
+
+            public int NationalityCountryId { get; init; }
+
+            public string? Email { get; init; }
+
+            public required string phoneNumber { get; init; }
+
+            public required string Address { get; init; }
+
+            public IFormFile? Image { get; init; }
+
+        }
+
+        public static int CreatePersonDB(CreatePersonRequest req, string? imagePath)
+        {
+            string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
+
+            using var con = new SqlConnection(conString);
+
+            string query = @"INSERT INTO People VALUES
+                (@NationalNo, @FirstName, @SecondName, @ThirdName, @LastName,  @DateOfBirth, @Gender, @Address, @PhoneNumber, @Email, @NationalityCountryId, @ImagePath);
+                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            using var cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@NationalNo", req.NationalNo);
+            cmd.Parameters.AddWithValue("@FirstName", req.FirstName);
+            cmd.Parameters.AddWithValue("@SecondName", req.SecondName);
+            cmd.Parameters.AddWithValue("@ThirdName", req.ThirdName);
+            cmd.Parameters.AddWithValue("@LastName", req.LastName);
+            cmd.Parameters.AddWithValue("@DateOfBirth", req.DateOfBirth);
+            cmd.Parameters.AddWithValue("@Gender", req.Gender);
+            cmd.Parameters.AddWithValue("@Address", req.Address);
+            cmd.Parameters.AddWithValue("@PhoneNumber", req.phoneNumber);
+            cmd.Parameters.AddWithValue("@Email", req.Email);
+            cmd.Parameters.AddWithValue("@NationalityCountryId", req.NationalityCountryId);
+
+            cmd.Parameters.Add("@ImagePath", SqlDbType.NVarChar).Value = (object?)imagePath ?? DBNull.Value;
+
+            con.Open();
+            int id = (int)cmd.ExecuteScalar();
+            return id;
+        }
+
+        public static string? SaveImage(IFormFile? image, string webRootPath)
+        {
+            if (image is null || image.Length == 0) return null;
+
+            var uploadsDirectory = Path.Combine(
+
+                webRootPath,
+                "images",
+                "people"
+
+                );
+
+            Directory.CreateDirectory(uploadsDirectory);
+
+            var extension = Path.GetExtension(image.FileName);
+            var fileName = $"{Guid.NewGuid()}{extension}";
+
+            var physicalPath = Path.Combine(uploadsDirectory, fileName);
+
+
+            using var stream = System.IO.File.Create(physicalPath);
+            image.CopyTo(stream);
+
+            return Path.Combine("images", "people", fileName).Replace('\\', '/');
+        }
+
+        [HttpPost]
+        public ActionResult<CreatePersonResponse> CreatePerson([FromForm] CreatePersonRequest request)
+        {
+
+            int id;
+            CreatePersonResponse res;
+            string? imagePath = SaveImage(request.Image, _environment.WebRootPath);
+
+            try
+            {
+                id = CreatePersonDB(request, imagePath);
+                res = new CreatePersonResponse(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
+
+
+            return Created(
+                 $"/api/people/{res.id}",
+                     res);
         }
     }
 }
