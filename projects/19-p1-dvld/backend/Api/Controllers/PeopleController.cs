@@ -184,6 +184,14 @@ namespace Api.Controllers
 
 
         public sealed record CreatePersonResponse(int id);
+
+        public enum ImageAction { Unchanged, Replaced, Removed }
+
+        public sealed class ImageUpdateRequest
+        {
+            public required ImageAction Action { get; init; }
+            public IFormFile? File { get; init; }
+        }
         public sealed class CreatePersonRequest
         {
             public required string NationalNo { get; init; }
@@ -208,7 +216,7 @@ namespace Api.Controllers
 
             public required string Address { get; init; }
 
-            public IFormFile? Image { get; init; }
+            public ImageUpdateRequest? Image { get; init; }
 
         }
 
@@ -226,13 +234,28 @@ namespace Api.Controllers
             cmd.Parameters.AddWithValue("@NationalNo", req.NationalNo);
             cmd.Parameters.AddWithValue("@FirstName", req.FirstName);
             cmd.Parameters.AddWithValue("@SecondName", req.SecondName);
-            cmd.Parameters.AddWithValue("@ThirdName", req.ThirdName);
+            if (req.ThirdName != null)
+            {
+                cmd.Parameters.AddWithValue("@ThirdName", req.ThirdName);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@ThirdName", System.DBNull.Value);
+            }
             cmd.Parameters.AddWithValue("@LastName", req.LastName);
             cmd.Parameters.AddWithValue("@DateOfBirth", req.DateOfBirth);
             cmd.Parameters.AddWithValue("@Gender", req.Gender);
             cmd.Parameters.AddWithValue("@Address", req.Address);
             cmd.Parameters.AddWithValue("@PhoneNumber", req.phoneNumber);
-            cmd.Parameters.AddWithValue("@Email", req.Email);
+
+            if (req.Email != null)
+            {
+                cmd.Parameters.AddWithValue("@Email", req.Email);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@Email", System.DBNull.Value);
+            }
             cmd.Parameters.AddWithValue("@NationalityCountryId", req.NationalityCountryId);
 
             cmd.Parameters.Add("@ImagePath", SqlDbType.NVarChar).Value = (object?)imagePath ?? DBNull.Value;
@@ -274,7 +297,11 @@ namespace Api.Controllers
 
             int id;
             CreatePersonResponse res;
-            string? imagePath = SaveImage(request.Image, _environment.WebRootPath);
+            string? imagePath = null;
+            if (request.Image is not null && request.Image.Action == ImageAction.Replaced && request.Image.File is not null)
+            {
+                imagePath = SaveImage(request.Image.File, _environment.WebRootPath);
+            }
 
             try
             {
