@@ -78,11 +78,12 @@ const formSchema = z.object({
     .max(20, "last name must be at most 20 characters."),
   gender: z.string(),
   dateOfBirth: z
-    .preprocess((arg)=>{if (typeof arg === "string" && arg.trim() !== "") {
-      return new Date(arg);
-    }
-    return arg;
-  }, z.date())
+    .preprocess((arg) => {
+      if (typeof arg === "string" && arg.trim() !== "") {
+        return new Date(arg);
+      }
+      return arg;
+    }, z.date())
     .refine(
       (date) => date <= eighteenYearsAgo,
       "age must be at least 18 years old.",
@@ -90,9 +91,13 @@ const formSchema = z.object({
   nationality: z.string().nonempty("please select a country."),
   phoneNumber: z
     .string()
-    .max(20, "Phone number must be at most 20 characters.").nonempty("required."),
+    .max(20, "Phone number must be at most 20 characters.")
+    .nonempty("required."),
   email: z.email().max(50, "email address must be at most 50 characters."),
-  address: z.string().max(500, "address most be at most 500 characters.").nonempty("this field is required."),
+  address: z
+    .string()
+    .max(500, "address most be at most 500 characters.")
+    .nonempty("this field is required."),
   image: z
     .instanceof(File)
     .nullable()
@@ -187,10 +192,9 @@ const PersonImageField = ({
 };
 
 export const PersonForm = ({
-  countries
+  countries,
 }: {
-  countries: country[] | undefined,
- 
+  countries: country[] | undefined;
 }) => {
   const {
     // register,
@@ -220,28 +224,33 @@ export const PersonForm = ({
   });
 
   const createPersonMutation = useCreatePerson();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-
-    const req : CreatePersonRequest = {
+    const req: CreatePersonRequest = {
       firstName: data.firstName,
       secondName: data.secondName,
       thirdName: data.thirdName,
       lastName: data.lastName,
-      gender: data.gender == 'male'? 1 : 0,
+      gender: data.gender == "male" ? 1 : 0,
       dateOfBirth: data.dateOfBirth,
       image: data.image,
       nationalNo: data.nationalNo,
       nationalityCountryId: Number(data.nationality),
       phoneNumber: data.phoneNumber,
       email: data.email,
-      address: data.address
+      address: data.address,
     };
     createPersonMutation.mutate(req, {
-      onSuccess: ()=> {navigate("/people")},
-      onError: ()=> console.log(createPersonMutation.error),
+      onSuccess: (res) => {
+        navigate(`/people/${res.id}`, {
+          state: {
+            created: true,
+          },
+        });
+      },
+      onError: () => console.log(createPersonMutation.error),
     });
-  }
+  };
 
   const nationalNo = watch("nationalNo");
 

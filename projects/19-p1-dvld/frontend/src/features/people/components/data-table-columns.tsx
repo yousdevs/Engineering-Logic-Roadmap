@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 export const columns: ColumnDef<Person>[] = [
   {
@@ -82,6 +83,7 @@ export const columns: ColumnDef<Person>[] = [
     cell: ({ row }) => {
       const person = row.original;
 
+      const navigate = useNavigate();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -101,8 +103,14 @@ export const columns: ColumnDef<Person>[] = [
               Copy Person ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View Person</DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`${person.id}`)}>
+              View Person
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigate(`${person.id}/edit`)}
+            >
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem>Delete</DropdownMenuItem>
             <DropdownMenuItem>Email</DropdownMenuItem>
             <DropdownMenuItem>Phone call</DropdownMenuItem>

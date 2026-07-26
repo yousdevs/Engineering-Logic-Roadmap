@@ -1,5 +1,6 @@
 import { AddPersonPage } from "@/features/people/pages/add-person-page";
 import { PeopleListPage } from "@/features/people/pages/people-list-page";
+import { PersonDetailsPage } from "@/features/people/pages/person-details-page";
 import DashboardLayout from "@/layouts/dashboard-layout";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
@@ -12,6 +13,7 @@ export function AppRouter() {
           <Route path="people" element={<Outlet />}>
             <Route index element={<PeopleListPage />} />
             <Route path="/people/new" element={<AddPersonPage />} />
+            <Route path="/people/:id" element={<PersonDetailsPage />} />
           </Route>
         </Route>
         <Route path="/login" element={<h1>login</h1>}></Route>
