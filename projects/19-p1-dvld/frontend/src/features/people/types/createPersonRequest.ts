@@ -10,5 +10,8 @@ export type CreatePersonRequest = {
   email: string | null;
   phoneNumber: string;
   address: string;
-  image: File | null;
+  image: {
+    action: "unchanged" | "replaced" | "removed";
+    file: File | null;
+  };
 };

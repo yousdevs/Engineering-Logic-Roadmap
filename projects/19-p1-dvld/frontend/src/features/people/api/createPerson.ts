@@ -27,8 +27,12 @@ export async function createPerson(
     request.nationalityCountryId.toString(),
   );
 
-  if (request.image) formData.append("image", request.image);
+  // if (request.image) formData.append("image", request.image);
 
+  formData.append("Image.Action", request.image.action);
+  if (request.image.file) formData.append("Image.File", request.image.file);
+
+  
   const res = await fetch("https://localhost:7152/api/people", {
     method: "POST",
     body: formData,
