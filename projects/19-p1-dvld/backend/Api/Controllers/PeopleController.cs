@@ -293,5 +293,69 @@ namespace Api.Controllers
                  $"/api/people/{res.id}",
                      res);
         }
+
+
+
+        public sealed record PersonDetails(int id, string firstName, string secondName, string? thirdName, string lastName, string nationalNo,
+            DateTime dateOfBirth, byte gender, string phoneNumber, string? email, string country, string address, string? imagePath);
+
+
+        public static PersonDetails GetPersonDB(int id)
+        {
+
+            string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
+
+            using var con = new SqlConnection(conString);
+
+            string query = @"SELECT 
+                            p.PersonID,
+                            p.FirstName,
+                            p.SecondName,
+                            p.ThirdName,
+                            p.LastName,
+                            p.NationalNo,
+                            p.DateOfBirth,
+                            p.Gendor,
+                            p.Phone,
+                            p.Email,
+                            c.CountryName,
+                            p.Address,
+                            p.ImagePath
+                            FROM People p
+                            INNER JOIN Countries c
+                            ON p.NationalityCountryID = c.CountryID
+                            WHERE PersonID = @PersonID;";
+            using var cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@PersonID", id);
+
+            con.Open();
+
+            var reader = cmd.ExecuteReader();
+
+            reader.Read();
+
+            return new PersonDetails((int)reader["PersonID"], (string)reader["FirstName"], (string)reader["SecondName"],
+                reader.IsDBNull(reader.GetOrdinal("ThirdName")) ? null : reader.GetString(reader.GetOrdinal("ThirdName")), (string)reader["LastName"],
+                (string)reader["NationalNo"], (DateTime)reader["DateOfBirth"], (byte)reader["Gendor"], (string)reader["Phone"],
+                reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")), (string)reader["CountryName"],
+                (string)reader["Address"],
+                reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : reader.GetString(reader.GetOrdinal("ImagePath")));
+        }
+
+        [HttpGet("{id:int}")]
+        public ActionResult<PersonDetails> GetPersonDetails(int id)
+        {
+            PersonDetails person;
+            try
+            {
+                person = GetPersonDB(id);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+            return Ok(person);
+        }
     }
 }
