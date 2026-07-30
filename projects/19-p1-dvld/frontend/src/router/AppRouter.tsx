@@ -1,4 +1,5 @@
 import { AddPersonPage } from "@/features/people/pages/add-person-page";
+import { EditPersonPage } from "@/features/people/pages/edit-person-page";
 import { PeopleListPage } from "@/features/people/pages/people-list-page";
 import { PersonDetailsPage } from "@/features/people/pages/person-details-page";
 import DashboardLayout from "@/layouts/dashboard-layout";
@@ -14,6 +15,7 @@ export function AppRouter() {
             <Route index element={<PeopleListPage />} />
             <Route path="/people/new" element={<AddPersonPage />} />
             <Route path="/people/:id" element={<PersonDetailsPage />} />
+            <Route path="/people/:id/edit" element={<EditPersonPage />} />
           </Route>
         </Route>
         <Route path="/login" element={<h1>login</h1>}></Route>

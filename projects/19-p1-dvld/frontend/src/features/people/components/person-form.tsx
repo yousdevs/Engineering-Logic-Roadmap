@@ -43,7 +43,7 @@ type ImageState = {
 interface PersonImageFieldProps {
   gender: "male" | "female";
   imageState: ImageState;
-  existingImageUrl: string | null;
+  existingImageUrl?: string;
   onImageChange: (imageState: ImageState) => void;
 }
 
@@ -69,7 +69,18 @@ const PersonImageField = ({
   }, [previewImageUrl]);
 
   const fallbackImageUrl = gender == "male" ? "/men32.png" : "/women32.png";
-  const previewUrl = previewImageUrl ?? existingImageUrl ?? fallbackImageUrl;
+  const previewUrl = useMemo(() => {
+    switch (imageState.state) {
+      case "replaced":
+        return previewImageUrl ?? fallbackImageUrl;
+
+      case "removed":
+        return fallbackImageUrl;
+
+      case "unchanged":
+        return existingImageUrl ?? fallbackImageUrl;
+    }
+  }, [imageState.state, previewImageUrl, existingImageUrl, fallbackImageUrl]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,10 +149,12 @@ export const PersonForm = ({
   countries,
   onSubmit,
   form,
+  existingImageUrl,
 }: {
   countries: Country[] | undefined;
   onSubmit: (data: PersonFormType) => void;
   form: UseFormReturn<PersonFormType>;
+  existingImageUrl?: string;
 }) => {
   return (
     <Card className="w-full max-w-5xl">
@@ -483,7 +496,7 @@ export const PersonForm = ({
                   <FieldLabel>Person Image</FieldLabel>
                   <PersonImageField
                     imageState={field.value}
-                    existingImageUrl={null}
+                    existingImageUrl={existingImageUrl}
                     gender={form.watch("gender")}
                     onImageChange={field.onChange}
                   />
