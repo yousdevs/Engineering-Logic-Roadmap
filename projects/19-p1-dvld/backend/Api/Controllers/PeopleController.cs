@@ -286,6 +286,7 @@ namespace Api.Controllers
 
 
             using var stream = System.IO.File.Create(physicalPath);
+
             image.CopyTo(stream);
 
             return Path.Combine("images", "people", fileName).Replace('\\', '/');
@@ -384,5 +385,214 @@ namespace Api.Controllers
 
             return Ok(person);
         }
+
+
+        public sealed class EditPersonRequest
+        {
+            public required string NationalNo { get; init; }
+
+            public required string FirstName { get; init; }
+
+            public required string SecondName { get; init; }
+
+            public string? ThirdName { get; init; }
+
+            public required string LastName { get; init; }
+
+            public byte Gender { get; init; }
+
+            public required DateOnly DateOfBirth { get; init; }
+
+            public int NationalityCountryId { get; init; }
+
+            public string? Email { get; init; }
+
+            public required string phoneNumber { get; init; }
+
+            public required string Address { get; init; }
+
+            public ImageUpdateRequest? Image { get; init; }
+
+        }
+
+        public sealed record EditPersonResponse(int id);
+
+
+        public static int EditPersonDB(EditPersonRequest request, int id, string? imagePath, bool imageRemoved)
+        {
+
+            string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
+
+            using var con = new SqlConnection(conString);
+
+
+            // the queryBuilder need to know wether 
+            // set existing ImagePath to null, 
+            // or change it to new @ImagePath,
+            // or keep it as is
+
+            string query = @"
+                    
+                UPDATE People
+                SET
+                NationalNo = @NationalNo,
+                FirstName = @FirstName,
+                SecondName = @SecondName,
+                ThirdName = @ThirdName,
+                LastName = @LastName,
+                Gendor = @Gender,
+                DateOfBirth = @DateOfBirth,
+                Address = @Address,
+                Phone = @PhoneNumber,
+                Email = @Email,
+                NationalityCountryID = @NationalityCountryID
+                ";
+            if (imageRemoved)
+            {
+                query += @", ImagePath = NULL";
+            }
+            else if (imagePath is not null)
+            {
+                query += ", ImagePath = @ImagePath";
+            }
+
+            query += " WHERE PersonID = @PersonID";
+
+            using var cmd = new SqlCommand(query, con);
+
+            cmd.Parameters.AddWithValue("@NationalNo", request.NationalNo);
+            cmd.Parameters.AddWithValue("@FirstName", request.FirstName);
+            cmd.Parameters.AddWithValue("@SecondName", request.SecondName);
+            cmd.Parameters.AddWithValue("@ThirdName", request.ThirdName is not null ? request.ThirdName : DBNull.Value);
+            cmd.Parameters.AddWithValue("@LastName", request.LastName);
+            cmd.Parameters.AddWithValue("@Gender", request.Gender);
+            cmd.Parameters.AddWithValue("@DateOfBirth", request.DateOfBirth);
+            cmd.Parameters.AddWithValue("@Address", request.Address);
+            cmd.Parameters.AddWithValue("@PhoneNumber", request.phoneNumber);
+            cmd.Parameters.AddWithValue("@Email", request.Email is not null ? request.Email : DBNull.Value);
+            cmd.Parameters.AddWithValue("@NationalityCountryID", request.NationalityCountryId);
+
+            if (imagePath is not null)
+            {
+                cmd.Parameters.AddWithValue("@ImagePath", imagePath);
+            }
+
+            cmd.Parameters.AddWithValue("@PersonID", id);
+
+            con.Open();
+
+            int affected = cmd.ExecuteNonQuery();
+
+            if (affected < 0)
+            {
+                throw new Exception("couldn't update person");
+            }
+
+            return id;
+
+        }
+
+        public static string? getImagePathById(int id)
+        {
+
+            string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
+
+            using var con = new SqlConnection(conString);
+
+            string query = "SELECT ImagePath FROM People WHERE PersonID = @PersonID;";
+
+            using var cmd = new SqlCommand(query, con);
+
+            cmd.Parameters.AddWithValue("@PersonID", id);
+
+
+            con.Open();
+
+            var reader = cmd.ExecuteReader();
+
+            reader.Read();
+
+            if (reader.IsDBNull(0))
+            {
+                return null;
+            }
+            return (string)reader[0];
+        }
+
+
+        public static void RemoveImage(string path)
+        {
+
+
+            System.IO.File.Delete(Path.Combine("wwwroot", path));
+
+        }
+
+
+
+        [HttpPut("{id:int}")]
+        public ActionResult<EditPersonResponse> EditPerson([FromForm] EditPersonRequest request, int id)
+        {
+
+
+            // now i have the request
+            // 1- we extract the image state
+
+            var imageState = request.Image;
+
+            // replaced, removed, unchanged
+            // replaced- the existing image should be deleted from server, then update imagepath in db with the new saved image
+            // we can, get the existing image path from db, then we save the new image with same path, this will replace the image while keeping the imagepath unchanged.
+            // but since the remove function will be reusable, we stick to delete the existing image from server, then save the new one and update dbpath.
+
+            // removed- we must set the db image path to null, delete the existing image from server.
+
+            // unchanged- we don't touch the image path on db.
+
+
+            string? imagePath = null;
+
+            bool imageRemoved = false;
+
+            switch (imageState.Action)
+            {
+                case (ImageAction.Removed):
+                    RemoveImage(getImagePathById(id));
+                    imagePath = null;
+                    imageRemoved = true;
+                    break;
+                case ImageAction.Replaced:
+                    string? path = getImagePathById(id);
+                    if (path is not null)
+                    {
+                        RemoveImage(path);
+                    }
+
+
+                    imagePath = SaveImage(imageState.File, _environment.WebRootPath);
+                    imageRemoved = false;
+                    break;
+                case ImageAction.Unchanged:
+                    imagePath = null;
+                    imageRemoved = false;
+                    break;
+                default: return BadRequest("Unsupported imageaction state");
+
+            }
+
+            try
+            {
+                EditPersonDB(request, id, imagePath, imageRemoved);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+            return Ok(new EditPersonResponse(id));
+
+
+        }
+
     }
 }
