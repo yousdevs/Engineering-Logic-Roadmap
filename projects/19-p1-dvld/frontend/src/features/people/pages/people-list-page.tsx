@@ -3,10 +3,20 @@ import { Plus } from "lucide-react";
 import { DataTable } from "@/features/people/components/data-table";
 import { columns } from "@/features/people/components/data-table-columns";
 import { usePeople } from "@/features/people/hooks/use-people";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-
-import type { OnChangeFn, PaginationState } from "@tanstack/react-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
+import type { OnChangeFn, PaginationState, Row } from "@tanstack/react-table";
+import type { Person } from "../schemas/person-schema";
+import { useDeletePerson } from "../hooks/useDeletePerson";
 
 export const PeopleListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams({
@@ -32,13 +42,66 @@ export const PeopleListPage = () => {
         ? updaterOrValue(pagination)
         : updaterOrValue;
 
-    console.log(nextPagination.pageIndex);
-    console.log(nextPagination.pageSize);
     setSearchParams({
       page: `${nextPagination.pageIndex + 1}`,
       pageSize: `${nextPagination.pageSize}`,
     });
   };
+
+  const deletePersonMutation = useDeletePerson();
+
+  const handleDeletePerson = (id: number) => {
+    deletePersonMutation.mutate(id, {
+      onError: (err) => console.log(err.message),
+
+      onSuccess: () => console.log(id + "deleted"),
+    });
+  };
+
+  const navigate = useNavigate();
+  const columnsWithActions = [
+    ...columns,
+    {
+      id: "actions",
+      cell: ({ row }: { row: Row<Person> }) => {
+        const person = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(person.id.toString())
+                }
+              >
+                Copy Person ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate(`${person.id}`)}>
+                View Person
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`${person.id}/edit`)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDeletePerson(person.id)}>
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuItem>Email</DropdownMenuItem>
+              <DropdownMenuItem>Phone call</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
   return (
     <>
@@ -57,7 +120,7 @@ export const PeopleListPage = () => {
         <>no data</>
       ) : (
         <DataTable
-          columns={columns}
+          columns={columnsWithActions}
           data={data.items}
           onPaginationChange={handlePaginationChange}
           pagination={pagination}
