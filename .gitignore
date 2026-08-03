@@ -61,3 +61,4 @@ dist-ssr
 *.sw?
 
 wwwroot/images/*
+/projects/19-p1-dvld/backend/Api/wwwroot/images/people
