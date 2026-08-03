@@ -594,5 +594,52 @@ namespace Api.Controllers
 
         }
 
+
+        public static void DeletePersonDB(int id)
+        {
+
+            string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
+
+            using var con = new SqlConnection(conString);
+
+            string query = "DELETE FROM People WHERE PersonID = @PersonID;";
+
+            using var cmd = new SqlCommand(query, con);
+
+            cmd.Parameters.AddWithValue("@PersonID", id);
+
+            con.Open();
+            int affected = cmd.ExecuteNonQuery();
+
+            if (affected == 0) throw new Exception("Couldn't delete person with id = " + id);
+        }
+
+        [HttpDelete("{id:int}")]
+        public ActionResult DeletePerson(int id)
+        {
+
+            // get image path by id
+            // delete person from db
+            // if success remove the image.
+
+            string? imagePath = getImagePathById(id);
+
+            try
+            {
+                DeletePersonDB(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            if (imagePath is not null) RemoveImage(imagePath);
+
+            return NoContent();
+
+        }
+
     }
+
+
 }
