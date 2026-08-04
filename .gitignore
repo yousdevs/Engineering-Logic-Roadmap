@@ -62,3 +62,4 @@ dist-ssr
 
 wwwroot/images/*
 /projects/19-p1-dvld/backend/Api/wwwroot/images/people
+/projects/19-p1-dvld/backend/Api/appsettings.Development.json
