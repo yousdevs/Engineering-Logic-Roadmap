@@ -79,19 +79,23 @@ export const PeopleListPage = () => {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() =>
-                  navigator.clipboard.writeText(person.id.toString())
+                  navigator.clipboard.writeText(person.personId.toString())
                 }
               >
                 Copy Person ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate(`${person.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`${person.personId}`)}>
                 View Person
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate(`${person.id}/edit`)}>
+              <DropdownMenuItem
+                onClick={() => navigate(`${person.personId}/edit`)}
+              >
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDeletePerson(person.id)}>
+              <DropdownMenuItem
+                onClick={() => handleDeletePerson(person.personId)}
+              >
                 Delete
               </DropdownMenuItem>
               <DropdownMenuItem>Email</DropdownMenuItem>
@@ -124,7 +128,7 @@ export const PeopleListPage = () => {
           data={data.items}
           onPaginationChange={handlePaginationChange}
           pagination={pagination}
-          rowCount={data.total}
+          rowCount={data.totalCount}
         />
       )}
     </>
