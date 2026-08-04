@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.DTOs;
+using Core.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
 public class PersonDto
@@ -33,7 +35,7 @@ public class PersonDto
 }
 namespace Api.Controllers
 {
-    public sealed record PagedResult<T>(int offset, int limit, int total, IReadOnlyList<T> items);
+
 
     [Route("api/[controller]")]
     [ApiController]
@@ -41,93 +43,24 @@ namespace Api.Controllers
     {
 
         private readonly IWebHostEnvironment _environment;
+        private readonly PersonService _personService;
 
-        public PeopleController(IWebHostEnvironment environment)
+        public PeopleController(IWebHostEnvironment environment, PersonService personService)
         {
             _environment = environment;
-        }
-
-        public static PagedResult<PersonDto> getPeople(int offset, int limit)
-        {
-            const string conString = "Server=(localdb)\\MSSQLLocalDB;Database=DVLD;User Id=sa;Password=123456;TrustServerCertificate=True;";
-            SqlConnection con = new SqlConnection(conString);
-
-            const string query = "SELECT COUNT(*) FROM People; SELECT * FROM People p INNER JOIN Countries c ON p.NationalityCountryID = c.CountryID ORDER BY PersonID OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;";
-
-            SqlCommand cmd = new SqlCommand(query, con);
-            cmd.Parameters.AddWithValue("@offset", offset);
-            cmd.Parameters.AddWithValue("@limit", limit);
-            var people = new List<PersonDto>();
-            int total = 0;
-            try
-            {
-
-                con.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                reader.Read();
-                total = reader.GetInt32(0);
-                reader.NextResult();
-
-                int idOrdinal = reader.GetOrdinal("PersonID");
-                int nationalNoOrdinal = reader.GetOrdinal("NationalNo");
-                int firstNameOrdinal = reader.GetOrdinal("FirstName");
-                int secondNameOrdinal = reader.GetOrdinal("SecondName");
-                int thirdNameOrdinal = reader.GetOrdinal("ThirdName");
-                int lastNameOrdinal = reader.GetOrdinal("LastName");
-                int genderOrdinal = reader.GetOrdinal("Gendor");
-                int dateOfBirthOrdinal = reader.GetOrdinal("DateOfBirth");
-                int nationalityOrdinal = reader.GetOrdinal("CountryName");
-                int phoneNumberOrdinal = reader.GetOrdinal("Phone");
-                int emailOrdinal = reader.GetOrdinal("Email");
-
-                while (reader.Read())
-                {
-
-                    people.Add(
-                        new PersonDto(
-                        reader.GetInt32(idOrdinal),
-                        reader.GetString(nationalNoOrdinal),
-                        reader.GetString(firstNameOrdinal),
-                        reader.GetString(secondNameOrdinal),
-                        reader.IsDBNull(thirdNameOrdinal) ? "null" : reader.GetString(thirdNameOrdinal),
-                        reader.GetString(lastNameOrdinal),
-                        (reader.GetByte(genderOrdinal) == 1 ? "Female" : "Male"),
-                        reader.GetDateTime(dateOfBirthOrdinal),
-                        reader.GetString(nationalityOrdinal),
-                        reader.GetString(phoneNumberOrdinal),
-                        reader.IsDBNull(emailOrdinal) ? "test@test.com" : reader.GetString(emailOrdinal)
-                        ));
-
-                }
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine(ex.Message);
-
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            var res = new PagedResult<PersonDto>(offset, limit, total, people);
-
-            return res;
+            _personService = personService;
         }
 
         [HttpGet]
-        public ActionResult<PagedResult<PersonDto>> GetPeople(int offset, int limit)
+        [ProducesResponseType(typeof(PagedResult<PersonSummary>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<PagedResult<PersonSummary>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
 
+            var result = await _personService.GetAllAsync(new Page(page, pageSize));
 
-            var people = getPeople(offset, limit);
-
-
-
-            return Ok(people);
+            return Ok(result);
         }
 
 
