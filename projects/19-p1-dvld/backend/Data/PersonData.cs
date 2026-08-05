@@ -98,4 +98,83 @@ public static class PersonData
 
         return totalCount;
     }
+
+
+    public static async Task<int> Insert(
+        string nationalNo,
+        string firstName,
+        string secondName,
+        string? thirdName,
+        string lastName,
+        DateTime dateOfBirth,
+        byte gender,
+        string address,
+        string phoneNumber,
+        string? email,
+        int nationalityCountryId
+        )
+    {
+
+        RequireInitialized();
+
+        using var con = new SqlConnection(_connectionString);
+
+        string query = @"
+            INSERT INTO People (
+                NationalNo,
+                FirstName,
+                SecondName,
+                ThirdName,
+                LastName,
+                DateOfBirth,
+                Gendor,
+                Address,
+                Phone,
+                Email,
+                NationalityCountryID,
+                ImagePath
+            )
+            VALUES(
+                @NationalNo,
+                @FirstName,
+                @SecondName,
+                @ThirdName,
+                @LastName,
+                @DateOfBirth,
+                @Gender,
+                @Address,
+                @PhoneNumber,
+                @Email,
+                @NationalityCountryId,
+                @ImagePath);
+
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+        using var cmd = new SqlCommand(query, con);
+
+
+        cmd.Parameters.Add("@NationalNo", SqlDbType.NVarChar).Value = nationalNo;
+        cmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = firstName;
+        cmd.Parameters.Add("@SecondName", SqlDbType.NVarChar).Value = secondName;
+
+        cmd.Parameters.Add("@ThirdName", SqlDbType.NVarChar).Value = (object?)thirdName ?? DBNull.Value;
+
+        cmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = lastName;
+        cmd.Parameters.Add("@DateOfBirth", SqlDbType.DateTime).Value = dateOfBirth;
+        cmd.Parameters.Add("@Gender", SqlDbType.TinyInt).Value = gender;
+        cmd.Parameters.Add("@Address", SqlDbType.NVarChar).Value = address;
+        cmd.Parameters.Add("@PhoneNumber", SqlDbType.NVarChar).Value = phoneNumber;
+
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = (object?)email ?? DBNull.Value;
+
+        cmd.Parameters.Add("@NationalityCountryId", SqlDbType.Int).Value = nationalityCountryId;
+
+        cmd.Parameters.Add("@ImagePath", SqlDbType.NVarChar).Value = (object?)null ?? DBNull.Value;
+
+        await con.OpenAsync();
+
+        int id = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+
+        return id;
+    }
 }
