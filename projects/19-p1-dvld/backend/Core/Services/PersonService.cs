@@ -47,4 +47,47 @@ public sealed class PersonService
 
         return new PagedResult<PersonSummary>(people, totalCount, page.Number, page.Size);
     }
+
+    public async Task<int> CreateAsync(PersonForm form)
+    {
+
+        if (!Enum.TryParse<Gender>(form.Gender, out var gender))
+            throw new ArgumentException($"Invalid gender: {form.Gender}.");
+
+        if (form.NationalityCountryId < 1 || form.NationalityCountryId > short.MaxValue)
+            throw new ArgumentException("Invalid country.");
+
+        short nationalityCountryId = (short)form.NationalityCountryId;
+
+        var person = Person.Create(
+            form.FirstName,
+            form.SecondName,
+            form.ThirdName,
+            form.LastName,
+            gender,
+            form.DateOfBirth,
+            form.NationalNo,
+            nationalityCountryId,
+            form.Address,
+            form.PhoneNumber,
+            form.Email,
+            imagePath: null
+            );
+
+        int id = await PersonData.InsertAsync(
+            person.NationalNo,
+            person.FirstName,
+            person.SecondName,
+            person.ThirdName,
+            person.LastName,
+            person.DateOfBirth,
+            (byte)person.Gender,
+            person.Address,
+            person.PhoneNumber,
+            person.Email,
+            person.NationalityCountryId
+            );
+
+        return id;
+    }
 }

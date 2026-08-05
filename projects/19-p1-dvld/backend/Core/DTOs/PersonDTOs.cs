@@ -14,3 +14,16 @@ public sealed record PersonSummary(
     string? email
     );
 
+public sealed record PersonForm(
+    string NationalNo,
+    string FirstName,
+    string SecondName,
+    string? ThirdName,
+    string LastName,
+    string Gender,
+    DateTime DateOfBirth,
+    int NationalityCountryId,
+    string PhoneNumber,
+    string? Email,
+    string Address
+    );

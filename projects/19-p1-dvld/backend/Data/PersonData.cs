@@ -100,7 +100,7 @@ public static class PersonData
     }
 
 
-    public static async Task<int> Insert(
+    public static async Task<int> InsertAsync(
         string nationalNo,
         string firstName,
         string secondName,
