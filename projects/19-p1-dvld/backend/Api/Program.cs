@@ -3,6 +3,7 @@ using Core;
 using Core.DTOs;
 using Core.Services;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.FileProviders;
 
 namespace Api;
 
@@ -15,6 +16,17 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
+
+        var imageStoragePath = builder.Configuration["ImageStorage:Path"]!;
+
+        Directory.CreateDirectory(imageStoragePath);
+
+        builder.Services.AddSingleton(
+            new ImageStorageService(
+                imageStoragePath,
+                builder.Configuration["ImageStorage:BaseUrl"]!
+            ));
+
         builder.Services.AddScoped<PersonService>();
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -62,7 +74,15 @@ public class Program
 
         app.UseAuthorization();
 
-        app.UseStaticFiles();
+        app.UseStaticFiles(
+            new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                        imageStoragePath
+                    ),
+                RequestPath = "/images"
+            }
+            );
 
         app.MapControllers();
 
