@@ -95,6 +95,23 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        [HttpGet("exists")]
+        public async Task<IActionResult> Exist([FromQuery] string? nationalNo, [FromQuery] string? email, [FromQuery] string? phoneNumber)
+        {
+
+            var filtersProvided = new[] { nationalNo, email, phoneNumber }.Count(f => f != null);
+
+            if (filtersProvided != 1)
+                return BadRequest("Exactly one filter must be provided.");
+
+            bool exists =
+                nationalNo != null ? await _personService.ExistsByNationalNoAsync(nationalNo)
+                : email != null ? await _personService.ExistsByEmailAsync(email)
+                : await _personService.ExistsByPhoneNumberAsync(phoneNumber!);
+
+            return Ok(new { exists });
+        }
+
         public static bool getPersonExistsByNationalNo(string nationalNo)
         {
 
