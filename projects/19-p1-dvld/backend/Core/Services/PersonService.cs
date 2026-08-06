@@ -200,4 +200,11 @@ public sealed class PersonService
         _imageStorageService.Delete(oldPath);
 
     }
+
+
+    public async Task<bool> ExistsByNationalNoAsync(string nationalNo) => await PersonData.ExistsByNationalNoAsync(nationalNo);
+
+    public async Task<bool> ExistsByPhoneNumberAsync(string phoneNumber) => await PersonData.ExistsByPhoneNumberAsync(phoneNumber);
+
+    public async Task<bool> ExistsByEmailAsync(string email) => await PersonData.ExistsByEmailAsync(email);
 }
