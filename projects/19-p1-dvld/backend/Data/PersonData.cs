@@ -284,4 +284,80 @@ public static class PersonData
 
         return affected > 0;
     }
+
+
+    public static async Task<bool> ExistsByNationalNoAsync(string nationalNo)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT CASE WHEN EXISTS (
+	        SELECT 1 FROM People WHERE NationalNo = @NationalNo
+            ) THEN 1 ELSE 0 END;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@NationalNo", SqlDbType.NVarChar).Value = nationalNo;
+
+        await con.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+
+        if (result == null)
+            throw new InvalidOperationException($"ExistsByNationalNo: unexpected null result from scalar query.");
+
+        return (int)result == 1;
+    }
+
+    public static async Task<bool> ExistsByPhoneNumberAsync(string phoneNumber)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT CASE WHEN EXISTS (
+	        SELECT 1 FROM People WHERE Phone = @Phone
+            ) THEN 1 ELSE 0 END;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phoneNumber;
+
+        await con.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+
+        if (result == null)
+            throw new InvalidOperationException($"ExistsByPhoneNumber: unexpected null result from scalar query.");
+
+        return (int)result == 1;
+    }
+
+    public static async Task<bool> ExistsByEmailAsync(string email)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT CASE WHEN EXISTS (
+	        SELECT 1 FROM People WHERE Email = @Email
+            ) THEN 1 ELSE 0 END;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
+
+        await con.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+
+        if (result == null)
+            throw new InvalidOperationException($"ExistsByEmail: unexpected null result from scalar query.");
+
+        return (int)result == 1;
+    }
 }
