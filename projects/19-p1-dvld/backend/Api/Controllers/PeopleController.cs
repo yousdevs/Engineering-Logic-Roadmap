@@ -129,7 +129,14 @@ namespace Api.Controllers
             return Ok(details);
         }
 
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
 
+            await _personService.DeleteAsync(id);
+
+            return NoContent();
+        }
         public static bool getPersonExistsByNationalNo(string nationalNo)
         {
 
@@ -612,30 +619,30 @@ namespace Api.Controllers
             if (affected == 0) throw new Exception("Couldn't delete person with id = " + id);
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult DeletePerson(int id)
-        {
+        //[HttpDelete("{id:int}")]
+        //public ActionResult DeletePerson(int id)
+        //{
 
-            // get image path by id
-            // delete person from db
-            // if success remove the image.
+        //    // get image path by id
+        //    // delete person from db
+        //    // if success remove the image.
 
-            string? imagePath = getImagePathById(id);
+        //    string? imagePath = getImagePathById(id);
 
-            try
-            {
-                DeletePersonDB(id);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        //    try
+        //    {
+        //        DeletePersonDB(id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
-            if (imagePath is not null) RemoveImage(imagePath);
+        //    if (imagePath is not null) RemoveImage(imagePath);
 
-            return NoContent();
+        //    return NoContent();
 
-        }
+        //}
 
     }
 

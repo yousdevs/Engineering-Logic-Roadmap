@@ -232,7 +232,7 @@ public static class PersonData
             );
     }
 
-    public static async Task UpdateAsync(PersonRecord record)
+    public static async Task<bool> UpdateAsync(PersonRecord record)
     {
 
         RequireInitialized();
@@ -282,8 +282,8 @@ public static class PersonData
         await con.OpenAsync();
         int affected = await cmd.ExecuteNonQueryAsync();
 
-        if (affected < 0)
-            throw new KeyNotFoundException($"Person with PersonID = {record.PersonID} does not exist.");
+        return affected == 1;
+
     }
 
 
@@ -413,5 +413,32 @@ public static class PersonData
             (string)reader["Address"],
             reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : (string)reader["ImagePath"]
             );
+    }
+
+    public static async Task<(bool Deleted, string? ImagePath)> DeleteAsync(int id)
+    {
+        RequireInitialized();
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            DELETE FROM People
+            OUTPUT DELETED.ImagePath
+            WHERE PersonID = @id;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+
+        await con.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return (false, null);
+
+        string? imagePath = reader.IsDBNull(reader.GetOrdinal("ImagePath"))
+        ? null
+        : (string?)reader["ImagePath"];
+
+        return (true, imagePath);
     }
 }

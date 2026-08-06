@@ -125,7 +125,7 @@ public sealed class PersonService
         try
         {
             person.ChangeImage(path);
-            await PersonData.UpdateAsync(new PersonRecord(
+            bool updated = await PersonData.UpdateAsync(new PersonRecord(
                 person.Id,
                 person.NationalNo,
                 person.FirstName,
@@ -141,6 +141,8 @@ public sealed class PersonService
                 person.ImagePath
             ));
 
+            if (!updated)
+                throw new KeyNotFoundException($"Person with PersonID = {id} does not exist.");
         }
         catch
         {
@@ -182,7 +184,7 @@ public sealed class PersonService
             return;
 
         person.RemoveImage();
-        await PersonData.UpdateAsync(new PersonRecord(
+        bool updated = await PersonData.UpdateAsync(new PersonRecord(
             person.Id,
             person.NationalNo,
             person.FirstName,
@@ -197,6 +199,10 @@ public sealed class PersonService
             person.NationalityCountryId,
             person.ImagePath
             ));
+
+        if (!updated)
+            throw new KeyNotFoundException($"Person with PersonID = {record.PersonID} does not exist.");
+
         _imageStorageService.Delete(oldPath);
 
     }
@@ -253,7 +259,7 @@ public sealed class PersonService
                 form.Email
             );
 
-        await PersonData.UpdateAsync(new PersonRecord(
+        bool updated = await PersonData.UpdateAsync(new PersonRecord(
 
             person.Id,
             person.NationalNo,
@@ -269,6 +275,9 @@ public sealed class PersonService
             person.NationalityCountryId,
             person.ImagePath
             ));
+
+        if (!updated)
+            throw new KeyNotFoundException($"Person with PersonID = {id} does not exist.");
     }
 
     public async Task<PersonDetails> GetDetailsByIdAsync(int id)
@@ -301,5 +310,16 @@ public sealed class PersonService
             imageUrl
             );
 
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+
+        (bool deleted, string? imagePath) = await PersonData.DeleteAsync(id);
+
+        if (!deleted)
+            throw new KeyNotFoundException($"Person with PersonID = {id} does not exist.");
+
+        _imageStorageService.Delete(imagePath);
     }
 }
