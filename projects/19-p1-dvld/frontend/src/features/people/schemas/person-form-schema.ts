@@ -24,7 +24,7 @@ export const PersonformSchema = z.object({
     .string()
     .min(2, "last name must be at least 2 characters.")
     .max(20, "last name must be at most 20 characters."),
-  gender: z.enum(["male", "female"]).nonoptional(),
+  gender: z.enum(["Male", "Female"]).nonoptional(),
   dateOfBirth: z
     // .preprocess((arg) => {
     //   if (typeof arg === "string" && arg.trim() !== "") {
