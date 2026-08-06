@@ -112,6 +112,15 @@ namespace Api.Controllers
             return Ok(new { exists });
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] PersonForm form)
+        {
+            await _personService.UpdateAsync(id, form);
+
+            return NoContent();
+        }
+
+        //update - details - delete
         public static bool getPersonExistsByNationalNo(string nationalNo)
         {
 
@@ -510,69 +519,69 @@ namespace Api.Controllers
 
 
 
-        [HttpPut("{id:int}")]
-        public ActionResult<EditPersonResponse> EditPerson([FromForm] EditPersonRequest request, int id)
-        {
+        //[HttpPut("{id:int}")]
+        //public ActionResult<EditPersonResponse> EditPerson([FromForm] EditPersonRequest request, int id)
+        //{
 
 
-            // now i have the request
-            // 1- we extract the image state
+        //    // now i have the request
+        //    // 1- we extract the image state
 
-            var imageState = request.Image;
+        //    var imageState = request.Image;
 
-            // replaced, removed, unchanged
-            // replaced- the existing image should be deleted from server, then update imagepath in db with the new saved image
-            // we can, get the existing image path from db, then we save the new image with same path, this will replace the image while keeping the imagepath unchanged.
-            // but since the remove function will be reusable, we stick to delete the existing image from server, then save the new one and update dbpath.
+        //    // replaced, removed, unchanged
+        //    // replaced- the existing image should be deleted from server, then update imagepath in db with the new saved image
+        //    // we can, get the existing image path from db, then we save the new image with same path, this will replace the image while keeping the imagepath unchanged.
+        //    // but since the remove function will be reusable, we stick to delete the existing image from server, then save the new one and update dbpath.
 
-            // removed- we must set the db image path to null, delete the existing image from server.
+        //    // removed- we must set the db image path to null, delete the existing image from server.
 
-            // unchanged- we don't touch the image path on db.
-
-
-            string? imagePath = null;
-
-            bool imageRemoved = false;
-
-            switch (imageState.Action)
-            {
-                case (ImageAction.Removed):
-                    RemoveImage(getImagePathById(id));
-                    imagePath = null;
-                    imageRemoved = true;
-                    break;
-                case ImageAction.Replaced:
-                    string? path = getImagePathById(id);
-                    if (path is not null)
-                    {
-                        RemoveImage(path);
-                    }
+        //    // unchanged- we don't touch the image path on db.
 
 
-                    imagePath = SaveImage(imageState.File, _environment.WebRootPath);
-                    imageRemoved = false;
-                    break;
-                case ImageAction.Unchanged:
-                    imagePath = null;
-                    imageRemoved = false;
-                    break;
-                default: return BadRequest("Unsupported imageaction state");
+        //    string? imagePath = null;
 
-            }
+        //    bool imageRemoved = false;
 
-            try
-            {
-                EditPersonDB(request, id, imagePath, imageRemoved);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-            return Ok(new EditPersonResponse(id));
+        //    switch (imageState.Action)
+        //    {
+        //        case (ImageAction.Removed):
+        //            RemoveImage(getImagePathById(id));
+        //            imagePath = null;
+        //            imageRemoved = true;
+        //            break;
+        //        case ImageAction.Replaced:
+        //            string? path = getImagePathById(id);
+        //            if (path is not null)
+        //            {
+        //                RemoveImage(path);
+        //            }
 
 
-        }
+        //            imagePath = SaveImage(imageState.File, _environment.WebRootPath);
+        //            imageRemoved = false;
+        //            break;
+        //        case ImageAction.Unchanged:
+        //            imagePath = null;
+        //            imageRemoved = false;
+        //            break;
+        //        default: return BadRequest("Unsupported imageaction state");
+
+        //    }
+
+        //    try
+        //    {
+        //        EditPersonDB(request, id, imagePath, imageRemoved);
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        return BadRequest(ex.Message);
+        //    }
+        //    return Ok(new EditPersonResponse(id));
+
+
+        //}
 
 
         public static void DeletePersonDB(int id)
