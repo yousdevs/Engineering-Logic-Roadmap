@@ -37,7 +37,7 @@ public class PeopleController : ControllerBase
         int id = await _personService.CreateAsync(form);
 
         //return CreatedAtAction(nameof(GetById), new { id}, id);
-        return StatusCode(StatusCodes.Status201Created, id);
+        return StatusCode(StatusCodes.Status201Created, new { id });
     }
 
     [HttpPut("{id:int}/image")]
