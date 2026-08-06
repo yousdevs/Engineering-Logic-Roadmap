@@ -120,7 +120,16 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        //update - details - delete
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<PersonDetails>> GetFullDetails(int id)
+        {
+
+            var details = await _personService.GetDetailsByIdAsync(id);
+
+            return Ok(details);
+        }
+
+
         public static bool getPersonExistsByNationalNo(string nationalNo)
         {
 
@@ -359,21 +368,21 @@ namespace Api.Controllers
                 reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : reader.GetString(reader.GetOrdinal("ImagePath")));
         }
 
-        [HttpGet("{id:int}")]
-        public ActionResult<PersonDetails> GetPersonDetails(int id)
-        {
-            PersonDetails person;
-            try
-            {
-                person = GetPersonDB(id);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+        //[HttpGet("{id:int}")]
+        //public ActionResult<PersonDetails> GetPersonDetails(int id)
+        //{
+        //    PersonDetails person;
+        //    try
+        //    {
+        //        person = GetPersonDB(id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return NotFound(ex.Message);
+        //    }
 
-            return Ok(person);
-        }
+        //    return Ok(person);
+        //}
 
 
         public sealed class EditPersonRequest

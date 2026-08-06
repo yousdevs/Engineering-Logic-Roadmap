@@ -16,3 +16,19 @@ public sealed record PersonRecord(
     int NationalityCountryID,
     string? ImagePath
     );
+
+public sealed record PersonDetailsRecord(
+
+    string FirstName,
+    string SecondName,
+    string? ThirdName,
+    string LastName,
+    string NationalNo,
+    DateTime DateOfBirth,
+    byte Gender,
+    string Phone,
+    string? Email,
+    string CountryName,
+    string Address,
+    string? ImagePath
+    );

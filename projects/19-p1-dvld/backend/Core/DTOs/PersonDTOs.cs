@@ -27,3 +27,18 @@ public sealed record PersonForm(
     string? Email,
     string Address
     );
+
+public sealed record PersonDetails(
+    string FirstName,
+    string SecondName,
+    string? ThirdName,
+    string LastName,
+    string NationalNo,
+    DateTime DateOfBirth,
+    string Gender,
+    string PhoneNumber,
+    string? Email,
+    string Country,
+    string Address,
+    string? ImageUrl
+    );

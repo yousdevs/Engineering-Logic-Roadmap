@@ -270,4 +270,36 @@ public sealed class PersonService
             person.ImagePath
             ));
     }
+
+    public async Task<PersonDetails> GetDetailsByIdAsync(int id)
+    {
+
+        PersonDetailsRecord? record = await PersonData.GetDetailsByIdAsync(id);
+
+        if (record == null)
+            throw new KeyNotFoundException($"Person with id= {id} does not exist.");
+
+        string? imageUrl = null;
+
+        if (record.ImagePath != null)
+            imageUrl = _imageStorageService.BuildUrl(record.ImagePath);
+
+        string gender = ((Gender)record.Gender).ToString();
+
+        return new PersonDetails(
+            record.FirstName,
+            record.SecondName,
+            record.ThirdName,
+            record.LastName,
+            record.NationalNo,
+            record.DateOfBirth,
+            gender,
+            record.Phone,
+            record.Email,
+            record.CountryName,
+            record.Address,
+            imageUrl
+            );
+
+    }
 }

@@ -361,4 +361,57 @@ public static class PersonData
 
         return (int)result == 1;
     }
+
+
+    public static async Task<PersonDetailsRecord?> GetDetailsByIdAsync(int id)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+        const string query = @"
+            
+            SELECT 
+                p.FirstName,
+                p.SecondName,
+                p.ThirdName,
+                p.LastName,
+                p.NationalNo,
+                p.DateOfBirth,
+                p.Gendor,
+                p.Phone,
+                p.Email,
+                c.CountryName,
+                p.Address,
+                p.ImagePath
+            FROM People p
+            INNER JOIN Countries c
+            ON p.NationalityCountryID = c.CountryID
+            WHERE p.PersonID = @PersonID;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@PersonID", SqlDbType.Int).Value = id;
+
+        await con.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new PersonDetailsRecord(
+            (string)reader["FirstName"],
+            (string)reader["SecondName"],
+            reader.IsDBNull(reader.GetOrdinal("ThirdName")) ? null : (string)reader["ThirdName"],
+            (string)reader["LastName"],
+            (string)reader["NationalNo"],
+            (DateTime)reader["DateOfBirth"],
+            (byte)reader["Gendor"],
+            (string)reader["Phone"],
+            reader.IsDBNull(reader.GetOrdinal("Email")) ? null : (string)reader["Email"],
+            (string)reader["CountryName"],
+            (string)reader["Address"],
+            reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : (string)reader["ImagePath"]
+            );
+    }
 }
