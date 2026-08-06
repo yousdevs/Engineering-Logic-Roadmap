@@ -45,16 +45,16 @@ public sealed class Person
 
     public static Person Create(string firstName, string secondName,
         string? thirdName, string lastName, Gender gender, DateTime dateOfBirth,
-        string nationalNo, short nationalityCountryId, string address, string phoneNumber, string? email, string? imagePath)
+        string nationalNo, short nationalityCountryId, string address, string phoneNumber, string? email)
     {
 
 
         Validate("Person::Create", firstName, secondName, thirdName, lastName,
-            dateOfBirth, nationalNo, nationalityCountryId, address, phoneNumber, email, imagePath);
+            dateOfBirth, nationalNo, nationalityCountryId, address, phoneNumber, email);
 
         return new Person(-1, firstName, secondName, thirdName,
             lastName, gender, dateOfBirth, nationalNo,
-            nationalityCountryId, address, phoneNumber, email, imagePath);
+            nationalityCountryId, address, phoneNumber, email, null);
     }
     public static Person Reconstitute(int id, string firstName, string secondName,
         string? thirdName, string lastName, Gender gender, DateTime dateOfBirth,
@@ -67,14 +67,14 @@ public sealed class Person
     }
 
 
-    public void Update(string firstName, string secondName, string? thirdName, string lastName,
+    public void UpdatePersonalInfo(string firstName, string secondName, string? thirdName, string lastName,
         Gender gender, DateTime dateOfBirth, string nationalNo, short nationalityCountryId,
-        string address, string phoneNumber, string? email, string? imagePath)
+        string address, string phoneNumber, string? email)
     {
 
 
-        Validate("Person::UpdatePersonInfo", firstName, secondName, thirdName, lastName,
-            dateOfBirth, nationalNo, nationalityCountryId, address, phoneNumber, email, imagePath);
+        Validate("Person::UpdatePersonalInfo", firstName, secondName, thirdName, lastName,
+            dateOfBirth, nationalNo, nationalityCountryId, address, phoneNumber, email);
 
         FirstName = firstName;
         SecondName = secondName;
@@ -87,12 +87,25 @@ public sealed class Person
         Address = address;
         PhoneNumber = phoneNumber;
         Email = email;
-        ImagePath = imagePath;
+
+    }
+
+    public void ChangeImage(string newImagePath)
+    {
+        Guard.RequireNonEmpty(newImagePath, nameof(newImagePath), "Person::ChangeImage");
+        ImagePath = newImagePath;
+    }
+
+    public void RemoveImage()
+    {
+        if (ImagePath == null) return;
+
+        ImagePath = null;
     }
 
     private static void Validate(string context, string firstName, string secondName, string? thirdName, string lastName,
          DateTime dateOfBirth, string nationalNo, short nationalityCountryId,
-        string address, string phoneNumber, string? email, string? imagePath)
+        string address, string phoneNumber, string? email)
     {
         Guard.RequireNonEmpty(firstName, nameof(firstName), context);
         Guard.RequireNonEmpty(secondName, nameof(secondName), context);
@@ -102,7 +115,6 @@ public sealed class Person
         Guard.RequireNonEmpty(address, nameof(address), context);
         Guard.RequireNonEmpty(phoneNumber, nameof(phoneNumber), context);
         Guard.RequireNonEmptyIfProvided(email, nameof(email), context);
-        Guard.RequireNonEmptyIfProvided(imagePath, nameof(imagePath), context);
 
         Guard.RequireMinAge(dateOfBirth, MinAge, nameof(dateOfBirth), context);
         Guard.RequireIntegerInRange(nationalityCountryId, 1, 193, nameof(nationalityCountryId), context);
