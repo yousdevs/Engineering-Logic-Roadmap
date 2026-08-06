@@ -31,7 +31,7 @@ export const EditPersonPage = () => {
       secondName: personDetails.secondName,
       thirdName: personDetails.thirdName,
       lastName: personDetails.lastName,
-      gender: personDetails.gender == 0 ? "male" : "female",
+      gender: personDetails.gender == "Male" ? "Male" : "Female",
       dateOfBirth: personDetails.dateOfBirth,
       address: personDetails.address,
       email: personDetails.email,
@@ -54,7 +54,7 @@ export const EditPersonPage = () => {
       secondName: "",
       thirdName: null,
       lastName: "",
-      gender: "male",
+      gender: "Male",
       address: "",
       dateOfBirth: new Date(),
       email: null,
@@ -77,44 +77,40 @@ export const EditPersonPage = () => {
     );
   }, [existingPersonQuery.data, form, countriesQuery.data]);
 
-  const existingImage = existingPersonQuery.data?.imagePath ?? undefined;
+  const existingImage = existingPersonQuery.data?.imageUrl ?? undefined;
 
-  const existingImageUrl = existingImage
-    ? "https://localhost:7152/" + existingImage
-    : undefined;
+  const existingImageUrl = existingImage ?? undefined;
 
   const navigate = useNavigate();
 
   const editPersonMutation = useEditPerson(personId);
   const handleSubmit = (data: PersonFormType) => {
     const req: EditPersonRequest = {
-      id: personId,
       firstName: data.firstName,
       secondName: data.secondName,
       thirdName: data.thirdName,
       lastName: data.lastName,
-      gender: data.gender == "male" ? 0 : 1,
+      gender: data.gender,
       dateOfBirth: data.dateOfBirth,
       address: data.address,
       email: data.email,
       nationalityCountryId: Number(data.nationality),
       nationalNo: data.nationalNo,
       phoneNumber: data.phoneNumber,
-      image: {
-        action: data.image.state,
-        file: data.image.file,
-      },
     };
 
-    editPersonMutation.mutate(req, {
-      onSuccess: (res) =>
-        navigate(`/people/${res.id}`, {
-          state: {
-            created: true,
-          },
-        }),
-      onError: (err) => console.log(err.message),
-    });
+    editPersonMutation.mutate(
+      { id: personId, request: req },
+      {
+        onSuccess: () =>
+          navigate(`/people/${personId}`, {
+            state: {
+              created: true,
+            },
+          }),
+        onError: (err) => console.log(err.message),
+      },
+    );
   };
   return (
     <main>
