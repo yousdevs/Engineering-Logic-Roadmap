@@ -232,7 +232,7 @@ public static class PersonData
             );
     }
 
-    public static async Task<bool> UpdateAsync(PersonRecord record)
+    public static async Task UpdateAsync(PersonRecord record)
     {
 
         RequireInitialized();
@@ -282,7 +282,8 @@ public static class PersonData
         await con.OpenAsync();
         int affected = await cmd.ExecuteNonQueryAsync();
 
-        return affected > 0;
+        if (affected < 0)
+            throw new KeyNotFoundException($"Person with PersonID = {record.PersonID} does not exist.");
     }
 
 

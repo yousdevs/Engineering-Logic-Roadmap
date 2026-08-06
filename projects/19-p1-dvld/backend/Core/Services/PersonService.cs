@@ -207,4 +207,67 @@ public sealed class PersonService
     public async Task<bool> ExistsByPhoneNumberAsync(string phoneNumber) => await PersonData.ExistsByPhoneNumberAsync(phoneNumber);
 
     public async Task<bool> ExistsByEmailAsync(string email) => await PersonData.ExistsByEmailAsync(email);
+
+    public async Task UpdateAsync(int id, PersonForm form)
+    {
+
+        if (!Enum.TryParse<Gender>(form.Gender, out var gender))
+            throw new ArgumentException($"Invalid gender: {form.Gender}.");
+
+        if (form.NationalityCountryId < 1 || form.NationalityCountryId > short.MaxValue)
+            throw new ArgumentException("Invalid country.");
+
+        PersonRecord? record = await PersonData.GetByIdAsync(id);
+
+        if (record == null)
+            throw new KeyNotFoundException("Person with id={id} not found.");
+
+        var person = Person.Reconstitute(
+                record.PersonID,
+                record.FirstName,
+                record.SecondName,
+                record.ThirdName,
+                record.LastName,
+                (Gender)record.Gendor,
+                record.DateOfBirth,
+                record.NationalNo,
+                (short)record.NationalityCountryID,
+                record.Address,
+                record.Phone,
+                record.Email,
+                record.ImagePath
+            );
+
+        person.UpdatePersonalInfo(
+
+                form.FirstName,
+                form.SecondName,
+                form.ThirdName,
+                form.LastName,
+                gender,
+                form.DateOfBirth,
+                form.NationalNo,
+                (short)form.NationalityCountryId,
+                form.Address,
+                form.PhoneNumber,
+                form.Email
+            );
+
+        await PersonData.UpdateAsync(new PersonRecord(
+
+            person.Id,
+            person.NationalNo,
+            person.FirstName,
+            person.SecondName,
+            person.ThirdName,
+            person.LastName,
+            person.DateOfBirth,
+            (byte)person.Gender,
+            person.Address,
+            person.PhoneNumber,
+            person.Email,
+            person.NationalityCountryId,
+            person.ImagePath
+            ));
+    }
 }
