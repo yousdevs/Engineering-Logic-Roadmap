@@ -63,7 +63,37 @@ namespace Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<ActionResult<int>> Create([FromBody] PersonForm form)
+        {
 
+            int id = await _personService.CreateAsync(form);
+
+            //return CreatedAtAction(nameof(GetById), new { id}, id);
+            return StatusCode(StatusCodes.Status201Created, id);
+        }
+
+        [HttpPut("{id:int}/image")]
+        public async Task<IActionResult> SetImage(int id, [FromForm] IFormFile image)
+        {
+
+            if (image is null)
+                return BadRequest("Image file is required.");
+
+            string imageUrl = await _personService.SetPersonImageAsync(id,
+                new ImageFile(image.OpenReadStream(), image.FileName, image.ContentType));
+
+            return Ok(new { imageUrl });
+        }
+
+        [HttpDelete("{id:int}/image")]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+
+            await _personService.RemovePersonImageAsync(id);
+
+            return NoContent();
+        }
 
         public static bool getPersonExistsByNationalNo(string nationalNo)
         {
@@ -225,35 +255,35 @@ namespace Api.Controllers
             return Path.Combine("images", "people", fileName).Replace('\\', '/');
         }
 
-        [HttpPost]
-        public ActionResult<CreatePersonResponse> CreatePerson([FromForm] CreatePersonRequest request)
-        {
+        //[HttpPost]
+        //public ActionResult<CreatePersonResponse> CreatePerson([FromForm] CreatePersonRequest request)
+        //{
 
-            int id;
-            CreatePersonResponse res;
-            string? imagePath = null;
-            if (request.Image is not null && request.Image.Action == ImageAction.Replaced && request.Image.File is not null)
-            {
-                imagePath = SaveImage(request.Image.File, _environment.WebRootPath);
-            }
+        //    int id;
+        //    CreatePersonResponse res;
+        //    string? imagePath = null;
+        //    if (request.Image is not null && request.Image.Action == ImageAction.Replaced && request.Image.File is not null)
+        //    {
+        //        imagePath = SaveImage(request.Image.File, _environment.WebRootPath);
+        //    }
 
-            try
-            {
-                id = CreatePersonDB(request, imagePath);
-                res = new CreatePersonResponse(id);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-
+        //    try
+        //    {
+        //        id = CreatePersonDB(request, imagePath);
+        //        res = new CreatePersonResponse(id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
 
 
-            return Created(
-                 $"/api/people/{res.id}",
-                     res);
-        }
+
+
+        //    return Created(
+        //         $"/api/people/{res.id}",
+        //             res);
+        //}
 
 
 
