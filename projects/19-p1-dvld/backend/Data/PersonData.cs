@@ -177,4 +177,111 @@ public static class PersonData
 
         return id;
     }
+
+    public static async Task<PersonRecord?> GetByIdAsync(int id)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            SELECT 
+            PersonID,
+            NationalNO,
+            FirstName,
+            SecondName,
+            ThirdName,
+            LastName,
+            DateOfBirth,
+            Gendor,
+            Address,
+            Phone,
+            Email,
+            NationalityCountryID,
+            ImagePath
+            FROM People
+            WHERE PersonID = @id;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+
+        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+
+        await con.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new PersonRecord(
+            (int)reader["PersonID"],
+            (string)reader["NationalNo"],
+            (string)reader["FirstName"],
+            (string)reader["SecondName"],
+            reader.IsDBNull(reader.GetOrdinal("ThirdName")) ? null : (string)reader["ThirdName"],
+            (string)reader["LastName"],
+            (DateTime)reader["DateOfBirth"],
+            (byte)reader["Gendor"],
+            (string)reader["Address"],
+            (string)reader["Phone"],
+            reader.IsDBNull(reader.GetOrdinal("Email")) ? null : (string)reader["Email"],
+            (int)reader["NationalityCountryID"],
+            reader.IsDBNull(reader.GetOrdinal("ImagePath")) ? null : (string)reader["ImagePath"]
+            );
+    }
+
+    public static async Task<bool> UpdateAsync(PersonRecord record)
+    {
+
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            UPDATE People
+            SET NationalNo = @NationalNo,
+                FirstName = @FirstName,
+                SecondName = @SecondName,
+                ThirdName = @ThirdName,
+                LastName = @LastName,
+                DateOfBirth = @DateOfBirth,
+                Gendor = @Gendor,
+                Address = @Address,
+                Phone = @Phone,
+                Email = @Email,
+                NationalityCountryID = @NationalityCountryID,
+                ImagePath = @ImagePath
+                WHERE PersonID = @PersonID;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+
+        cmd.Parameters.Add("@NationalNo", SqlDbType.NVarChar).Value = record.NationalNo;
+        cmd.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = record.FirstName;
+        cmd.Parameters.Add("@SecondName", SqlDbType.NVarChar).Value = record.SecondName;
+
+        cmd.Parameters.Add("@ThirdName", SqlDbType.NVarChar).Value = (object?)record.ThirdName ?? DBNull.Value;
+
+        cmd.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = record.LastName;
+        cmd.Parameters.Add("@DateOfBirth", SqlDbType.DateTime).Value = record.DateOfBirth;
+        cmd.Parameters.Add("@Gendor", SqlDbType.TinyInt).Value = record.Gendor;
+        cmd.Parameters.Add("@Address", SqlDbType.NVarChar).Value = record.Address;
+        cmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = record.Phone;
+
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = (object?)record.Email ?? DBNull.Value;
+
+        cmd.Parameters.Add("@NationalityCountryID", SqlDbType.Int).Value = record.NationalityCountryID;
+
+        cmd.Parameters.Add("@ImagePath", SqlDbType.NVarChar).Value = (object?)record.ImagePath ?? DBNull.Value;
+
+        cmd.Parameters.Add("@PersonID", SqlDbType.Int).Value = record.PersonID;
+
+        await con.OpenAsync();
+        int affected = await cmd.ExecuteNonQueryAsync();
+
+        return affected > 0;
+    }
 }
