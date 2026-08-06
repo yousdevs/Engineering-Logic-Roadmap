@@ -39,11 +39,10 @@ export const PersonDetail = ({
   data: PersonDetails;
   onEdit: () => void;
 }) => {
-  const fallbackImageUrl = data.gender == 0 ? "/men32.png" : "/women32.png";
+  const fallbackImageUrl =
+    data.gender == "Male" ? "/men32.png" : "/women32.png";
 
-  const imageUrl = data.imagePath
-    ? "https://localhost:7152/" + data.imagePath
-    : fallbackImageUrl;
+  const imageUrl = data.imageUrl ?? fallbackImageUrl;
 
   return (
     <Card className="w-3xl">
@@ -79,10 +78,7 @@ export const PersonDetail = ({
           label="Date Of Birth"
           value={data.dateOfBirth.toISOString().split("T")[0]}
         />
-        <DetailsItem
-          label="Gender"
-          value={data.gender == 0 ? "Male" : "Female"}
-        />
+        <DetailsItem label="Gender" value={data.gender} />
         <DetailsItem label="Nationality" value={data.country} />
         <Separator className="col-span-full" />
         <h2 className="col-span-full">Contact Information</h2>
@@ -151,7 +147,7 @@ export const PersonDetailsPage = () => {
           <div className="ml-auto mr-auto w-fit">
             <PersonDetail
               data={data}
-              onEdit={() => navigate(`/people/${data.id}/edit`)}
+              onEdit={() => navigate(`/people/${id}/edit`)}
             />
           </div>
         )}

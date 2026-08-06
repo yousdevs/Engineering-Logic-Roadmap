@@ -1,17 +1,13 @@
 export type CreatePersonRequest = {
+  nationalNo: string;
   firstName: string;
   secondName: string;
   thirdName: string | null;
   lastName: string;
-  gender: 0 | 1; // 0 male
+  gender: "Male" | "Female";
   dateOfBirth: Date;
-  nationalNo: string;
   nationalityCountryId: number;
-  email: string | null;
   phoneNumber: string;
+  email: string | null;
   address: string;
-  image: {
-    action: "unchanged" | "replaced" | "removed";
-    file: File | null;
-  };
 };

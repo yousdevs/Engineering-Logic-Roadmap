@@ -29,12 +29,8 @@ export const AddPersonPage = () => {
       secondName: data.secondName,
       thirdName: data.thirdName,
       lastName: data.lastName,
-      gender: data.gender == "male" ? 0 : 1,
+      gender: data.gender,
       dateOfBirth: data.dateOfBirth,
-      image: {
-        action: data.image.state,
-        file: data.image.file,
-      },
       nationalNo: data.nationalNo,
       nationalityCountryId: Number(data.nationality),
       phoneNumber: data.phoneNumber,
@@ -42,7 +38,21 @@ export const AddPersonPage = () => {
       address: data.address,
     };
     createPersonMutation.mutate(req, {
-      onSuccess: (res) => {
+      onSuccess: async (res) => {
+        if (data.image.file) {
+          const imageForm = new FormData();
+
+          imageForm.append("image", data.image.file);
+          const result = await fetch(
+            `https://localhost:7152/api/people/${res.id}/image`,
+            {
+              method: "PUT",
+              body: imageForm,
+            },
+          );
+          if (!result.ok) console.log(await result.json());
+        }
+
         navigate(`/people/${res.id}`, {
           state: {
             created: true,
@@ -61,7 +71,7 @@ export const AddPersonPage = () => {
       thirdName: null,
       lastName: "",
       dateOfBirth: eighteenYearsAgo,
-      gender: "male",
+      gender: "Male",
       email: null,
       phoneNumber: "",
       image: {

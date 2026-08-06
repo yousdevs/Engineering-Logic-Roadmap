@@ -41,7 +41,7 @@ type ImageState = {
   file: File | null;
 };
 interface PersonImageFieldProps {
-  gender: "male" | "female";
+  gender: "Male" | "Female";
   imageState: ImageState;
   existingImageUrl?: string;
   onImageChange: (imageState: ImageState) => void;
@@ -68,7 +68,7 @@ const PersonImageField = ({
     };
   }, [previewImageUrl]);
 
-  const fallbackImageUrl = gender == "male" ? "/men32.png" : "/women32.png";
+  const fallbackImageUrl = gender == "Male" ? "/men32.png" : "/women32.png";
   const previewUrl = useMemo(() => {
     switch (imageState.state) {
       case "replaced":
@@ -388,7 +388,7 @@ export const PersonForm = ({
                         data-invalid={fieldState.invalid}
                       >
                         <RadioGroupItem
-                          value="male"
+                          value="Male"
                           id="form-person-male"
                           aria-invalid={fieldState.invalid}
                         />{" "}
@@ -402,7 +402,7 @@ export const PersonForm = ({
                         data-invalid={fieldState.invalid}
                       >
                         <RadioGroupItem
-                          value="female"
+                          value="Female"
                           id="form-person-female"
                           aria-invalid={fieldState.invalid}
                         />{" "}
