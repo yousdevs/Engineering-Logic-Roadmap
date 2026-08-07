@@ -17,6 +17,8 @@ public class Program
 
         builder.Services.AddControllers();
 
+        builder.Services.AddSingleton<PasswordHasher>();
+
         var imageStoragePath = builder.Configuration["ImageStorage:Path"]!;
 
         Directory.CreateDirectory(imageStoragePath);
