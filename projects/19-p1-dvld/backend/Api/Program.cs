@@ -1,4 +1,5 @@
 
+using Api.Services;
 using Core;
 using Core.DTOs;
 using Core.Services;
@@ -14,6 +15,16 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+
+        var jwtConfig = builder.Configuration.GetSection("Jwt");
+
+        builder.Services.AddSingleton<IJwtService>(new JwtService(
+
+            jwtConfig["Secret"]!,
+            jwtConfig["Issuer"]!,
+            jwtConfig["Audience"]!,
+            int.Parse(jwtConfig["AccessTokenExpiryMinutes"]!)
+            ));
 
         builder.Services.AddControllers();
 
