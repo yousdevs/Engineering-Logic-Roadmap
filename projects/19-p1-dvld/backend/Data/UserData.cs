@@ -1,0 +1,59 @@
+﻿using Microsoft.Data.SqlClient;
+
+namespace Data;
+
+public static class UserData
+{
+
+    private static string _connectionString = null!;
+
+    public static void Initialize(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    private static void RequireInitialized()
+    {
+        if (_connectionString is null)
+        {
+            throw new InvalidOperationException("UserData not initialized, call Initialize() first.");
+        }
+    }
+
+    public static async Task<UserRecord?> GetByUsernameAsync(string username)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT 
+                UserID,
+                PersonID,
+                UserName,
+                Password,
+                IsActive
+            FROM Users
+            WHERE UserName = @username;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@username", System.Data.SqlDbType.NVarChar).Value = username;
+
+        await con.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new UserRecord(
+            (int)reader["UserID"],
+            (int)reader["PersonID"],
+            (string)reader["UserName"],
+            (string)reader["Password"],
+            (bool)reader["IsActive"]
+            );
+    }
+
+}
