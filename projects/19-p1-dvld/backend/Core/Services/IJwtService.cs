@@ -6,5 +6,5 @@ public interface IJwtService
 
     string IssueRefreshToken();
 
-    int? ValidateAccessToken(string token); // returns userid on success
+    AccessTokenClaims? ValidateAccessToken(string token);
 }

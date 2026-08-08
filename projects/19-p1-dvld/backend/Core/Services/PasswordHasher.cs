@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace Core.Services;
 
@@ -31,5 +32,9 @@ public sealed class PasswordHasher
         return CryptographicOperations.FixedTimeEquals(key, keyToCheck);
     }
 
-
+    public string HashToken(string token)
+    {
+        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToBase64String(bytes);
+    }
 }

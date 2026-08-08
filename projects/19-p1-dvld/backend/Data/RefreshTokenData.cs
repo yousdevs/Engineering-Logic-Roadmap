@@ -65,10 +65,14 @@ public static class RefreshTokenData
 
         const string query = @"
 
-            SELECT RefreshTokenId,
-                   UserId,
-                   ExpiresAt
-            FROM RefreshTokens
+            SELECT r.RefreshTokenId,
+                   r.UserId,
+                   u.UserName,
+                   u.IsActive,
+                   r.ExpiresAt
+            FROM RefreshTokens r
+            INNER JOIN Users u
+            ON r.UserId = u.UserID
             WHERE TokenHash = @tokenHash
             AND RevokedAt IS NULL
             AND ExpiresAt > GETUTCDATE();
@@ -87,6 +91,8 @@ public static class RefreshTokenData
         return new RefreshTokenRecord(
             (int)reader["RefreshTokenId"],
             (int)reader["UserId"],
+            (string)reader["UserName"],
+            (bool)reader["IsActive"],
             (DateTime)reader["ExpiresAt"]
             );
     }
