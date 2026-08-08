@@ -12,6 +12,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -25,10 +26,14 @@ public class Program
             jwtConfig["Audience"]!,
             int.Parse(jwtConfig["AccessTokenExpiryMinutes"]!)
             ));
+        builder.Services.AddSingleton<PasswordHasher>();
+        builder.Services.AddScoped<AuthenticationService>();
 
         builder.Services.AddControllers();
 
-        builder.Services.AddSingleton<PasswordHasher>();
+
+
+
 
         var imageStoragePath = builder.Configuration["ImageStorage:Path"]!;
 
