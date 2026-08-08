@@ -41,10 +41,10 @@ public sealed class AuthenticationService
         await RefreshTokenData.RevokeAllByUserIdAsync(record.UserId);
     }
 
-    public async Task<AuthResult> RotateAsync(RotateRequest request)
+    public async Task<AuthResult> RotateAsync(string refreshToken)
     {
 
-        string refreshTokenHash = _passwordHasher.HashToken(request.RefreshToken);
+        string refreshTokenHash = _passwordHasher.HashToken(refreshToken);
         RefreshTokenRecord? record = await RefreshTokenData.GetActiveByHashAsync(refreshTokenHash);
 
         if (record == null)
