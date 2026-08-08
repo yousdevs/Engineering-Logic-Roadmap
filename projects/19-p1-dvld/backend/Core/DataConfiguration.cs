@@ -9,5 +9,6 @@ public static class DataConfiguration
     {
         PersonData.Initialize(connectionString);
         UserData.Initialize(connectionString);
+        RefreshTokenData.Initialize(connectionString);
     }
 }
