@@ -3,8 +3,10 @@ using Api.Services;
 using Core;
 using Core.DTOs;
 using Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api;
 
@@ -18,16 +20,44 @@ public class Program
         // Add services to the container.
 
         var jwtConfig = builder.Configuration.GetSection("Jwt");
+        var jwtSecret = jwtConfig["Secret"]!;
+        var jwtIssuer = jwtConfig["Issuer"]!;
+        var jwtAudience = jwtConfig["Audience"]!;
+        var jwtAccessTokenExpiryMinutes = int.Parse(jwtConfig["AccessTokenExpiryMinutes"]!);
 
         builder.Services.AddSingleton<IJwtService>(new JwtService(
 
-            jwtConfig["Secret"]!,
-            jwtConfig["Issuer"]!,
-            jwtConfig["Audience"]!,
-            int.Parse(jwtConfig["AccessTokenExpiryMinutes"]!)
+            jwtSecret,
+            jwtIssuer,
+            jwtAudience,
+            jwtAccessTokenExpiryMinutes
             ));
         builder.Services.AddSingleton<PasswordHasher>();
         builder.Services.AddScoped<AuthenticationService>();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtIssuer,
+                ValidateAudience = true,
+                ValidAudience = jwtAudience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtSecret)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+
+        builder.Services.AddAuthorization();
+
+
 
         builder.Services.AddControllers();
 
@@ -56,7 +86,8 @@ public class Program
             {
                 policy.WithOrigins("http://localhost:5173")
                       .AllowAnyHeader()
-                      .AllowAnyMethod();
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
 
@@ -73,6 +104,7 @@ public class Program
             var (status, message) = exception switch
             {
                 ArgumentException ex => (400, ex.Message),
+                UnauthorizedAccessException ex => (401, ex.Message),
                 InvalidOperationException ex => (500, ex.Message),
                 _ => (500, "An unexpected error occured.")
             };
@@ -90,6 +122,7 @@ public class Program
 
         app.UseCors("Frontend");
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseStaticFiles(
