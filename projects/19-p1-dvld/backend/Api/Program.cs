@@ -62,12 +62,6 @@ public class Program
 
 
 
-        builder.Services.AddControllers();
-
-
-
-
-
         var imageStoragePath = builder.Configuration["ImageStorage:Path"]!;
 
         Directory.CreateDirectory(imageStoragePath);
@@ -79,6 +73,15 @@ public class Program
             ));
 
         builder.Services.AddScoped<PersonService>();
+        builder.Services.AddScoped<UserService>();
+
+        builder.Services.AddControllers();
+
+
+
+
+
+
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();

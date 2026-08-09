@@ -56,4 +56,38 @@ public static class UserData
             );
     }
 
+    public static async Task<int?> InsertAsync(int personId, string username, string passwordHash, bool isActive)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            INSERT INTO Users(
+            PersonID,
+            UserName,
+            Password,
+            IsActive)
+            VALUES(
+            @personId,
+            @username,
+            @passwordHash,
+            @isActive);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@personId", System.Data.SqlDbType.Int).Value = personId;
+        cmd.Parameters.Add("@username", System.Data.SqlDbType.NVarChar).Value = username;
+        cmd.Parameters.Add("@passwordHash", System.Data.SqlDbType.NVarChar).Value = passwordHash;
+        cmd.Parameters.Add("@isActive", System.Data.SqlDbType.Bit).Value = isActive;
+
+        await con.OpenAsync();
+
+        int? userId = (int?)await cmd.ExecuteScalarAsync();
+
+        return userId;
+    }
+
 }
