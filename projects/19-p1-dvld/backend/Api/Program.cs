@@ -35,6 +35,9 @@ public class Program
         builder.Services.AddSingleton<PasswordHasher>();
         builder.Services.AddScoped<AuthenticationService>();
 
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
