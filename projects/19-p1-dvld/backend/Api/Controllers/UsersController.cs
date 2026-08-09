@@ -43,4 +43,12 @@ public sealed class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPatch("{id:int}/activate")]
+    public async Task<IActionResult> ActivateAsync(int id)
+    {
+        await _userService.ActivateAsync(id);
+
+        return NoContent();
+    }
 }
