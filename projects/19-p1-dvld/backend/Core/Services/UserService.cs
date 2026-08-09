@@ -8,10 +8,12 @@ public sealed class UserService
 
 
     private readonly PasswordHasher _passwordHasher;
-    public UserService(PasswordHasher passwordHasher)
+    private readonly ICurrentUser _currentUser;
+    public UserService(PasswordHasher passwordHasher, ICurrentUser currentUser)
     {
 
         _passwordHasher = passwordHasher;
+        _currentUser = currentUser;
     }
 
     public async Task<int> CreateAsync(CreateUserForm form)
@@ -56,5 +58,42 @@ public sealed class UserService
 
         return new PagedResult<UserSummary>(items, userPage.Total, page.Number, page.Size);
 
+    }
+
+    public async Task SuspendAsync(int userId)
+    {
+
+        if (userId == _currentUser.UserId)
+            throw new InvalidOperationException("Cannot suspend your own account.");
+
+        var userRecord = await UserData.FindByIdAsync(userId);
+
+        if (userRecord == null)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        var user = User.Reconstitute(
+            userRecord.UserID,
+            userRecord.PersonID,
+            userRecord.UserName,
+            userRecord.PasswordHash,
+            userRecord.IsActive
+            );
+
+        user.Deactivate();
+
+        bool updated = await UserData.UpdateAsync(
+            new UserRecord(
+                user.Id,
+                user.PersonId,
+                user.Username,
+                user.PasswordHash,
+                user.IsActive
+                )
+            );
+
+        if (!updated)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        await RefreshTokenData.RevokeAllByUserIdAsync(userId);
     }
 }

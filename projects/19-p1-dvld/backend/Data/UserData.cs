@@ -142,4 +142,71 @@ public static class UserData
         return new UserPage(items, total);
 
     }
+
+    public static async Task<UserRecord?> FindByIdAsync(int userId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+
+            SELECT UserID,
+                   PersonID,
+                   UserName,
+                   Password,
+                   IsActive
+            FROM Users
+            WHERE UserID = @userId;
+         ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@userId", System.Data.SqlDbType.Int).Value = userId;
+
+        await con.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new UserRecord(
+            (int)reader["UserID"],
+            (int)reader["PersonID"],
+            (string)reader["UserName"],
+            (string)reader["Password"],
+            (bool)reader["IsActive"]
+            );
+    }
+
+    public static async Task<bool> UpdateAsync(UserRecord record)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            UPDATE Users
+            SET 
+                PersonID = @personId,
+                UserName = @username,
+                Password = @passwordHash,
+                IsActive = @isActive
+            WHERE UserID = @userId;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@userId", System.Data.SqlDbType.Int).Value = record.UserID;
+        cmd.Parameters.Add("@personId", System.Data.SqlDbType.Int).Value = record.PersonID;
+        cmd.Parameters.Add("@username", System.Data.SqlDbType.NVarChar).Value = record.UserName;
+        cmd.Parameters.Add("@passwordHash", System.Data.SqlDbType.NVarChar).Value = record.PasswordHash;
+        cmd.Parameters.Add("@isActive", System.Data.SqlDbType.Bit).Value = record.IsActive;
+
+        await con.OpenAsync();
+
+        int affected = await cmd.ExecuteNonQueryAsync();
+
+        return affected > 0;
+    }
 }

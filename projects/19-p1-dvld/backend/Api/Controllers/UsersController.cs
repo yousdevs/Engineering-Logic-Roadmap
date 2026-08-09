@@ -35,4 +35,12 @@ public sealed class UsersController : ControllerBase
 
         return Ok(res);
     }
+
+    [HttpPatch("{id:int}/suspend")]
+    public async Task<IActionResult> SuspendAsync(int id)
+    {
+        await _userService.SuspendAsync(id);
+
+        return NoContent();
+    }
 }
