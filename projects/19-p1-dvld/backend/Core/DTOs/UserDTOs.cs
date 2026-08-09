@@ -7,3 +7,11 @@ public sealed record CreateUserForm(
     string Password
     );
 
+public sealed record UserSummary(
+
+    int UserId,
+    string Firstname,
+    string Lastname,
+    string Username,
+    string Status
+    );

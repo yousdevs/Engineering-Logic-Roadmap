@@ -26,4 +26,13 @@ public sealed class UsersController : ControllerBase
 
         return Created($"/api/users/{userId}", userId);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<PagedResult<UserSummary>>> GetAllAsync([FromQuery] int page = 1, [FromQuery] int size = 10)
+    {
+
+        var res = await _userService.GetAllAsync(new Page(page, size));
+
+        return Ok(res);
+    }
 }

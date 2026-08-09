@@ -90,4 +90,56 @@ public static class UserData
         return userId;
     }
 
+
+    public static async Task<UserPage> FindAllAsync(int offset, int limit)
+    {
+
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT 
+                u.UserID,
+                u.UserName,
+                u.IsActive,
+                p.FirstName,
+                p.LastName,
+                COUNT(*) OVER() AS Total
+            FROM Users u
+            INNER JOIN People p
+            ON u.PersonID = p.PersonID 
+            ORDER BY FirstName, u.UserID
+            OFFSET @offset ROWS
+            FETCH NEXT @limit ROWS ONLY;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@offset", System.Data.SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@limit", System.Data.SqlDbType.Int).Value = limit;
+
+        await con.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        var items = new List<UserSummaryRecord>();
+        int total = 0;
+
+        while (await reader.ReadAsync())
+        {
+            if (items.Count == 0)
+                total = (int)reader["Total"];
+
+            items.Add(new UserSummaryRecord(
+                (int)reader["UserID"],
+                (string)reader["FirstName"],
+                (string)reader["LastName"],
+                (string)reader["UserName"],
+                (bool)reader["IsActive"]
+                ));
+        }
+
+        return new UserPage(items, total);
+
+    }
 }
