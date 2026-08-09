@@ -6,5 +6,4 @@ public interface IJwtService
 
     string IssueRefreshToken();
 
-    AccessTokenClaims? ValidateAccessToken(string token);
 }

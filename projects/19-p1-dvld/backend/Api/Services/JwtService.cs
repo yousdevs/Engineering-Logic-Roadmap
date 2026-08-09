@@ -1,5 +1,4 @@
-﻿using Core;
-using Core.Services;
+﻿using Core.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -53,39 +52,5 @@ public sealed class JwtService : IJwtService
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 
-    public AccessTokenClaims? ValidateAccessToken(string token)
-    {
-        var key = new SymmetricSecurityKey(Convert.FromBase64String(_secret));
 
-        var parameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = _issuer,
-            ValidateAudience = true,
-            ValidAudience = _audience,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = key,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-
-        try
-        {
-            var principal = new JwtSecurityTokenHandler()
-                .ValidateToken(token, parameters, out _);
-
-            var sub = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-            var username = principal.FindFirst(JwtRegisteredClaimNames.UniqueName)?.Value;
-            var isActive = principal.FindFirst("isActive")?.Value;
-
-            if (sub is null || username is null || isActive is null)
-                return null;
-
-            return new AccessTokenClaims(int.Parse(sub), username, bool.Parse(isActive));
-        }
-        catch
-        {
-            return null;
-        }
-    }
 }
