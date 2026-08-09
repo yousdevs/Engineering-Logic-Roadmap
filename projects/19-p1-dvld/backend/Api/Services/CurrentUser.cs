@@ -16,7 +16,19 @@ public class CurrentUser : ICurrentUser
 
     private ClaimsPrincipal User => _accessor.HttpContext!.User;
 
-    public int UserId => int.Parse(User.FindFirst(JwtRegisteredClaimNames.Sub)!.Value);
+    public int UserId
+    {
+        get
+        {
+            var claims = User.Claims.Select(c => $"{c.Type}={c.Value}").ToList();
+            Console.WriteLine($"Claims: {string.Join(", ", claims)}");
+
+            var value = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            if (value is null)
+                throw new InvalidOperationException("UserId claim not found. Is the user authenticated?");
+            return int.Parse(value);
+        }
+    }
 
     public string Username => User.FindFirst(JwtRegisteredClaimNames.UniqueName)!.Value;
 
