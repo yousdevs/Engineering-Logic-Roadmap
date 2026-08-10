@@ -1,9 +1,12 @@
 
+using Api.Services;
 using Core;
 using Core.DTOs;
 using Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api;
 
@@ -11,11 +14,53 @@ public class Program
 {
     public static void Main(string[] args)
     {
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
 
-        builder.Services.AddControllers();
+        var jwtConfig = builder.Configuration.GetSection("Jwt");
+        var jwtSecret = jwtConfig["Secret"]!;
+        var jwtIssuer = jwtConfig["Issuer"]!;
+        var jwtAudience = jwtConfig["Audience"]!;
+        var jwtAccessTokenExpiryMinutes = int.Parse(jwtConfig["AccessTokenExpiryMinutes"]!);
+
+        builder.Services.AddSingleton<IJwtService>(new JwtService(
+
+            jwtSecret,
+            jwtIssuer,
+            jwtAudience,
+            jwtAccessTokenExpiryMinutes
+            ));
+        builder.Services.AddSingleton<PasswordHasher>();
+        builder.Services.AddScoped<AuthenticationService>();
+
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.MapInboundClaims = false;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtIssuer,
+                ValidateAudience = true,
+                ValidAudience = jwtAudience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtSecret)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+
+        builder.Services.AddAuthorization();
+
+
 
         var imageStoragePath = builder.Configuration["ImageStorage:Path"]!;
 
@@ -28,6 +73,15 @@ public class Program
             ));
 
         builder.Services.AddScoped<PersonService>();
+        builder.Services.AddScoped<UserService>();
+
+        builder.Services.AddControllers();
+
+
+
+
+
+
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
@@ -38,7 +92,8 @@ public class Program
             {
                 policy.WithOrigins("http://localhost:5173")
                       .AllowAnyHeader()
-                      .AllowAnyMethod();
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
 
@@ -55,6 +110,7 @@ public class Program
             var (status, message) = exception switch
             {
                 ArgumentException ex => (400, ex.Message),
+                UnauthorizedAccessException ex => (401, ex.Message),
                 InvalidOperationException ex => (500, ex.Message),
                 _ => (500, "An unexpected error occured.")
             };
@@ -72,6 +128,7 @@ public class Program
 
         app.UseCors("Frontend");
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseStaticFiles(
