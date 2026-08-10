@@ -11,5 +11,6 @@ public static class DataConfiguration
         UserData.Initialize(connectionString);
         RefreshTokenData.Initialize(connectionString);
         ApplicationTypesData.Initialize(connectionString);
+        TestTypeData.Initialize(connectionString);
     }
 }
