@@ -74,6 +74,7 @@ public class Program
 
         builder.Services.AddScoped<PersonService>();
         builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<ApplicationTypesService>();
 
         builder.Services.AddControllers();
 
