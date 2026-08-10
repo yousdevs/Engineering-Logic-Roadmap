@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.Entities;
 using Data;
 namespace Core.Services;
 
@@ -6,12 +7,14 @@ public sealed class AuthenticationService
 {
     private readonly IJwtService _jwtService;
     private readonly PasswordHasher _passwordHasher;
+    private readonly ICurrentUser _currentUser;
     private const int RefreshTokenExpiryDays = 30;
 
-    public AuthenticationService(IJwtService jwtService, PasswordHasher passwordHasher)
+    public AuthenticationService(IJwtService jwtService, PasswordHasher passwordHasher, ICurrentUser currentUser)
     {
         _jwtService = jwtService;
         _passwordHasher = passwordHasher;
+        _currentUser = currentUser;
     }
 
     public async Task<AuthResult> LoginAsync(LoginRequest request)
@@ -68,4 +71,40 @@ public sealed class AuthenticationService
         return new AuthResult(accessToken, refreshToken);
     }
 
+
+    public async Task ChangePasswordAsync(ChangePasswordRequest request)
+    {
+
+
+        var userRecord = await UserData.FindByIdAsync(_currentUser.UserId);
+
+        if (userRecord == null)
+            throw new KeyNotFoundException($"User with UserId={_currentUser.UserId} not found.");
+
+        if (!_passwordHasher.Verify(request.CurrentPassword, userRecord.PasswordHash))
+            throw new UnauthorizedAccessException("Invalid credentials.");
+
+        var user = User.Reconstitute(
+            userRecord.UserID,
+            userRecord.PersonID,
+            userRecord.UserName,
+            userRecord.PasswordHash,
+            userRecord.IsActive
+            );
+
+        user.ChangePasswordHash(_passwordHasher.Hash(request.NewPassword));
+
+        bool updated = await UserData.UpdateAsync(new UserRecord(
+                user.Id,
+                user.PersonId,
+                user.Username,
+                user.PasswordHash,
+                user.IsActive
+            ));
+
+        if (!updated)
+            throw new KeyNotFoundException("Failed to update password — user may have been deleted.");
+
+        await RefreshTokenData.RevokeAllByUserIdAsync(_currentUser.UserId);
+    }
 }

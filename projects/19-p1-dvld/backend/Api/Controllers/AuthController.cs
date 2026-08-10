@@ -57,6 +57,13 @@ public sealed class AuthController : ControllerBase
         return Ok(new { res.AccessToken });
     }
 
+    [HttpPut("password")]
+    public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
+    {
+        await _authenticationService.ChangePasswordAsync(request);
+
+        return NoContent();
+    }
     private static CookieOptions RefreshTokenCookieOptions() => new()
     {
         HttpOnly = true,
