@@ -15,3 +15,6 @@ public sealed record UserSummary(
     string Username,
     string Status
     );
+
+public sealed record ForceResetPasswordRequest(string NewPassword);
+public sealed record UpdateUsernameRequest(string NewUsername);

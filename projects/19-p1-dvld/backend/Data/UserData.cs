@@ -209,4 +209,25 @@ public static class UserData
 
         return affected > 0;
     }
+
+    public static async Task<bool> ExistsByUserId(int userId)
+    {
+
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM Users WHERE UserID = @userId) THEN 1 ELSE 0 END;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+
+        cmd.Parameters.Add("@userId", System.Data.SqlDbType.Int).Value = userId;
+
+        await con.OpenAsync();
+
+        return (int)(await cmd.ExecuteScalarAsync())! == 1;
+    }
 }

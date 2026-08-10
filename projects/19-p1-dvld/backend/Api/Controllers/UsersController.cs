@@ -51,4 +51,28 @@ public sealed class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPut("{id:int}/password")]
+    public async Task<IActionResult> ForceResetPasswordAsync(int id, [FromBody] ForceResetPasswordRequest request)
+    {
+        await _userService.ForceResetPasswordAsync(id, request.NewPassword);
+
+        return NoContent();
+    }
+
+    [HttpPut("{id:int}/username")]
+    public async Task<IActionResult> UpdateUsernameAsync(int id, [FromBody] UpdateUsernameRequest request)
+    {
+        await _userService.UpdateUsernameAsync(id, request.NewUsername);
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}/sessions")]
+    public async Task<IActionResult> RevokeAllSessionsAsync(int id)
+    {
+        await _userService.RevokeAllSessionsAsync(id);
+
+        return NoContent();
+    }
 }

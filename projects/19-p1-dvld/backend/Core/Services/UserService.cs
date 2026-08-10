@@ -131,4 +131,79 @@ public sealed class UserService
         if (!updated)
             throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
     }
+
+    public async Task ForceResetPasswordAsync(int userId, string newPassword)
+    {
+
+        var userRecord = await UserData.FindByIdAsync(userId);
+
+        if (userRecord == null)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        var user = User.Reconstitute(
+            userRecord.UserID,
+            userRecord.PersonID,
+            userRecord.UserName,
+            userRecord.PasswordHash,
+            userRecord.IsActive
+            );
+
+        user.ChangePasswordHash(_passwordHasher.Hash(newPassword));
+
+        bool updated = await UserData.UpdateAsync(new UserRecord(
+            user.Id,
+            user.PersonId,
+            user.Username,
+            user.PasswordHash,
+            user.IsActive
+
+            ));
+
+        if (!updated)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        await RefreshTokenData.RevokeAllByUserIdAsync(user.Id);
+
+    }
+
+    public async Task UpdateUsernameAsync(int userId, string newUsername)
+    {
+
+        var userRecord = await UserData.FindByIdAsync(userId);
+
+        if (userRecord == null)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        var user = User.Reconstitute(
+            userRecord.UserID,
+            userRecord.PersonID,
+            userRecord.UserName,
+            userRecord.PasswordHash,
+            userRecord.IsActive
+            );
+
+        user.ChangeUsername(newUsername);
+
+        bool updated = await UserData.UpdateAsync(new UserRecord(
+                    user.Id,
+                    user.PersonId,
+                    user.Username,
+                    user.PasswordHash,
+                    user.IsActive
+
+                    ));
+
+        if (!updated)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+    }
+
+    public async Task RevokeAllSessionsAsync(int userId)
+    {
+
+        if (!await UserData.ExistsByUserId(userId))
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        await RefreshTokenData.RevokeAllByUserIdAsync(userId);
+    }
 }
