@@ -18,3 +18,14 @@ public sealed record UserSummary(
 
 public sealed record ForceResetPasswordRequest(string NewPassword);
 public sealed record UpdateUsernameRequest(string NewUsername);
+
+public sealed record UserDetails(
+    int UserId,
+    int PersonId,
+    string UserName,
+    string FirstName,
+    string SecondName,
+    string? ThirdName,
+    string LastName,
+    string Status
+    );

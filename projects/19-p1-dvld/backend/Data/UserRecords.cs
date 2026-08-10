@@ -22,3 +22,14 @@ public sealed record UserPage(
     IReadOnlyList<UserSummaryRecord> Items,
     int Total
     );
+
+public sealed record UserDetailsRecord(
+    int UserId,
+    int PersonId,
+    string UserName,
+    string FirstName,
+    string SecondName,
+    string? ThirdName,
+    string LastName,
+    bool IsActive
+    );

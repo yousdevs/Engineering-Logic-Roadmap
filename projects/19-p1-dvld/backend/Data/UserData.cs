@@ -230,4 +230,49 @@ public static class UserData
 
         return (int)(await cmd.ExecuteScalarAsync())! == 1;
     }
+
+
+    public static async Task<UserDetailsRecord?> GetDetailsByIdAsync(int userId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+        
+            SELECT 
+                u.PersonID,
+                u.UserName,
+                u.IsActive,
+                p.FirstName,
+                p.SecondName,
+                p.ThirdName,
+                p.LastName
+            FROM Users u
+            INNER JOIN People p
+            ON u.PersonID = p.PersonID
+            WHERE u.UserID = @userId;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@userId", System.Data.SqlDbType.Int).Value = userId;
+
+        await con.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new UserDetailsRecord(
+            userId,
+            (int)reader["PersonID"],
+            (string)reader["UserName"],
+            (string)reader["FirstName"],
+            (string)reader["SecondName"],
+            reader.IsDBNull(reader.GetOrdinal("ThirdName")) ? null : (string)reader["ThirdName"],
+            (string)reader["LastName"],
+            (bool)reader["IsActive"]
+            );
+    }
 }

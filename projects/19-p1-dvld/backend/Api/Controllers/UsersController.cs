@@ -75,4 +75,13 @@ public sealed class UsersController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<UserDetails>> GetByIdAsync(int id)
+    {
+
+        var userDetails = await _userService.GetByIdAsync(id);
+
+        return Ok(userDetails);
+    }
 }

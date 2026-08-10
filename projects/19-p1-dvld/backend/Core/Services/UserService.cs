@@ -206,4 +206,24 @@ public sealed class UserService
 
         await RefreshTokenData.RevokeAllByUserIdAsync(userId);
     }
+
+    public async Task<UserDetails> GetByIdAsync(int userId)
+    {
+
+        var userDetailsRecord = await UserData.GetDetailsByIdAsync(userId);
+
+        if (userDetailsRecord == null)
+            throw new KeyNotFoundException($"User with UserId = {userId} does not exist.");
+
+        return new UserDetails(
+            userDetailsRecord.UserId,
+            userDetailsRecord.PersonId,
+            userDetailsRecord.UserName,
+            userDetailsRecord.FirstName,
+            userDetailsRecord.SecondName,
+            userDetailsRecord.ThirdName,
+            userDetailsRecord.LastName,
+            userDetailsRecord.IsActive ? "Active" : "Inactive"
+            );
+    }
 }
