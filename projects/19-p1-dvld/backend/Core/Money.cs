@@ -27,4 +27,6 @@ public readonly record struct Money
     public static Money From(decimal amount) => new(amount);
 
     public static Money Zero => new(0m);
+
+    public static Money operator +(Money left, Money right) => new(left.Amount + right.Amount);
 }

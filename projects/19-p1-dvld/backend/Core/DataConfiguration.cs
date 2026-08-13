@@ -13,5 +13,7 @@ public static class DataConfiguration
         ApplicationTypesData.Initialize(connectionString);
         TestTypeData.Initialize(connectionString);
         LicenseClassData.Initialize(connectionString);
+        ApplicationData.Initialize(connectionString);
+        LocalDrivingLicenseApplicationData.Initialize(connectionString);
     }
 }
