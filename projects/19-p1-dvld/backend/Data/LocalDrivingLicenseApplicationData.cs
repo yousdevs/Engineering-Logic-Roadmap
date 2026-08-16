@@ -52,4 +52,31 @@ public static class LocalDrivingLicenseApplicationData
 
         return (int)result;
     }
+
+    public static async Task<int?> GetIdByApplicationId(int applicationId)
+    {
+
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT LocalDrivingLicenseApplicationID 
+            FROM LocalDrivingLicenseApplications
+            WHERE ApplicationID = @id;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = applicationId;
+
+        await con.OpenAsync();
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        if (result == null)
+            return null;
+
+        return (int)result;
+    }
 }

@@ -1,16 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.DTOs;
+using Core.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace Api.Controllers;
+
+[Authorize]
+[Route("api")]
+[ApiController]
+public sealed class TestController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TestController : ControllerBase
-    {
+    private readonly TestService _testService;
 
-        [HttpGet(Name = "GetTest")]
-        public string Get()
-        {
-            return "Test Succeed";
-        }
+    public TestController(TestService testService)
+    {
+        _testService = testService;
+    }
+
+
+    [HttpPost("applications/{applicationId:int}/tests")]
+    public async Task<IActionResult> ScheduleTest(int applicationId, [FromBody] ScheduleTestRequest request)
+    {
+        var appointmentId = await _testService.ScheduleTestAsync(applicationId, request.TestTypeId, request.AppointmentDate);
+
+        return Created(
+            $"api/test-appointments/{appointmentId}",
+            new { id = appointmentId }
+            );
     }
 }

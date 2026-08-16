@@ -78,6 +78,7 @@ public class Program
         builder.Services.AddScoped<TestTypeService>();
         builder.Services.AddScoped<LicenseClassService>();
         builder.Services.AddScoped<ApplicationService>();
+        builder.Services.AddScoped<TestService>();
 
         builder.Services.AddControllers();
 
