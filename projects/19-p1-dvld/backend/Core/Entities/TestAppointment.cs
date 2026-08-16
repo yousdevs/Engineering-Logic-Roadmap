@@ -45,6 +45,12 @@ public sealed class TestAppointment
         return new TestAppointment(-1, testType.Id, localDrivingLicenseAppId, createdByUserId, retakeTestAppId, appointmentDate, false, paidFees);
     }
 
+    public static TestAppointment Reconstitute(int id, int testTypeId, int localDrivingLicenseAppId,
+        int createdByUserId, int? retakeTestAppId, DateTime appointmentDate, bool isLocked, Money paidFees)
+    {
+
+        return new TestAppointment(id, testTypeId, localDrivingLicenseAppId, createdByUserId, retakeTestAppId, appointmentDate, isLocked, paidFees);
+    }
     public void Lock()
     {
         if (IsLocked)

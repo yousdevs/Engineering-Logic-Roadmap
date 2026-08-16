@@ -79,4 +79,29 @@ public static class LocalDrivingLicenseApplicationData
 
         return (int)result;
     }
+
+    public static async Task<int?> GetApplicationStatusByIdAsync(int localDrivingLicenseApplicationId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+            SELECT ApplicationStatus 
+            FROM LocalDrivingLicenseApplications l
+            INNER JOIN Applications a
+            ON l.ApplicationID = a.ApplicationID
+            WHERE l.LocalDrivingLicenseApplicationID = @id;
+            """;
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = localDrivingLicenseApplicationId;
+
+        await con.OpenAsync();
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        return result == null ? null : Convert.ToInt32((byte)result);
+
+    }
 }

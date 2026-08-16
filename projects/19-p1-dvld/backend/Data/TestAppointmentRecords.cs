@@ -9,6 +9,7 @@ public sealed record TestAttemptRecord(
 
 public sealed record TestAppointmentRecord(
 
+    int? Id,
     int TestTypeId,
     int LocalDrivingLicenseApplicationId,
     DateTime AppointmentDate,
@@ -16,4 +17,13 @@ public sealed record TestAppointmentRecord(
     int CreatedByUserId,
     bool IsLocked,
     int? RetakeTestApplicationId
+    );
+
+public sealed record TestRecord(
+
+    int? Id,
+    int TestAppointmentId,
+    bool TestResult,
+    string? Notes,
+    int CreatedByUserId
     );

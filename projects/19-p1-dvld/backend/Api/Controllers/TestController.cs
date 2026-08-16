@@ -28,4 +28,16 @@ public sealed class TestController : ControllerBase
             new { id = appointmentId }
             );
     }
+
+    [HttpPost("test-appointments/{appointmentId:int}/result")]
+    public async Task<IActionResult> TakeTestAsync(int appointmentId, [FromBody] TakeTestRequest request)
+    {
+
+        var testId = await _testService.TakeTestAsync(appointmentId, request.Passed, request.Notes);
+
+        return Created(
+            $"/api/tests/{testId}",
+            new { id = testId }
+            );
+    }
 }
