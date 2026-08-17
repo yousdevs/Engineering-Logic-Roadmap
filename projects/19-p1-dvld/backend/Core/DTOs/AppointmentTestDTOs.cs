@@ -11,3 +11,8 @@ public sealed record TakeTestRequest(
     bool Passed,
     string? Notes
     );
+
+public sealed record ScheduleRetakeTestRequest(
+
+    DateTime AppointmentDate
+    );

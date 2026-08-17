@@ -40,4 +40,16 @@ public sealed class TestController : ControllerBase
             new { id = testId }
             );
     }
+
+    [HttpPost("applications/{applicationId:int}/tests/retake")]
+    public async Task<IActionResult> ScheduleRetakeTestAsync(int applicationId, [FromBody] ScheduleRetakeTestRequest request)
+    {
+
+        var appointmentId = await _testService.ScheduleRetakeTestAsync(applicationId, request.AppointmentDate);
+
+        return Created(
+            $"/api/test-appointments/{appointmentId}",
+            new { id = appointmentId }
+            );
+    }
 }

@@ -128,4 +128,26 @@ public static class ApplicationData
 
         return Convert.ToInt32((byte)result);
     }
+
+    public static async Task<int?> GetPersonIdByApplicationIdAsync(int applicationId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+
+            SELECT ApplicantPersonID
+            FROM Applications
+            WHERE ApplicationID = @id;
+            """;
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = applicationId;
+
+        await con.OpenAsync();
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        return result == null ? null : (int)result;
+    }
 }

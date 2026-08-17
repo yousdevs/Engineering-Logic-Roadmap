@@ -48,6 +48,18 @@ public sealed class Application
         return new Application(-1, personId, ApplicationTypeId.NewLocalDrivingLicense, createdByUserId, now, ApplicationStatus.New, now, paidFee);
     }
 
+    public static Application CreateRetakeTest(int personId, int createdByUserId, ApplicationType applicationType)
+    {
+
+        if (applicationType.Id != ApplicationTypeId.RetakeTest)
+            throw new ArgumentException(
+                "ApplicationType does not meet required application type.",
+                nameof(applicationType));
+
+        DateTime now = DateTime.UtcNow;
+
+        return new Application(-1, personId, ApplicationTypeId.RetakeTest, createdByUserId, now, ApplicationStatus.Completed, now, applicationType.Fee);
+    }
 
 
     private static int CalculateAge(DateTime dateOfBirth, DateTime asOf)

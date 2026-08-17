@@ -158,11 +158,99 @@ public sealed class TestService
 
         return testId.Value;
     }
-    public async Task ScheduleRetakeTest(int applicationid, int testTypeId, DateTime appointmentDate)
+    public async Task<int> ScheduleRetakeTestAsync(int applicationId, DateTime appointmentDate)
     {
 
-        // is no testtypeid with passed ?
-        // is there testtypeid with failed?
-        // is no appointment linked to application?
+        var applicationStatus = await ApplicationData.GetApplicationStatus(applicationId);
+
+        if (applicationStatus == null)
+            throw new KeyNotFoundException($"Application with id={applicationId} does not exist.");
+
+        if ((ApplicationStatus)applicationStatus != ApplicationStatus.New)
+            throw new InvalidOperationException("Application must be New.");
+
+        var localDrivingLicenseApplicationId = await LocalDrivingLicenseApplicationData.GetIdByApplicationId(applicationId);
+
+        if (localDrivingLicenseApplicationId == null)
+            throw new InvalidOperationException("This application is not local driving license application.");
+
+        var historyRecords = await TestAppointmentData.GetHistoryAsync(localDrivingLicenseApplicationId.Value);
+
+        var attempts = historyRecords.Select(x =>
+            new TestAttempt(
+                x.TestAppointmentId,
+                (TestTypeId)x.TestTypeId,
+                x.TestResult.HasValue ? x.TestResult.Value ? TestOutcome.Passed : TestOutcome.Failed : null
+        )).ToList();
+
+        var workflow = LocalDrivingLicenseTestWorkflow.FromAttempts(attempts);
+
+        if (workflow.CurrentStep == null)
+            throw new InvalidOperationException("All Tests passed.");
+
+        if (workflow.CurrentStep.Action != TestStepAction.ScheduleRetakeTest)
+            throw new InvalidOperationException($"Invalid action, use {workflow.CurrentStep.Action} instead.");
+
+        var personId = await ApplicationData.GetPersonIdByApplicationIdAsync(applicationId);
+        if (personId == null)
+            throw new KeyNotFoundException($"Application with id={applicationId} does not exist.");
+
+        var applicationTypeRecord = await ApplicationTypesData.FindByIdAsync((int)ApplicationTypeId.RetakeTest);
+        if (applicationTypeRecord == null)
+            throw new KeyNotFoundException($"ApplicationType with id={(int)ApplicationTypeId.RetakeTest} does not exist.");
+
+
+        var testTypeRecord = await TestTypeData.FindByIdAsync((int)workflow.CurrentStep.TestTypeId);
+        if (testTypeRecord == null)
+            throw new KeyNotFoundException($"TestType with id={(int)workflow.CurrentStep.TestTypeId} does not exist");
+
+        var retakeApplication = Application.CreateRetakeTest(
+            personId.Value,
+            _currentUser.UserId,
+            ApplicationType.Reconstitute((ApplicationTypeId)applicationTypeRecord.Id, applicationTypeRecord.Title, Money.From(applicationTypeRecord.Fee)));
+
+        var retakeApplicationId = await ApplicationData.InsertAsync(
+            new ApplicationRecord(
+                retakeApplication.PersonId,
+                retakeApplication.CreatedAt,
+                (int)retakeApplication.ApplicationTypeId,
+                (byte)retakeApplication.Status,
+                retakeApplication.LastStatusAt,
+                retakeApplication.PaidFees.Amount,
+                retakeApplication.CreatedByUserId)
+            );
+
+        if (retakeApplicationId == null)
+            throw new InvalidOperationException("Failed to insert RetakeApplication.");
+
+
+
+        var appointment = TestAppointment.CreateRetakeTestAppointment(
+            localDrivingLicenseApplicationId.Value,
+            _currentUser.UserId,
+            retakeApplicationId.Value,
+            appointmentDate,
+            TestType.Reconstitute(testTypeRecord.Id, testTypeRecord.Title, testTypeRecord.Description, Money.From(testTypeRecord.Fee)));
+
+        var appointmentId = await TestAppointmentData.InsertAppointmentAsync(
+
+            new TestAppointmentRecord(
+                appointment.Id,
+                appointment.TestTypeId,
+                appointment.LocalDrivingLicenseAppId,
+                appointment.AppointmentDate,
+                appointment.PaidFees.Amount,
+                appointment.CreatedByUserId,
+                appointment.IsLocked,
+                appointment.RetakeTestAppId
+                )
+            );
+
+        if (appointmentId == null)
+            throw new InvalidOperationException("Failed to insert Appointment.");
+
+        return appointmentId.Value;
     }
+
+
 }
