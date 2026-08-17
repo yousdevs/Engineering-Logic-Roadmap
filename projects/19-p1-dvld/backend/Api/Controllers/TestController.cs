@@ -1,4 +1,5 @@
-﻿using Core.DTOs;
+﻿using Core;
+using Core.DTOs;
 using Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,5 +52,14 @@ public sealed class TestController : ControllerBase
             $"/api/test-appointments/{appointmentId}",
             new { id = appointmentId }
             );
+    }
+
+    [HttpGet("applications/{applicationId:int}/tests/workflow")]
+    public async Task<ActionResult<LocalDrivingLicenseTestWorkflow>> GetTestWorkflowAsync(int applicationId)
+    {
+
+        var workflow = await _testService.GetWorkflowAsync(applicationId);
+
+        return Ok(workflow);
     }
 }

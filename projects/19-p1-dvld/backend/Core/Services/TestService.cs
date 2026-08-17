@@ -252,5 +252,24 @@ public sealed class TestService
         return appointmentId.Value;
     }
 
+    public async Task<LocalDrivingLicenseTestWorkflow> GetWorkflowAsync(int applicationId)
+    {
 
+        var localDrivingLicenseApplicationId = await LocalDrivingLicenseApplicationData.GetIdByApplicationId(applicationId);
+        if (localDrivingLicenseApplicationId == null)
+            throw new KeyNotFoundException($"Application with id={applicationId} does not exist.");
+
+        var historyRecords = await TestAppointmentData.GetHistoryAsync(localDrivingLicenseApplicationId.Value);
+
+        var attempts = historyRecords.Select(x =>
+            new TestAttempt(
+                x.TestAppointmentId,
+                (TestTypeId)x.TestTypeId,
+                x.TestResult.HasValue ? x.TestResult.Value ? TestOutcome.Passed : TestOutcome.Failed : null
+        )).ToList();
+
+        var workflow = LocalDrivingLicenseTestWorkflow.FromAttempts(attempts);
+
+        return workflow;
+    }
 }
