@@ -150,4 +150,76 @@ public static class ApplicationData
 
         return result == null ? null : (int)result;
     }
+
+    public static async Task<ApplicationRecord?> FindByIdAsync(int applicationId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+            SELECT ApplicantPersonID,
+                   ApplicationDate,
+                   ApplicationTypeID,
+                   ApplicationStatus,
+                   LastStatusDate,
+                   PaidFees,
+                   CreatedByUserID
+            FROM Applications
+            WHERE ApplicationID = @id;
+            """;
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = applicationId;
+
+        await con.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new ApplicationRecord(
+            (int)reader["ApplicantPersonID"],
+            (DateTime)reader["ApplicationDate"],
+            (int)reader["ApplicationTypeID"],
+            (byte)reader["ApplicationStatus"],
+            (DateTime)reader["LastStatusDate"],
+            (decimal)reader["PaidFees"],
+            (int)reader["CreatedByUserID"]
+            );
+    }
+
+    public static async Task<bool> UpdateByIdAsync(int applicationId, ApplicationRecord record)
+    {
+        RequireInitialized();
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+
+            UPDATE Applications
+            SET ApplicantPersonID = @personId,
+                ApplicationDate = @applicationDate,
+                ApplicationTypeID = @applicationTypeId,
+                ApplicationStatus = @applicationStatus,
+                LastStatusDate = @lastStatusDate,
+                PaidFees = @paidFees,
+                CreatedByUserID = @createdByUserId
+            WHERE ApplicationID = @applicationId;
+            """;
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@personId", System.Data.SqlDbType.Int).Value = record.ApplicantPersonId;
+        cmd.Parameters.Add("@applicationDate", System.Data.SqlDbType.DateTime).Value = record.ApplicationDate;
+        cmd.Parameters.Add("@applicationTypeId", System.Data.SqlDbType.Int).Value = record.ApplicationTypeId;
+        cmd.Parameters.Add("@applicationStatus", System.Data.SqlDbType.Int).Value = record.ApplicationStatus;
+        cmd.Parameters.Add("@lastStatusDate", System.Data.SqlDbType.DateTime).Value = record.LastStatusDate;
+        cmd.Parameters.Add("@paidFees", System.Data.SqlDbType.Decimal).Value = record.PaidFees;
+        cmd.Parameters.Add("@createdByUserId", System.Data.SqlDbType.Int).Value = record.CreatedByUserId;
+        cmd.Parameters.Add("@applicationId", System.Data.SqlDbType.Int).Value = applicationId;
+
+        await con.OpenAsync();
+
+        var affected = await cmd.ExecuteNonQueryAsync();
+        return affected > 0;
+    }
 }

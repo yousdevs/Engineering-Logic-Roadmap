@@ -104,4 +104,23 @@ public static class LocalDrivingLicenseApplicationData
         return result == null ? null : Convert.ToInt32((byte)result);
 
     }
+
+    public static async Task<int> GetLicenseClassIdByApplicationIdAsync(int applicationId)
+    {
+        RequireInitialized();
+        await using var con = new SqlConnection(_connectionString);
+        const string query = """
+
+            SELECT LicenseClassID
+            FROM LocalDrivingLicenseApplications
+            WHERE ApplicationID = @applicationId;
+            """;
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@applicationId", System.Data.SqlDbType.Int).Value = applicationId;
+
+        await con.OpenAsync();
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result);
+    }
 }

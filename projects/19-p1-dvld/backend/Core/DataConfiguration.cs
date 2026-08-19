@@ -16,5 +16,7 @@ public static class DataConfiguration
         ApplicationData.Initialize(connectionString);
         LocalDrivingLicenseApplicationData.Initialize(connectionString);
         TestAppointmentData.Initialize(connectionString);
+        LicenseData.Initialize(connectionString);
+        DriverData.Initialize(connectionString);
     }
 }

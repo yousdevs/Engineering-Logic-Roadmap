@@ -80,6 +80,7 @@ public class Program
         builder.Services.AddScoped<LicenseClassService>();
         builder.Services.AddScoped<ApplicationService>();
         builder.Services.AddScoped<TestService>();
+        builder.Services.AddScoped<LicenseService>();
 
         builder.Services
             .AddControllers()
