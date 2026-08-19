@@ -165,4 +165,47 @@ public static class LicenseData
             );
 
     }
+
+    public static async Task<bool> UpdateAsync(LicenseRecord record)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+            UPDATE Licenses
+            SET ApplicationID = @applicationId,
+                DriverID = @driverId,
+                LicenseClass = @licenseClassId,
+                IssueDate = @issueDate,
+                ExpirationDate = @expirationDate,
+                Notes = @notes,
+                PaidFees = @paidFees,
+                IsActive = @isActive,
+                IssueReason = @issueReason,
+                CreatedByUserID = @createdByUserId
+
+            WHERE LicenseID = @licenseId;
+                
+            """;
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@applicationId", System.Data.SqlDbType.Int).Value = record.ApplicationId;
+        cmd.Parameters.Add("@driverId", System.Data.SqlDbType.Int).Value = record.DriverId;
+        cmd.Parameters.Add("@licenseClassId", System.Data.SqlDbType.Int).Value = record.LicenseClassId;
+        cmd.Parameters.Add("@issueDate", System.Data.SqlDbType.DateTime).Value = record.IssueDate;
+        cmd.Parameters.Add("@expirationDate", System.Data.SqlDbType.DateTime).Value = record.ExpirationDate;
+        cmd.Parameters.Add("@notes", System.Data.SqlDbType.NVarChar).Value = (object?)record.Notes ?? DBNull.Value;
+        cmd.Parameters.Add("@paidFees", System.Data.SqlDbType.Decimal).Value = record.PaidFees;
+        cmd.Parameters.Add("@isActive", System.Data.SqlDbType.Bit).Value = record.IsActive;
+        cmd.Parameters.Add("@issueReason", System.Data.SqlDbType.TinyInt).Value = record.IssueReason;
+        cmd.Parameters.Add("@createdByUserId", System.Data.SqlDbType.Int).Value = record.CreatedByUserId;
+        cmd.Parameters.Add("@licenseId", System.Data.SqlDbType.Int).Value = record.Id;
+
+        await con.OpenAsync();
+
+        var affected = await cmd.ExecuteNonQueryAsync();
+
+        return affected > 0;
+    }
 }

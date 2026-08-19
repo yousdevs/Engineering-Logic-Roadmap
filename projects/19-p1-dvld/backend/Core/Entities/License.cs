@@ -3,6 +3,7 @@
 public enum LicenseIssueReason
 {
     FirstTime = 1,
+    Renew = 2,
 }
 public sealed class License
 {
@@ -43,6 +44,12 @@ public sealed class License
         var paidFees = licenseClass.Fee;
 
         return new License(-1, applicationId, driverId, licenseClass.Id, now, expiresAt, notes, paidFees, true, issueReason, createdByUserId);
+    }
+
+    public static License Reconstitute(int id, int applicationId, int driverId, int licenseClassId, DateTime issuedAt, DateTime expiresAt, string? notes, Money paidFees, bool isActive, LicenseIssueReason issueReason, int createdByUserId)
+    {
+
+        return new License(id, applicationId, driverId, licenseClassId, issuedAt, expiresAt, notes, paidFees, isActive, issueReason, createdByUserId);
     }
 
     public void DeActivate()

@@ -40,4 +40,16 @@ public sealed class LicensesController : ControllerBase
             new { InternationalLicenseId = licenseId }
             );
     }
+
+    [HttpPost("local/{licenseId:int}/renewals")]
+    public async Task<IActionResult> RenewLocalLicenseAsync(int licenseId, [FromBody] RenewLocalLicenseRequest request)
+    {
+
+        var newLocalLicenseId = await _licenseService.RenewLocalLicenseAsync(licenseId, request.Notes);
+
+        return Created(
+            $"/api/licenses/local/{newLocalLicenseId}",
+            new { LocalLicenseId = newLocalLicenseId }
+            );
+    }
 }

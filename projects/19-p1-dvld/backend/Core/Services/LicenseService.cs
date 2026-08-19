@@ -174,4 +174,122 @@ public sealed class LicenseService
 
         return internationalLicenseId;
     }
+
+    public async Task<int> RenewLocalLicenseAsync(int oldLicenseId, string? notes)
+    {
+
+        var oldLicenseRecord = await LicenseData.FindByIdAsync(oldLicenseId);
+
+        if (oldLicenseRecord == null)
+            throw new KeyNotFoundException($"License with id={oldLicenseId} does not exist.");
+
+        if (!oldLicenseRecord.IsActive)
+            throw new InvalidOperationException("Cannot renew inactive license.");
+
+        if (oldLicenseRecord.ExpirationDate > DateTime.UtcNow)
+            throw new InvalidOperationException("Cannot renew unexpired license.");
+
+        var licenseClassRecord = await LicenseClassData.FindByIdAsync(oldLicenseRecord.LicenseClassId);
+        if (licenseClassRecord == null)
+            throw new KeyNotFoundException($"licenseClass with id={oldLicenseRecord.LicenseClassId} does not exist.");
+
+        var applicationTypeRecord = await ApplicationTypesData.FindByIdAsync((int)ApplicationTypeId.RenewDrivingLicense);
+        if (applicationTypeRecord == null)
+            throw new KeyNotFoundException($"applicationType with id={(int)ApplicationTypeId.RenewDrivingLicense} does not exist.");
+
+        var personId = await DriverData.GetPersonIdByIdAsync(oldLicenseRecord.DriverId);
+
+        var licenseClass = LicenseClass.Reconstitute(
+                licenseClassRecord.Id,
+                licenseClassRecord.Title,
+                licenseClassRecord.Description,
+                licenseClassRecord.MinAge,
+                licenseClassRecord.ValidityLengthYears,
+                Money.From(licenseClassRecord.Fees)
+                );
+
+        var application = Application.CreateRenewLocalLicense(
+            personId,
+            _currentUser.UserId,
+            ApplicationType.Reconstitute(
+                (ApplicationTypeId)applicationTypeRecord.Id,
+                applicationTypeRecord.Title,
+                Money.From(applicationTypeRecord.Fee)
+            ),
+            licenseClass);
+
+        var applicationId = await ApplicationData.InsertAsync(
+            new ApplicationRecord(
+                application.PersonId,
+                application.CreatedAt,
+                (int)application.ApplicationTypeId,
+                (byte)application.Status,
+                application.LastStatusAt,
+                application.PaidFees.Amount,
+                application.CreatedByUserId
+                ));
+
+        if (applicationId == null)
+            throw new InvalidOperationException("Failed to create application.");
+
+        var newLicense = License.Issue(
+            applicationId.Value,
+            oldLicenseRecord.DriverId,
+            licenseClass,
+            notes,
+            LicenseIssueReason.Renew,
+            _currentUser.UserId
+            );
+
+        var oldLicense = License.Reconstitute(
+            oldLicenseRecord.Id,
+            oldLicenseRecord.ApplicationId,
+            oldLicenseRecord.DriverId,
+            oldLicenseRecord.LicenseClassId,
+            oldLicenseRecord.IssueDate,
+            oldLicenseRecord.ExpirationDate,
+            oldLicenseRecord.Notes,
+            Money.From(oldLicenseRecord.PaidFees),
+            oldLicenseRecord.IsActive,
+            (LicenseIssueReason)oldLicenseRecord.IssueReason,
+            oldLicenseRecord.CreatedByUserId
+            );
+
+        oldLicense.DeActivate();
+
+        var newLicenseId = await LicenseData.InsertAsync(
+            new LicenseRecord(
+                newLicense.Id,
+                newLicense.ApplicationId,
+                newLicense.DriverId,
+                newLicense.LicenseClassId,
+                newLicense.IssuedAt,
+                newLicense.ExpiresAt,
+                newLicense.Notes,
+                newLicense.PaidFees.Amount,
+                newLicense.IsActive,
+                (int)newLicense.IssueReason,
+                newLicense.CreatedByUserId
+                )
+            );
+
+        await LicenseData.UpdateAsync(
+
+            new LicenseRecord(
+                oldLicense.Id,
+                oldLicense.ApplicationId,
+                oldLicense.DriverId,
+                oldLicense.LicenseClassId,
+                oldLicense.IssuedAt,
+                oldLicense.ExpiresAt,
+                oldLicense.Notes,
+                oldLicense.PaidFees.Amount,
+                oldLicense.IsActive,
+                (int)oldLicense.IssueReason,
+                oldLicense.CreatedByUserId
+                )
+            );
+
+        return newLicenseId;
+    }
 }

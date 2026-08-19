@@ -68,6 +68,19 @@ public sealed class Application
         return new Application(-1, personId, ApplicationTypeId.NewInternationalLicense, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
     }
 
+    public static Application CreateRenewLocalLicense(int personId, int createdByUserId, ApplicationType applicationType, LicenseClass licenseClass)
+    {
+
+        if (applicationType.Id != ApplicationTypeId.RenewDrivingLicense)
+            throw new ArgumentException(
+                "ApplicationType does not meet required application type.",
+                nameof(applicationType));
+
+        var paidFees = applicationType.Fee + licenseClass.Fee;
+        var now = DateTime.UtcNow;
+        return new Application(-1, personId, ApplicationTypeId.RenewDrivingLicense, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
+    }
+
     private static int CalculateAge(DateTime dateOfBirth, DateTime asOf)
     {
         int age = asOf.Year - dateOfBirth.Year;

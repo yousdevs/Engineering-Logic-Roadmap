@@ -10,3 +10,8 @@ public sealed record IssueLocalDrivingLicenseRequest(
 public sealed record IssueInternationalLicenseRequest(
     int LocalLicenseId
     );
+
+public sealed record RenewLocalLicenseRequest
+(
+    string? Notes
+);

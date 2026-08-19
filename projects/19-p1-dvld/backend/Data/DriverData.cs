@@ -95,4 +95,27 @@ public static class DriverData
 
         return (int?)await cmd.ExecuteScalarAsync();
     }
+
+    public static async Task<int> GetPersonIdByIdAsync(int driverId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+            SELECT PersonID
+            FROM Drivers
+            WHERE DriverID = @id;
+            """;
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = driverId;
+
+        await con.OpenAsync();
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        return Convert.ToInt32(result);
+
+    }
 }
