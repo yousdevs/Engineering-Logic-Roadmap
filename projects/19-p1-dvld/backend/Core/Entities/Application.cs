@@ -61,6 +61,12 @@ public sealed class Application
         return new Application(-1, personId, ApplicationTypeId.RetakeTest, createdByUserId, now, ApplicationStatus.Completed, now, applicationType.Fee);
     }
 
+    public static Application CreateInternationalLicense(int personId, int createdByUserId, Money paidFees)
+    {
+
+        var now = DateTime.UtcNow;
+        return new Application(-1, personId, ApplicationTypeId.NewInternationalLicense, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
+    }
 
     private static int CalculateAge(DateTime dateOfBirth, DateTime asOf)
     {

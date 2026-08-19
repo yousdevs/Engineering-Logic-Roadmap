@@ -86,6 +86,7 @@ public sealed class LicenseService
 
         var licenseId = await LicenseData.InsertAsync(
             new LicenseRecord(
+                license.Id,
                 license.ApplicationId,
                 license.DriverId,
                 license.LicenseClassId,
@@ -114,4 +115,63 @@ public sealed class LicenseService
         return licenseId;
     }
 
+
+    public async Task<int> IssueInternationalLicenseAsync(int localLicenseId)
+    {
+
+        var localLicenseRecord = await LicenseData.FindByIdAsync(localLicenseId);
+
+        if (localLicenseRecord == null)
+            throw new KeyNotFoundException($"LocalLicense with Id={localLicenseId} does not exist.");
+
+
+        if (await InternationalLicenseData.ExistActiveByDriverId(localLicenseRecord.DriverId))
+            throw new InvalidOperationException("This Driver already has active international license.");
+
+        if (localLicenseRecord.LicenseClassId != 3)
+            throw new InvalidOperationException("Class 3 Local License required for International License Issurance.");
+
+        if (!localLicenseRecord.IsActive)
+            throw new InvalidOperationException("Active local license required.");
+
+        if (DateTime.UtcNow.AddMonths(6) > localLicenseRecord.ExpirationDate)
+            throw new InvalidOperationException("Local license expiration date must be at least 6 months from now.");
+
+        var personId = await ApplicationData.GetPersonIdByApplicationIdAsync(localLicenseRecord.ApplicationId);
+        if (personId == null)
+            throw new KeyNotFoundException();
+
+        var fees = await ApplicationTypesData.GetFeesByIdAsync((int)ApplicationTypeId.NewInternationalLicense);
+
+        var application = Application.CreateInternationalLicense(personId.Value, _currentUser.UserId, Money.From(fees));
+
+        var applicationId = await ApplicationData.InsertAsync(
+            new ApplicationRecord(
+                application.PersonId,
+                application.CreatedAt,
+                (int)application.ApplicationTypeId,
+                (byte)application.Status,
+                application.LastStatusAt,
+                application.PaidFees.Amount,
+                application.CreatedByUserId
+            ));
+        if (applicationId == null)
+            throw new InvalidOperationException("Failed to create application.");
+
+        var license = InternationalLicense.Issue(applicationId.Value, localLicenseRecord.DriverId, localLicenseId, 3, _currentUser.UserId);
+
+        var internationalLicenseId = await InternationalLicenseData.InsertAsync(
+            new InternationalLicenseRecord(
+                    license.ApplicationId,
+                    license.DriverId,
+                    license.IssuedByLocalLicenseId,
+                    license.IssuedAt,
+                    license.ExpiresAt,
+                    license.IsActive,
+                    license.CreateByUserId
+                )
+            );
+
+        return internationalLicenseId;
+    }
 }

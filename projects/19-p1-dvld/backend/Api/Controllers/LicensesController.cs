@@ -21,11 +21,23 @@ public sealed class LicensesController : ControllerBase
     public async Task<IActionResult> IssueLocalDrivingLicenseAsync([FromBody] IssueLocalDrivingLicenseRequest request)
     {
 
-        var licenseId = _licenseService.IssueLocalDrivingLicenseAsync(request.ApplicationId, request.Notes);
+        var licenseId = await _licenseService.IssueLocalDrivingLicenseAsync(request.ApplicationId, request.Notes);
 
         return Created(
-            $"api/licenses/{licenseId}",
+            $"/api/licenses/local/{licenseId}",
             new { licenseId }
+            );
+    }
+
+    [HttpPost("international")]
+    public async Task<IActionResult> IssueInternationalLicenseAsync([FromBody] IssueInternationalLicenseRequest request)
+    {
+
+        var licenseId = await _licenseService.IssueInternationalLicenseAsync(request.LocalLicenseId);
+
+        return Created(
+            $"/api/licenses/international/{licenseId}",
+            new { InternationalLicenseId = licenseId }
             );
     }
 }

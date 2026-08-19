@@ -18,5 +18,6 @@ public static class DataConfiguration
         TestAppointmentData.Initialize(connectionString);
         LicenseData.Initialize(connectionString);
         DriverData.Initialize(connectionString);
+        InternationalLicenseData.Initialize(connectionString);
     }
 }

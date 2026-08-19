@@ -4,7 +4,7 @@ namespace Data;
 
 
 public sealed record LicenseRecord(
-
+    int Id,
     int ApplicationId,
     int DriverId,
     int LicenseClassId,
@@ -115,5 +115,54 @@ public static class LicenseData
         var result = await cmd.ExecuteScalarAsync();
 
         return Convert.ToInt32(result);
+    }
+
+    public static async Task<LicenseRecord?> FindByIdAsync(int localLicenseId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+
+            SELECT 
+                ApplicationID,
+                DriverID,
+                LicenseClass,
+                IssueDate,
+                ExpirationDate,
+                Notes,
+                PaidFees,
+                IsActive,
+                IssueReason,
+                CreatedByUserID
+            FROM Licenses
+            WHERE LicenseID = @id;
+            """;
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = localLicenseId;
+
+        await con.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new LicenseRecord(
+            localLicenseId,
+            (int)reader["ApplicationID"],
+            (int)reader["DriverID"],
+            (int)reader["LicenseClass"],
+            (DateTime)reader["IssueDate"],
+            (DateTime)reader["ExpirationDate"],
+            reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : (string)reader["Notes"],
+            (decimal)reader["PaidFees"],
+            (bool)reader["IsActive"],
+            Convert.ToInt32((byte)reader["IssueReason"]),
+            (int)reader["CreatedByUserID"]
+            );
+
     }
 }
