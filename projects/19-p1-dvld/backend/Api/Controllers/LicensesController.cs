@@ -52,4 +52,28 @@ public sealed class LicensesController : ControllerBase
             new { LocalLicenseId = newLocalLicenseId }
             );
     }
+
+    [HttpPost("local/{licenseId:int}/damaged-replacement")]
+    public async Task<IActionResult> ReplaceDamagedLicenseAsync(int licenseId, [FromBody] ReplaceDamagedLicenseRequest request)
+    {
+
+        var newLocalLicenseId = await _licenseService.ReplaceDamagedLocalLicenseAsync(licenseId, request.Notes);
+
+        return Created(
+            $"/api/licenses/local/{newLocalLicenseId}",
+            new { localLicenseId = newLocalLicenseId }
+            );
+    }
+
+    [HttpPost("local/{licenseId:int}/lost-replacement")]
+    public async Task<IActionResult> ReplaceLostLicenseAsync(int licenseId, [FromBody] ReplaceLostLicenseRequest request)
+    {
+
+        var newLocalLicenseId = await _licenseService.ReplaceLostLocalLicenseAsync(licenseId, request.Notes);
+
+        return Created(
+            $"/api/licenses/local/{newLocalLicenseId}",
+            new { localLicenseId = newLocalLicenseId }
+            );
+    }
 }

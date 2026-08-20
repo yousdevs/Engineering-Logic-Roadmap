@@ -15,3 +15,13 @@ public sealed record RenewLocalLicenseRequest
 (
     string? Notes
 );
+
+public sealed record ReplaceDamagedLicenseRequest(
+
+    string? Notes
+    );
+
+public sealed record ReplaceLostLicenseRequest(
+
+    string? Notes
+    );

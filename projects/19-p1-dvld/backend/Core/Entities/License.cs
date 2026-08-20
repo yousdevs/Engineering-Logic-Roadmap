@@ -4,6 +4,9 @@ public enum LicenseIssueReason
 {
     FirstTime = 1,
     Renew = 2,
+    Damaged,
+    Lost
+
 }
 public sealed class License
 {
@@ -44,6 +47,19 @@ public sealed class License
         var paidFees = licenseClass.Fee;
 
         return new License(-1, applicationId, driverId, licenseClass.Id, now, expiresAt, notes, paidFees, true, issueReason, createdByUserId);
+    }
+
+    public static License IssueDamagedReplacement(int applicationId, int driverId, int licenseClassId, DateTime expiresAt, string? notes, int createdByUserId)
+    {
+        var now = DateTime.UtcNow;
+        return new License(-1, applicationId, driverId, licenseClassId, now, expiresAt, notes, Money.Zero, true, LicenseIssueReason.Damaged, createdByUserId);
+    }
+
+    public static License IssueLostReplacement(int applicationId, int driverId, int licenseClassId, DateTime expiresAt, string? notes, int createdByUserId)
+    {
+
+        var now = DateTime.UtcNow;
+        return new License(-1, applicationId, driverId, licenseClassId, now, expiresAt, notes, Money.Zero, true, LicenseIssueReason.Lost, createdByUserId);
     }
 
     public static License Reconstitute(int id, int applicationId, int driverId, int licenseClassId, DateTime issuedAt, DateTime expiresAt, string? notes, Money paidFees, bool isActive, LicenseIssueReason issueReason, int createdByUserId)

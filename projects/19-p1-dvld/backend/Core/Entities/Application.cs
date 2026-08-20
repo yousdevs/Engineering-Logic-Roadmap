@@ -81,6 +81,21 @@ public sealed class Application
         return new Application(-1, personId, ApplicationTypeId.RenewDrivingLicense, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
     }
 
+    public static Application CreateReplaceDamagedLocalLicense(int personId, int createdByUserId, ApplicationType applicationType)
+    {
+
+        var now = DateTime.UtcNow;
+        var paidFees = applicationType.Fee;
+        return new Application(-1, personId, ApplicationTypeId.ReplacementDamaged, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
+    }
+
+    public static Application CreateReplaceLostLocalLicense(int personId, int createdByUserId, ApplicationType applicationType)
+    {
+
+        var now = DateTime.UtcNow;
+        var paidFees = applicationType.Fee;
+        return new Application(-1, personId, ApplicationTypeId.ReplacementLost, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
+    }
     private static int CalculateAge(DateTime dateOfBirth, DateTime asOf)
     {
         int age = asOf.Year - dateOfBirth.Year;
