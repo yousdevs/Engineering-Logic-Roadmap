@@ -96,6 +96,15 @@ public sealed class Application
         var paidFees = applicationType.Fee;
         return new Application(-1, personId, ApplicationTypeId.ReplacementLost, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
     }
+
+
+    public static Application CreateReleaseDetainedLicense(int personId, int createdByUserId, Money paidFees)
+    {
+
+
+        var now = DateTime.UtcNow;
+        return new Application(-1, personId, ApplicationTypeId.ReleaseDetained, createdByUserId, now, ApplicationStatus.Completed, now, paidFees);
+    }
     private static int CalculateAge(DateTime dateOfBirth, DateTime asOf)
     {
         int age = asOf.Year - dateOfBirth.Year;

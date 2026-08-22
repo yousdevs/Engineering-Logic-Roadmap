@@ -1,0 +1,2141 @@
+{
+  "info": {
+    "_postman_id": "099843c0-bd59-44f4-9417-2ea49ff31c33",
+    "name": "DVLD",
+    "description": "Driving Licence Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57155466",
+    "_collection_link": "https://go.postman.co/collection/57155466-099843c0-bd59-44f4-9417-2ea49ff31c33?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Drivers",
+      "item": [],
+      "description": "Driver-related endpoints"
+    },
+    {
+      "name": "Licences",
+      "item": [
+        {
+          "name": "Issue Local Driving License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"applicationId\":149 ,\n    \"notes\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/licenses/local",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "licenses",
+                "local"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/licenses/local\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"applicationId\\\": 0,\\n  \\\"notes\\\": null\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Issue International License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"localLicenseId\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/licenses/international",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "licenses",
+                "international"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/licenses/international\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"localLicenseId\\\": 0\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Renew Local License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notes\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/licenses/local/{{licenseId}}/renewals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "licenses",
+                "local",
+                "{{licenseId}}",
+                "renewals"
+              ]
+            },
+            "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/licenses/local/{{licenseId}}\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"notes\\\": null\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Replace Damaged License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"notes\": null}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/licenses/local/{{licenseId}}/damaged-replacement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "licenses",
+                "local",
+                "{{licenseId}}",
+                "damaged-replacement"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/licenses/local/{{licenseId}}/replace/damaged\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d '{\"notes\": null}'"
+          },
+          "response": []
+        },
+        {
+          "name": "Replace Lost License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"notes\": null}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/licenses/local/{{licenseId}}/lost-replacement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "licenses",
+                "local",
+                "{{licenseId}}",
+                "lost-replacement"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/licenses/local/{{licenseId}}/replace/lost\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d '{\"notes\": null}'"
+          },
+          "response": []
+        }
+      ],
+      "description": "Licence management endpoints"
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Create Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{  \r\n    \"applicationTypeId\": 1,\r\n    \"personId\": 5031,\r\n    \"licenseClassId\": 4\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "applications"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/applications\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"applicationTypeId\\\": 0,\\n  \\\"personId\\\": 0,\\n  \\\"licenseClassId\\\": null\\n}\""
+          },
+          "response": []
+        }
+      ],
+      "description": "Licence application endpoints"
+    },
+    {
+      "name": "Tests",
+      "item": [
+        {
+          "name": "Schedule Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"testTypeId\": 3,\n    \"appointmentDate\": \"2026-09-09T09:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications/{{applicationId}}/tests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                "{{applicationId}}",
+                "tests"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/applications/{{applicationId}}/tests\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"testTypeId\\\": 0,\\n  \\\"appointmentDate\\\": \\\"2026-01-01T09:00:00\\\"\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Take Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"passed\": true,\n    \"notes\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-appointments/{{appointmentId}}/result",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "test-appointments",
+                "{{appointmentId}}",
+                "result"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/test-appointments/{{appointmentId}}/result\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"passed\\\": true,\\n  \\\"notes\\\": null\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Schedule Retake Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"appointmentDate\": \"2026-09-09T09:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications/{{applicationId}}/tests/retake",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                "{{applicationId}}",
+                "tests",
+                "retake"
+              ]
+            },
+            "description": "Generated from cURL: curl -X POST \"{{baseUrl}}/api/applications/{{applicationId}}/tests/retake\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"appointmentDate\\\": \\\"2026-01-01T09:00:00\\\"\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workflow state",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/applications/{{applicationId}}/tests/workflow",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "applications",
+                "{{applicationId}}",
+                "tests",
+                "workflow"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Driving test endpoints"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{  \r\n    \"currentPassword\": \"1234\",\r\n \"newPassword\": \"1234\"\r\n }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "password"
+              ]
+            },
+            "description": "Generated from cURL: curl -X PUT \"{{baseUrl}}/api/{{apiVersion}}/users/password\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"currentPassword\\\": \\\"\\\",\\n  \\\"newPassword\\\": \\\"\\\"\\n}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Returns a UserDetails object with the following fields:\n- **UserId** (int): The unique identifier of the user.\n- **PersonId** (int): The associated person's identifier.\n- **UserName** (string): The username.\n- **FirstName** (string): The user's first name.\n- **SecondName** (string): The user's second name.\n- **ThirdName** (string, nullable): The user's third name (optional).\n- **LastName** (string): The user's last name.\n- **Status** (string): The current status of the user."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log(\"Login — sending credentials...\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 200",
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response Content-Type is JSON",
+                  "pm.test(\"Response Content-Type is JSON\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "// 4. Response body contains accessToken",
+                  "pm.test(\"Response body contains accessToken\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an(\"object\");",
+                  "    pm.expect(json).to.have.property(\"accessToken\");",
+                  "});",
+                  "",
+                  "// 5. accessToken is a non-empty string",
+                  "pm.test(\"accessToken is a non-empty string\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.accessToken).to.be.a(\"string\").and.to.have.length.above(0);",
+                  "});",
+                  "",
+                  "// 6. Auto-store accessToken in environment",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.environment.set(\"authToken\", json.accessToken);",
+                  "    console.log(\"Stored accessToken in environment variable 'authToken'.\");",
+                  "}",
+                  "",
+                  "// 7. refreshToken cookie is set by server",
+                  "pm.test(\"refreshToken cookie is set\", function () {",
+                  "    const cookies = pm.response.headers.get(\"Set-Cookie\");",
+                  "    pm.expect(cookies).to.include(\"refreshToken\");",
+                  "});",
+                  "",
+                  "// 8. Request body contains username and password",
+                  "pm.test(\"Request body contains username and password\", function () {",
+                  "    const body = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(body).to.have.property(\"username\").that.is.a(\"string\").and.has.length.above(0);",
+                  "    pm.expect(body).to.have.property(\"password\").that.is.a(\"string\").and.has.length.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"Msaqer77\", \"password\": \"1234\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates a user. Returns 200 with { accessToken } in the body. Sets an HttpOnly 'refreshToken' cookie (Secure, SameSite=None, 30-day expiry). The accessToken is automatically stored in the {{authToken}} environment variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 204 No Content",
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response body is empty",
+                  "pm.test(\"Response body is empty\", function () {",
+                  "    pm.expect(pm.response.text()).to.be.empty;",
+                  "});",
+                  "",
+                  "// 4. Clear authToken from environment on successful logout",
+                  "if (pm.response.code === 204) {",
+                  "    pm.environment.unset(\"authToken\");",
+                  "    console.log(\"Cleared 'authToken' from environment — user logged out.\");",
+                  "}",
+                  "",
+                  "// Note: refreshToken HttpOnly cookie is deleted by the server via Set-Cookie header.",
+                  "// Postman's cookie jar will handle this automatically."
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log(\"Logout — sending request. Note: refreshToken is sent automatically via cookie jar.\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Logs out the current user. Reads the 'refreshToken' HttpOnly cookie from the browser/Postman cookie jar and invalidates it server-side. Returns 204 No Content. If no refreshToken cookie is present, also returns 204."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "console.log(\"Refresh Token — rotating session. refreshToken cookie sent automatically via cookie jar.\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// 1. Status Code 200",
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response Content-Type is JSON",
+                  "pm.test(\"Response Content-Type is JSON\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "// 4. Response body contains accessToken",
+                  "pm.test(\"Response body contains accessToken\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an(\"object\");",
+                  "    pm.expect(json).to.have.property(\"accessToken\");",
+                  "});",
+                  "",
+                  "// 5. accessToken is a non-empty string",
+                  "pm.test(\"accessToken is a non-empty string\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.accessToken).to.be.a(\"string\").and.to.have.length.above(0);",
+                  "});",
+                  "",
+                  "// 6. New accessToken is different from the old one",
+                  "pm.test(\"New accessToken is different from the previous one\", function () {",
+                  "    const json = pm.response.json();",
+                  "    const oldToken = pm.environment.get(\"authToken\");",
+                  "    if (oldToken) {",
+                  "        pm.expect(json.accessToken).to.not.equal(oldToken);",
+                  "    } else {",
+                  "        console.log(\"No previous authToken found — skipping rotation check.\");",
+                  "    }",
+                  "});",
+                  "",
+                  "// 7. Auto-store new accessToken in environment",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.environment.set(\"authToken\", json.accessToken);",
+                  "    console.log(\"Stored new accessToken in environment variable 'authToken'.\");",
+                  "}",
+                  "",
+                  "// 8. New refreshToken cookie is set by server",
+                  "pm.test(\"New refreshToken cookie is set\", function () {",
+                  "    const cookies = pm.response.headers.get(\"Set-Cookie\");",
+                  "    pm.expect(cookies).to.include(\"refreshToken\");",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path: valid refreshToken cookie in jar → 200 with new accessToken",
+                  "// To test 401: clear cookies in Postman cookie jar and send → 401 Unauthorized"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Rotates the refresh token. Reads the 'refreshToken' HttpOnly cookie automatically from the Postman cookie jar. Returns 200 with a new { accessToken } and sets a new 'refreshToken' cookie. Throws 401 if no refreshToken cookie is present. The new accessToken is automatically stored in {{authToken}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"personId\": 1040, \"username\": \"john.doe\", \"password\": \"Password123!\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Creates a new user account linked to a person. Requires a valid Bearer token in the Authorization header ({{authToken}}). Returns 201 Created with the new user's ID and a Location header pointing to /api/users/{id}."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users?page=1&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Returns a paginated list of users. Requires Bearer token auth. Query params: page (default 1), size (default 10, max 100). Returns 200 with PagedResult<UserSummary>."
+          },
+          "response": []
+        },
+        {
+          "name": "Suspend User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Validate authToken is set",
+                  "const authToken = pm.environment.get(\"authToken\");",
+                  "if (!authToken) {",
+                  "    console.warn(\"Warning: 'authToken' is not set. Run the Login request first to obtain an access token.\");",
+                  "} else {",
+                  "    console.log(\"Suspend User — authToken is set.\");",
+                  "}",
+                  "",
+                  "// Validate userId is set",
+                  "const userId = pm.variables.get(\"userId\");",
+                  "if (!userId) {",
+                  "    console.warn(\"Warning: 'userId' is not set. Set it in your environment or run Create User first.\");",
+                  "} else {",
+                  "    console.log(`Suspend User — userId: ${userId}`);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 204 No Content",
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response body is empty",
+                  "pm.test(\"Response body is empty\", function () {",
+                  "    pm.expect(pm.response.text()).to.be.empty;",
+                  "});",
+                  "",
+                  "// 4. Authorization header was sent",
+                  "pm.test(\"Authorization header was sent with Bearer token\", function () {",
+                  "    const auth = pm.request.headers.get(\"Authorization\");",
+                  "    pm.expect(auth).to.be.a(\"string\");",
+                  "    pm.expect(auth).to.match(/^Bearer\\s.+/);",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path: valid authToken + valid userId → 204",
+                  "// To test 401: clear authToken → 401 Unauthorized",
+                  "// To test 404: set userId to a non-existent value → 404 Not Found"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/1/suspend",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "1",
+                "suspend"
+              ]
+            },
+            "description": "Suspends a user account by ID. Requires Bearer token auth. Returns 204 No Content on success. Uses {{userId}} variable for the target user's ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Activate User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}",
+                "activate"
+              ]
+            },
+            "description": "Activates a suspended user account by ID. Requires Bearer token auth. Returns 204 No Content on success. Uses {{userId}} variable for the target user's ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Force Reset Password",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const authToken = pm.environment.get(\"authToken\");",
+                  "if (!authToken) {",
+                  "    console.warn(\"Warning: 'authToken' is not set. Run the Login request first.\");",
+                  "} else {",
+                  "    console.log(\"Force Reset Password — authToken is set.\");",
+                  "}",
+                  "",
+                  "const userId = pm.variables.get(\"userId\");",
+                  "if (!userId) {",
+                  "    console.warn(\"Warning: 'userId' is not set. Set it in your environment or run Create User first.\");",
+                  "} else {",
+                  "    console.log(`Force Reset Password — userId: ${userId}`);",
+                  "}",
+                  "",
+                  "const body = JSON.parse(pm.request.body.raw);",
+                  "if (!body.newPassword || body.newPassword.trim() === \"\") {",
+                  "    console.warn(\"Warning: 'newPassword' must not be empty.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// 1. Status Code 204 No Content",
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response body is empty",
+                  "pm.test(\"Response body is empty\", function () {",
+                  "    pm.expect(pm.response.text()).to.be.empty;",
+                  "});",
+                  "",
+                  "// 4. Authorization header was sent",
+                  "pm.test(\"Authorization header was sent with Bearer token\", function () {",
+                  "    const auth = pm.request.headers.get(\"Authorization\");",
+                  "    pm.expect(auth).to.be.a(\"string\");",
+                  "    pm.expect(auth).to.match(/^Bearer\\s.+/);",
+                  "});",
+                  "",
+                  "// 5. Request body contains newPassword",
+                  "pm.test(\"Request body contains non-empty newPassword\", function () {",
+                  "    const body = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(body).to.have.property(\"newPassword\").that.is.a(\"string\").and.has.length.above(0);",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path: valid authToken + valid userId + newPassword → 204",
+                  "// To test 401: clear authToken → 401 Unauthorized",
+                  "// To test 404: set userId to non-existent value → 404 Not Found",
+                  "// To test 400: send empty newPassword → 400 Bad Request"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"newPassword\": \"NewPassword123!\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}",
+                "password"
+              ]
+            },
+            "description": "Admin action to force reset a user's password by ID. Requires Bearer token auth. Returns 204 No Content on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Username",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const authToken = pm.environment.get(\"authToken\");",
+                  "if (!authToken) {",
+                  "    console.warn(\"Warning: 'authToken' is not set. Run the Login request first.\");",
+                  "} else {",
+                  "    console.log(\"Update Username — authToken is set.\");",
+                  "}",
+                  "",
+                  "const userId = pm.variables.get(\"userId\");",
+                  "if (!userId) {",
+                  "    console.warn(\"Warning: 'userId' is not set. Set it in your environment or run Create User first.\");",
+                  "} else {",
+                  "    console.log(`Update Username — userId: ${userId}`);",
+                  "}",
+                  "",
+                  "const body = JSON.parse(pm.request.body.raw);",
+                  "if (!body.newUsername || body.newUsername.trim() === \"\") {",
+                  "    console.warn(\"Warning: 'newUsername' must not be empty.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// 1. Status Code 204 No Content",
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response body is empty",
+                  "pm.test(\"Response body is empty\", function () {",
+                  "    pm.expect(pm.response.text()).to.be.empty;",
+                  "});",
+                  "",
+                  "// 4. Authorization header was sent",
+                  "pm.test(\"Authorization header was sent with Bearer token\", function () {",
+                  "    const auth = pm.request.headers.get(\"Authorization\");",
+                  "    pm.expect(auth).to.be.a(\"string\");",
+                  "    pm.expect(auth).to.match(/^Bearer\\s.+/);",
+                  "});",
+                  "",
+                  "// 5. Request body contains newUsername",
+                  "pm.test(\"Request body contains non-empty newUsername\", function () {",
+                  "    const body = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(body).to.have.property(\"newUsername\").that.is.a(\"string\").and.has.length.above(0);",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path: valid authToken + valid userId + newUsername → 204",
+                  "// To test 401: clear authToken → 401 Unauthorized",
+                  "// To test 404: set userId to non-existent value → 404 Not Found",
+                  "// To test 409: use a username that already exists → 409 Conflict",
+                  "// To test 400: send empty newUsername → 400 Bad Request"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"newUsername\": \"john.doe.updated\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/username",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}",
+                "username"
+              ]
+            },
+            "description": "Updates a user's username by ID. Requires Bearer token auth. Returns 204 No Content on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke All Sessions",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const authToken = pm.environment.get(\"authToken\");",
+                  "if (!authToken) {",
+                  "    console.warn(\"Warning: 'authToken' is not set. Run the Login request first.\");",
+                  "} else {",
+                  "    console.log(\"Revoke All Sessions — authToken is set.\");",
+                  "}",
+                  "",
+                  "const userId = pm.variables.get(\"userId\");",
+                  "if (!userId) {",
+                  "    console.warn(\"Warning: 'userId' is not set. Set it in your environment or run Create User first.\");",
+                  "} else {",
+                  "    console.log(`Revoke All Sessions — userId: ${userId}`);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 204 No Content",
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response body is empty",
+                  "pm.test(\"Response body is empty\", function () {",
+                  "    pm.expect(pm.response.text()).to.be.empty;",
+                  "});",
+                  "",
+                  "// 4. Authorization header was sent",
+                  "pm.test(\"Authorization header was sent with Bearer token\", function () {",
+                  "    const auth = pm.request.headers.get(\"Authorization\");",
+                  "    pm.expect(auth).to.be.a(\"string\");",
+                  "    pm.expect(auth).to.match(/^Bearer\\s.+/);",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path: valid authToken + valid userId → 204, all sessions invalidated",
+                  "// To test 401: clear authToken → 401 Unauthorized",
+                  "// To test 404: set userId to non-existent value → 404 Not Found"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/sessions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}",
+                "sessions"
+              ]
+            },
+            "description": "Revokes all active refresh token sessions for a user by ID. Requires Bearer token auth. Returns 204 No Content on success. Useful for forcing a user to re-authenticate on all devices."
+          },
+          "response": []
+        }
+      ],
+      "description": "User/auth endpoints"
+    },
+    {
+      "name": "People",
+      "item": [
+        {
+          "name": "Create Person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nationalNo\":\"005\",\"firstName\":\"John\",\"secondName\":\"Michael\",\"thirdName\":null,\"lastName\":\"Doe\",\"gender\":\"Male\",\"dateOfBirth\":\"1990-01-15T00:00:00\",\"nationalityCountryId\":1,\"phoneNumber\":\"+1234567890\",\"email\":\"john.doe@example.com\",\"address\":\"123 Main Street, City\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/people",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people"
+              ]
+            },
+            "description": "Creates a new person in the system. Returns the newly created person's ID (int). Returns 201 Created on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All People",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Validate Page query parameters before sending",
+                  "const page = parseInt(pm.request.url.query.get(\"page\") || \"1\");",
+                  "const pageSize = parseInt(pm.request.url.query.get(\"pageSize\") || \"10\");",
+                  "",
+                  "if (page < 1) {",
+                  "    console.warn(\"Warning: 'page' must be >= 1. Current value: \" + page);",
+                  "}",
+                  "if (pageSize < 1 || pageSize > 100) {",
+                  "    console.warn(\"Warning: 'pageSize' must be between 1 and 100. Current value: \" + pageSize);",
+                  "}",
+                  "",
+                  "console.log(`GetAll People — page: ${page}, pageSize: ${pageSize}`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 200",
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response Content-Type is JSON",
+                  "pm.test(\"Response Content-Type is JSON\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "// 4. PagedResult structure",
+                  "pm.test(\"Response has correct PagedResult structure\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an(\"object\");",
+                  "    pm.expect(json).to.have.property(\"items\").that.is.an(\"array\");",
+                  "    pm.expect(json).to.have.property(\"totalCount\").that.is.a(\"number\");",
+                  "    pm.expect(json).to.have.property(\"page\").that.is.a(\"number\");",
+                  "    pm.expect(json).to.have.property(\"pageSize\").that.is.a(\"number\");",
+                  "});",
+                  "",
+                  "// 5. Pagination values are sane",
+                  "pm.test(\"Pagination values are valid\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.page).to.be.at.least(1);",
+                  "    pm.expect(json.pageSize).to.be.within(1, 100);",
+                  "    pm.expect(json.totalCount).to.be.at.least(0);",
+                  "});",
+                  "",
+                  "// 6. Items count does not exceed pageSize",
+                  "pm.test(\"Items count does not exceed pageSize\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.items.length).to.be.at.most(json.pageSize);",
+                  "});",
+                  "",
+                  "// 7. Each PersonSummary item has correct structure",
+                  "pm.test(\"Each PersonSummary item has correct structure\", function () {",
+                  "    const json = pm.response.json();",
+                  "    if (json.items.length === 0) {",
+                  "        console.log(\"No items returned — skipping PersonSummary structure check.\");",
+                  "        return;",
+                  "    }",
+                  "    json.items.forEach(function (item, index) {",
+                  "        pm.expect(item, `item[${index}] missing personId`).to.have.property(\"personId\").that.is.a(\"number\");",
+                  "        pm.expect(item, `item[${index}] missing nationalNo`).to.have.property(\"nationalNo\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing firstName`).to.have.property(\"firstName\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing secondName`).to.have.property(\"secondName\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing lastName`).to.have.property(\"lastName\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing gender`).to.have.property(\"gender\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing dateOfBirth`).to.have.property(\"dateOfBirth\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing nationality`).to.have.property(\"nationality\").that.is.a(\"string\");",
+                  "        pm.expect(item, `item[${index}] missing phoneNumber`).to.have.property(\"phoneNumber\").that.is.a(\"string\");",
+                  "        // thirdName and email are optional (nullable), just check they exist as keys",
+                  "        pm.expect(item, `item[${index}] missing thirdName key`).to.have.property(\"thirdName\");",
+                  "        pm.expect(item, `item[${index}] missing email key`).to.have.property(\"email\");",
+                  "    });",
+                  "});",
+                  "",
+                  "// 8. 400 Bad Request scenario hint (manual note via console)",
+                  "// To test 400: set page=0 or pageSize=101 and re-run",
+                  "// To test 500: simulate a server error",
+                  "",
+                  "// 9. Page number in response matches requested page",
+                  "pm.test(\"Response page matches requested page query param\", function () {",
+                  "    const json = pm.response.json();",
+                  "    const requestedPage = parseInt(pm.request.url.query.get(\"page\") || \"1\");",
+                  "    pm.expect(json.page).to.equal(requestedPage);",
+                  "});",
+                  "",
+                  "// 10. PageSize in response matches requested pageSize",
+                  "pm.test(\"Response pageSize matches requested pageSize query param\", function () {",
+                  "    const json = pm.response.json();",
+                  "    const requestedPageSize = parseInt(pm.request.url.query.get(\"pageSize\") || \"10\");",
+                  "    pm.expect(json.pageSize).to.equal(requestedPageSize);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/people?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Returns a paginated list of people. Query params: page (default 1), pageSize (default 10, max 100). Returns 200 with PagedResult<PersonSummary>, 400 for bad request, 500 for server error."
+          },
+          "response": []
+        },
+        {
+          "name": "Set Person Image",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Remind tester to set personId",
+                  "const personId = pm.variables.get(\"personId\");",
+                  "if (!personId) {",
+                  "    console.warn(\"Warning: 'personId' variable is not set. Set it in your environment or collection variables before running.\");",
+                  "} else {",
+                  "    console.log(`Set Person Image — personId: ${personId}`);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 200",
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response Content-Type is JSON",
+                  "pm.test(\"Response Content-Type is JSON\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "// 4. Response body has imageUrl property",
+                  "pm.test(\"Response body contains imageUrl\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an(\"object\");",
+                  "    pm.expect(json).to.have.property(\"imageUrl\");",
+                  "});",
+                  "",
+                  "// 5. imageUrl is a non-empty string",
+                  "pm.test(\"imageUrl is a non-empty string\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.imageUrl).to.be.a(\"string\").and.to.have.length.above(0);",
+                  "});",
+                  "",
+                  "// 6. imageUrl looks like a valid URL or path",
+                  "pm.test(\"imageUrl is a valid URL or file path\", function () {",
+                  "    const json = pm.response.json();",
+                  "    const url = json.imageUrl;",
+                  "    const isUrl = url.startsWith(\"http://\") || url.startsWith(\"https://\") || url.startsWith(\"/\");",
+                  "    pm.expect(isUrl, `imageUrl \"${url}\" does not look like a valid URL or path`).to.be.true;",
+                  "});",
+                  "",
+                  "// 7. Store imageUrl in environment for use in other requests",
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.environment.set(\"lastImageUrl\", json.imageUrl);",
+                  "    console.log(\"Stored imageUrl in environment variable 'lastImageUrl':\", json.imageUrl);",
+                  "}",
+                  "",
+                  "// --- 400 Bad Request scenario ---",
+                  "// To test: send request without attaching a file",
+                  "// Expected: 400 with body \"Image file is required.\""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "type": "file",
+                  "key": "image",
+                  "src": "/C:/Users/SAMA/Desktop/a3b0eee1-92f2-4d0b-ae1b-2b015d7a54b9.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/people/{{personId}}/image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people",
+                "{{personId}}",
+                "image"
+              ]
+            },
+            "description": "Uploads and sets a profile image for a person. Accepts a multipart/form-data file upload. Returns 200 with { imageUrl } on success, 400 if image is null/missing."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Person Image",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/people/{{personId}}/image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people",
+                "{{personId}}",
+                "image"
+              ]
+            },
+            "description": "Removes the profile image for a person. Returns 204 No Content on success. No response body is returned."
+          },
+          "response": []
+        },
+        {
+          "name": "Check Person Exists",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Validate exactly one filter is provided (mirrors server-side logic)",
+                  "const params = pm.request.url.query;",
+                  "",
+                  "const nationalNo = params.get(\"nationalNo\");",
+                  "const email = params.get(\"email\");",
+                  "const phoneNumber = params.get(\"phoneNumber\");",
+                  "",
+                  "const provided = [nationalNo, email, phoneNumber].filter(f => f !== null && f !== undefined && f !== \"\");",
+                  "",
+                  "if (provided.length === 0) {",
+                  "    console.warn(\"Warning: No filter provided. Exactly one of nationalNo, email, or phoneNumber must be set.\");",
+                  "} else if (provided.length > 1) {",
+                  "    console.warn(`Warning: ${provided.length} filters provided. Exactly one must be provided — server will return 400.`);",
+                  "} else {",
+                  "    console.log(`Check Person Exists — filter: ${provided[0]}`);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 200",
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response Content-Type is JSON",
+                  "pm.test(\"Response Content-Type is JSON\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "// 4. Response body has correct structure",
+                  "pm.test(\"Response body contains 'exists' property\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an(\"object\");",
+                  "    pm.expect(json).to.have.property(\"exists\");",
+                  "});",
+                  "",
+                  "// 5. exists is a boolean",
+                  "pm.test(\"'exists' is a boolean value\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.exists).to.be.a(\"boolean\");",
+                  "});",
+                  "",
+                  "// 6. Exactly one query param was sent (mirrors server validation)",
+                  "pm.test(\"Exactly one filter query param was provided\", function () {",
+                  "    const params = pm.request.url.query;",
+                  "    const nationalNo = params.get(\"nationalNo\");",
+                  "    const email = params.get(\"email\");",
+                  "    const phoneNumber = params.get(\"phoneNumber\");",
+                  "    const provided = [nationalNo, email, phoneNumber].filter(f => f !== null && f !== undefined && f !== \"\");",
+                  "    pm.expect(provided.length, \"Expected exactly one filter param\").to.equal(1);",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path (exists=true):  enable nationalNo with a known value → 200 { exists: true }",
+                  "// Happy path (exists=false): enable nationalNo with an unknown value → 200 { exists: false }",
+                  "// 400 - no filter:           disable all params → 400 \"Exactly one filter must be provided.\"",
+                  "// 400 - multiple filters:    enable 2+ params → 400 \"Exactly one filter must be provided.\""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/people/exists?nationalNo=N13",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people",
+                "exists"
+              ],
+              "query": [
+                {
+                  "key": "phoneNumber",
+                  "value": "+1234567890",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "john.doe@jexample.com",
+                  "disabled": true
+                },
+                {
+                  "key": "nationalNo",
+                  "value": "N13"
+                }
+              ]
+            },
+            "description": "Checks if a person exists by exactly one of: nationalNo, email, or phoneNumber. Exactly one query param must be provided — sending 0 or 2+ returns 400. Returns 200 with { exists: bool }."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Person",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Validate personId is set",
+                  "const personId = pm.variables.get(\"personId\");",
+                  "if (!personId) {",
+                  "    console.warn(\"Warning: 'personId' variable is not set. Set it in your environment or collection variables before running.\");",
+                  "} else {",
+                  "    console.log(`Update Person — personId: ${personId}`);",
+                  "}",
+                  "",
+                  "// Validate required PersonForm fields are present in the request body",
+                  "const body = JSON.parse(pm.request.body.raw);",
+                  "",
+                  "const requiredFields = [",
+                  "    \"nationalNo\",",
+                  "    \"firstName\",",
+                  "    \"secondName\",",
+                  "    \"lastName\",",
+                  "    \"gender\",",
+                  "    \"dateOfBirth\",",
+                  "    \"nationalityCountryId\",",
+                  "    \"phoneNumber\",",
+                  "    \"address\"",
+                  "];",
+                  "",
+                  "requiredFields.forEach(field => {",
+                  "    if (body[field] === undefined || body[field] === null || body[field] === \"\") {",
+                  "        console.warn(`Warning: Required field \"${field}\" is missing or empty in PersonForm`);",
+                  "    }",
+                  "});",
+                  "",
+                  "console.log(\"PersonForm pre-request validation passed.\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Status Code 204 No Content",
+                  "pm.test(\"Status code is 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "// 2. Response time",
+                  "pm.test(\"Response time is under 2000ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "// 3. Response body is empty (NoContent returns no body)",
+                  "pm.test(\"Response body is empty\", function () {",
+                  "    pm.expect(pm.response.text()).to.be.empty;",
+                  "});",
+                  "",
+                  "// 4. Request had correct Content-Type header",
+                  "pm.test(\"Request had correct Content-Type header\", function () {",
+                  "    pm.expect(pm.request.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "// 5. Request body contains all required PersonForm fields",
+                  "pm.test(\"Request body contains all required PersonForm fields\", function () {",
+                  "    const body = JSON.parse(pm.request.body.raw);",
+                  "    const requiredFields = [",
+                  "        \"nationalNo\", \"firstName\", \"secondName\",",
+                  "        \"lastName\", \"gender\", \"dateOfBirth\",",
+                  "        \"nationalityCountryId\", \"phoneNumber\", \"address\"",
+                  "    ];",
+                  "    requiredFields.forEach(field => {",
+                  "        pm.expect(body, `Missing required field: ${field}`).to.have.property(field);",
+                  "        pm.expect(body[field], `Field \"${field}\" must not be null or empty`).to.not.be.null;",
+                  "        pm.expect(String(body[field]), `Field \"${field}\" must not be empty`).to.have.length.above(0);",
+                  "    });",
+                  "});",
+                  "",
+                  "// 6. Optional fields are present as keys (thirdName, email can be null)",
+                  "pm.test(\"Optional PersonForm fields are present as keys\", function () {",
+                  "    const body = JSON.parse(pm.request.body.raw);",
+                  "    pm.expect(body).to.have.property(\"thirdName\");",
+                  "    pm.expect(body).to.have.property(\"email\");",
+                  "});",
+                  "",
+                  "// --- Test scenarios ---",
+                  "// Happy path: valid personId + full PersonForm body → 204",
+                  "// To test 404: set personId to a non-existent value",
+                  "// To test 400: send with missing required fields"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nationalNo\":\"1234567890\",\"firstName\":\"John\",\"secondName\":\"Michael\",\"thirdName\":null,\"lastName\":\"Doe\",\"gender\":\"Male\",\"dateOfBirth\":\"1990-01-15T00:00:00\",\"nationalityCountryId\":4,\"phoneNumber\":\"+1234567890\",\"email\":\"john.doe@example.com\",\"address\":\"123 Main Street, City\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/people/{{personId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people",
+                "{{personId}}"
+              ]
+            },
+            "description": "Updates an existing person's details by ID. Accepts a full PersonForm body. Returns 204 No Content on success. Uses {{personId}} variable for the person's ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Person Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/people/{{personId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people",
+                "{{personId}}"
+              ]
+            },
+            "description": "Returns full details of a person by ID. Returns 200 with PersonDetails DTO on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Person",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/people/2035",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "people",
+                "2035"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "image",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://localhost:7152/images/f316de13-cd66-4665-a983-92e66547d9a6.jpg",
+              "protocol": "https",
+              "host": [
+                "localhost"
+              ],
+              "port": "7152",
+              "path": [
+                "images",
+                "f316de13-cd66-4665-a983-92e66547d9a6.jpg"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Application Types",
+      "item": [
+        {
+          "name": "Get All Application Types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/application-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "application-types"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{baseUrl}}/api/application-types\" -H \"Authorization: Bearer {{authToken}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application Type By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/application-types/{{applicationTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "application-types",
+                "{{applicationTypeId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{baseUrl}}/api/application-types/{{applicationTypeId}}\" -H \"Authorization: Bearer {{authToken}}\""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Application Type",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"title\": \"Release Detained Driving License\", \"fee\": 15}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/application-types/{{applicationTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "application-types",
+                "{{applicationTypeId}}"
+              ]
+            },
+            "description": "Generated from cURL: curl -X PATCH \"{{baseUrl}}/api/application-types/{{applicationTypeId}}\" -H \"Authorization: Bearer {{authToken}}\" -H \"Content-Type: application/json\" -d \"{\\n  \\\"title\\\": \\\"\\\",\\n  \\\"fee\\\": 0\\n}\""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Types",
+      "item": [
+        {
+          "name": "Get All Test Types]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "test-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Test Type By Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/test-types/{{testTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "test-types",
+                "{{testTypeId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Test Type",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n    \"title\": \"Vision Test\",\r\n    \"description\": \"This assesses the applicant's visual acuity to ensure they have sufficient vision to drive safely.\",\r\n    \"fee\": 10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-types/{{testTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "test-types",
+                "{{testTypeId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "License Classes",
+      "item": [
+        {
+          "name": "Get All License Classes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/license-classes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "license-classes"
+              ]
+            },
+            "description": "Generated from cURL: curl -X GET \"{{baseUrl}}/api/license-classes\" -H \"Authorization: Bearer {{authToken}}\""
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "// DVLD - Driving Licence Management System",
+          "// Collection-level pre-request script",
+          "console.log(\"Running DVLD collection...\");"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "// Standard response time check (applies to all requests in collection)",
+          "pm.test(\"Response time is acceptable (< 2000ms)\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "// Standard: Response must have a body",
+          "pm.test(\"Response has a body\", function () {",
+          "    pm.response.to.have.body;",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "personId",
+      "value": ""
+    }
+  ]
+}

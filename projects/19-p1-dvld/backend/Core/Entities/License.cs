@@ -75,5 +75,11 @@ public sealed class License
         IsActive = false;
     }
 
+    public void Activate()
+    {
+        if (IsActive)
+            throw new InvalidOperationException("Already active.");
+        IsActive = true;
+    }
 
 }
