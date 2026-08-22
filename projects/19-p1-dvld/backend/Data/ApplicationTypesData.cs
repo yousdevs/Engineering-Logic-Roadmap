@@ -120,4 +120,27 @@ public static class ApplicationTypesData
 
         return affected > 0;
     }
+
+    public static async Task<decimal> GetFeesByIdAsync(int applicationTypeId)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = """
+
+            SELECT ApplicationFees
+            FROM ApplicationTypes
+            WHERE ApplicationTypeID = @id;
+            """;
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", System.Data.SqlDbType.Int).Value = applicationTypeId;
+
+        await con.OpenAsync();
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        return Convert.ToDecimal(result);
+    }
 }

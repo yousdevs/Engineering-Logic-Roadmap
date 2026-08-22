@@ -1,16 +1,65 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core;
+using Core.DTOs;
+using Core.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace Api.Controllers;
+
+[Authorize]
+[Route("api")]
+[ApiController]
+public sealed class TestController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TestController : ControllerBase
+    private readonly TestService _testService;
+
+    public TestController(TestService testService)
+    {
+        _testService = testService;
+    }
+
+
+    [HttpPost("applications/{applicationId:int}/tests")]
+    public async Task<IActionResult> ScheduleTest(int applicationId, [FromBody] ScheduleTestRequest request)
+    {
+        var appointmentId = await _testService.ScheduleTestAsync(applicationId, request.TestTypeId, request.AppointmentDate);
+
+        return Created(
+            $"api/test-appointments/{appointmentId}",
+            new { id = appointmentId }
+            );
+    }
+
+    [HttpPost("test-appointments/{appointmentId:int}/result")]
+    public async Task<IActionResult> TakeTestAsync(int appointmentId, [FromBody] TakeTestRequest request)
     {
 
-        [HttpGet(Name = "GetTest")]
-        public string Get()
-        {
-            return "Test Succeed";
-        }
+        var testId = await _testService.TakeTestAsync(appointmentId, request.Passed, request.Notes);
+
+        return Created(
+            $"/api/tests/{testId}",
+            new { id = testId }
+            );
+    }
+
+    [HttpPost("applications/{applicationId:int}/tests/retake")]
+    public async Task<IActionResult> ScheduleRetakeTestAsync(int applicationId, [FromBody] ScheduleRetakeTestRequest request)
+    {
+
+        var appointmentId = await _testService.ScheduleRetakeTestAsync(applicationId, request.AppointmentDate);
+
+        return Created(
+            $"/api/test-appointments/{appointmentId}",
+            new { id = appointmentId }
+            );
+    }
+
+    [HttpGet("applications/{applicationId:int}/tests/workflow")]
+    public async Task<ActionResult<LocalDrivingLicenseTestWorkflow>> GetTestWorkflowAsync(int applicationId)
+    {
+
+        var workflow = await _testService.GetWorkflowAsync(applicationId);
+
+        return Ok(workflow);
     }
 }

@@ -441,4 +441,30 @@ public static class PersonData
 
         return (true, imagePath);
     }
+
+    public static async Task<DateTime?> FindDateOfBirthByIdAsync(int id)
+    {
+        RequireInitialized();
+
+        await using var con = new SqlConnection(_connectionString);
+
+        const string query = @"
+            
+            SELECT DateOfBirth
+            FROM People
+            WHERE PersonID = @id;
+        ";
+
+        await using var cmd = new SqlCommand(query, con);
+        cmd.Parameters.Add("@id", SqlDbType.Int).Value = id;
+
+        await con.OpenAsync();
+
+        var dob = await cmd.ExecuteScalarAsync();
+
+        if (dob == null)
+            return null;
+
+        return (DateTime)dob;
+    }
 }

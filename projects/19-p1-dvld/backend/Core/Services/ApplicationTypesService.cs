@@ -50,7 +50,7 @@ public sealed class ApplicationTypesService
 
 
         var applicationType = ApplicationType.Reconstitute(
-            record.Id,
+            (ApplicationTypeId)record.Id,
             record.Title,
             Money.From(record.Fee)
             );
@@ -60,7 +60,7 @@ public sealed class ApplicationTypesService
 
         bool updated = await ApplicationTypesData.UpdateAsync(
             new ApplicationTypeRecord(
-                applicationType.Id,
+                (int)applicationType.Id,
                 applicationType.Title,
                 applicationType.Fee.Amount
                 )

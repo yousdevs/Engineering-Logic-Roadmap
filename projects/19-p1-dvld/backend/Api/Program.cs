@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 namespace Api;
 
@@ -76,8 +77,19 @@ public class Program
         builder.Services.AddScoped<UserService>();
         builder.Services.AddScoped<ApplicationTypesService>();
         builder.Services.AddScoped<TestTypeService>();
+        builder.Services.AddScoped<LicenseClassService>();
+        builder.Services.AddScoped<ApplicationService>();
+        builder.Services.AddScoped<TestService>();
+        builder.Services.AddScoped<LicenseService>();
 
-        builder.Services.AddControllers();
+        builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter());
+            });
+
 
 
 
