@@ -88,4 +88,91 @@ public class GraphTests
         Assert.Equal(["A", "B"], graph.BFS("A").ToArray());
         Assert.Equal(["B"], graph.BFS("B").ToArray());
     }
+
+    [Fact]
+    public void Dijkstra_ShortestDistanceIsCorrectOnSimpleWeightedGraph()
+    {
+        var graph = new Graph<string>(true);
+        graph.AddNode("A");
+        graph.AddNode("B");
+        graph.AddNode("C");
+        graph.AddNode("D");
+
+        graph.AddEdge("A", "B", 2);
+        graph.AddEdge("A", "C", 1);
+        graph.AddEdge("B", "D", 1);
+        graph.AddEdge("C", "D", 5);
+
+        var result = graph.Dijkstra("A");
+        Assert.Equal(3, result.Distances["D"]);
+    }
+
+    [Fact]
+    public void Dijkstra_TryGetPathReturnsCorrectSequence()
+    {
+        var graph = new Graph<string>(true);
+        graph.AddNode("A");
+        graph.AddNode("B");
+        graph.AddNode("C");
+        graph.AddNode("D");
+
+        graph.AddEdge("A", "B", 2);
+        graph.AddEdge("A", "C", 1);
+        graph.AddEdge("B", "D", 1);
+        graph.AddEdge("C", "D", 5);
+
+        var result = graph.Dijkstra("A");
+        result.TryGetPath("D", out IEnumerable<string> path);
+        Assert.Equal(["A", "B", "D"], path);
+    }
+
+    [Fact]
+    public void Dijkstra_UnreachableNodeReturnsFalseFromTryGetPath()
+    {
+        var graph = new Graph<string>(true);
+        graph.AddNode("A");
+        graph.AddNode("B");
+        graph.AddNode("C");
+        graph.AddNode("D");
+        graph.AddNode("E");
+
+        graph.AddEdge("A", "B", 2);
+        graph.AddEdge("A", "C", 1);
+        graph.AddEdge("B", "D", 1);
+        graph.AddEdge("C", "D", 5);
+
+        var result = graph.Dijkstra("A");
+        bool reachable = result.TryGetPath("E", out IEnumerable<string> path);
+        Assert.False(reachable);
+    }
+
+    [Fact]
+    public void Dijkstra_StartNodeNotInGraphThrowsArgumentException()
+    {
+        var graph = new Graph<string>(true);
+        graph.AddNode("A");
+        graph.AddNode("B");
+        graph.AddNode("C");
+        graph.AddNode("D");
+
+        graph.AddEdge("A", "B", 2);
+        graph.AddEdge("A", "C", 1);
+        graph.AddEdge("B", "D", 1);
+        graph.AddEdge("C", "D", 5);
+
+        Assert.Throws<ArgumentException>(() => graph.Dijkstra("F"));
+    }
+
+    [Fact]
+    public void Dijkstra_TryGetPath_StartNodeReturnsItself()
+    {
+        var graph = new Graph<string>(true);
+        graph.AddNode("A");
+        graph.AddNode("B");
+        graph.AddEdge("A", "B", 1);
+
+        var result = graph.Dijkstra("A");
+        result.TryGetPath("A", out IEnumerable<string> path);
+        Assert.Equal(["A"], path.ToArray());
+    }
 }

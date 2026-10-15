@@ -1,5 +1,50 @@
 namespace DSA.Core.Datastructures;
 
+
+public sealed class DijkstraResult<T> where T : notnull
+{
+    internal DijkstraResult(T start, Dictionary<T, double> distances, Dictionary<T, T> predecessors)
+    {
+        Distances = distances;
+        _predecessors = predecessors;
+        _start = start;
+    }
+
+    private T _start {get;}
+    private IReadOnlyDictionary<T, T> _predecessors{get;}
+
+    public IReadOnlyDictionary<T,double> Distances {get;}
+
+    public bool TryGetPath(T destination, out IEnumerable<T> path)
+    {
+        if(destination.Equals(_start))
+        {
+            path = [_start];
+            return true;
+        }
+
+        if(!_predecessors.ContainsKey(destination))
+        {
+            path = [];
+            return false;
+        }
+        
+        List<T> result = new();
+
+        T current = destination;
+        while (!current.Equals(_start))
+        {
+            result.Add(current);
+            current = _predecessors[current];
+        }
+
+        result.Add(_start);
+        result.Reverse();
+        path = result;
+        return true;
+    }
+}
+
 public sealed class Graph<T> where T : notnull
 {
     
@@ -92,6 +137,54 @@ public sealed class Graph<T> where T : notnull
             }
         }
 
+    }
+
+    public DijkstraResult<T> Dijkstra(T start)
+    {
+        if(!_nodes.ContainsKey(start))
+            throw new ArgumentException($"Node does not exist in the graph.", nameof(start));
+
+        Dictionary<Node, double> distances = new();
+        Dictionary<Node, Node> predecessors = new();
+
+        PriorityQueue<Node, double> unVisited = new();
+        HashSet<Node> visited = new();
+
+        unVisited.Enqueue(_nodes[start], 0);
+        distances[_nodes[start]] = 0;
+
+        while(unVisited.Count > 0)
+        {
+           unVisited.TryDequeue(out Node? current, out double dist);
+            if(visited.Contains(current!))
+                continue;
+            
+            visited.Add(current!);
+
+            foreach((Node neighbor, double weight) in current!.Neighbors)
+            {
+                double newDistance = dist + weight;
+                if(!distances.ContainsKey(neighbor) || newDistance < distances[neighbor])
+                {
+                    distances[neighbor] = newDistance;
+                    predecessors[neighbor] = current;
+                    unVisited.Enqueue(neighbor, newDistance);
+                }
+            }
+        }
+
+
+        var publicDistances = distances.ToDictionary(
+            kvp => kvp.Key.Value,
+            kvp => kvp.Value
+        );
+
+        var publicPredecessors = predecessors.ToDictionary(
+            kvp => kvp.Key.Value,
+            kvp => kvp.Value.Value
+        );
+
+        return new DijkstraResult<T>(start, publicDistances, publicPredecessors);
     }
 
     private readonly bool _isDirected;
